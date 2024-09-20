@@ -1,0 +1,68 @@
+﻿<Window x:Class="ML.ApplicationLauncher.Shell.Views.MainWindow"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shell.Controls"
+              xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
+              mc:Ignorable="d"
+              Title="Universal Application Launcher" Height="700" Width="900"
+              Icon="pack://application:,,,/Resources/Application.ico"
+              d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}"
+>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ToolBarTray>
+            <ToolBar>
+                <Button Command="{Binding Path=ExitCommand, Mode=OneWay}" ToolTip="Exit">
+                    <Image Source="pack://application:,,,/Resources/exit-icon-4597-Windows.ico" MaxHeight="16" />
+                </Button>
+                <Separator />
+                <Button Command="{Binding Path=LoadListCommand, Mode=OneWay}" ToolTip="Load commands">
+                    <Image Source="pack://application:,,,/Resources/export-icon-12649-Windows.ico" MaxHeight="16" />
+                </Button>
+                <Button Command="{Binding Path=EditListCommand, Mode=OneWay}" ToolTip="Edit commands">
+                    <Image Source="pack://application:,,,/Resources/edit-icon-png-3585-Windows.ico" MaxHeight="16" />
+                </Button>
+                <Separator />
+                <Button Command="{Binding Path=ClearLastExecutedTimeCommand, Mode=OneWay}" ToolTip="Clear last executed time">
+                    <Image Source="pack://application:,,,/Resources/clear-icon-9211-Windows.ico" MaxHeight="16" />
+                </Button>
+            </ToolBar>
+
+        </ToolBarTray>
+
+
+        <ItemsControl Grid.Row="1" ItemsSource="{Binding Path=ProcessGroups, Mode=OneWay}" Margin="5">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type viewModels:ProcessGroupViewModel}">
+                    <controls:ProcessGroupView />
+                </DataTemplate>
+                <DataTemplate DataType="{x:Type viewModels:ProcessViewModel}">
+                    <controls:ProcessView />
+                </DataTemplate>
+            </ItemsControl.Resources>
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <ScrollViewer
+                            x:Name="ScrollViewer"
+                            Padding="{TemplateBinding Padding}"
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </ItemsControl.Template>
+        </ItemsControl>
+
+    </Grid>
+</Window>

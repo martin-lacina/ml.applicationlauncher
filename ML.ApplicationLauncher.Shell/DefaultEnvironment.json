@@ -1,0 +1,38 @@
+[
+  {
+    "DisplayName": "Tools",
+    "Groups": [
+      {
+        "DisplayName": "Consoles",
+		"CanLaunch": false,
+        "Groups": [],
+        "Processes": [
+          {
+            "DisplayName": "Command line - default",
+            "Executable": "C:\\Windows\\System32\\cmd.exe",
+            "Arguments": []
+          },
+          {
+            "DisplayName": "Command line - standalone",
+            "Executable": "C:\\Windows\\System32\\cmd.exe",
+            "Arguments": [],
+            "ExecutionMode": "standalone"
+          },
+          {
+            "DisplayName": "Command line - direct",
+            "Executable": "C:\\Windows\\System32\\cmd.exe",
+            "Arguments": [],
+            "ExecutionMode": "direct"
+          },
+          {
+            "DisplayName": "Command line - raw",
+            "Executable": "C:\\Windows\\System32\\cmd.exe",
+            "Arguments": [],
+            "ExecutionMode": "Raw"
+          }
+        ]
+      }
+    ],
+	"Processes": []
+  }
+]

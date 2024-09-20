@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Prism.Wpf" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\ML.ApplicationLauncher.Core\ML.ApplicationLauncher.Core.csproj" />
+  </ItemGroup>
+
+</Project>

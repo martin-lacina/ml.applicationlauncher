@@ -5,5 +5,11 @@
     <EnablePackageVersionOverride>false</EnablePackageVersionOverride>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageVersion Include="ConsoleControl.WPF" Version="1.4.0" />
+    <PackageVersion Include="Prism.Core" Version="8.1.97" />
+    <PackageVersion Include="Prism.Unity" Version="8.1.97" />
+    <PackageVersion Include="Prism.Wpf" Version="8.1.97" />
+    <PackageVersion Include="System.Threading.Tasks.Dataflow" Version="8.0.0" />
   </ItemGroup>
 </Project>
