@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="ConsoleControl.WPF" />-->
     <PackageReference Include="Prism.Unity" />
     <PackageReference Include="Prism.Wpf" />
   </ItemGroup>

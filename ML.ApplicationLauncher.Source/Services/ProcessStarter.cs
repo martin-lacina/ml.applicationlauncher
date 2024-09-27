@@ -16,12 +16,14 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
     private DateTime _lastStartup = DateTime.MinValue;
     private readonly TimeSpan _delay = TimeSpan.FromSeconds(3);
 
+    private readonly IMessageService _messageService;
     private readonly ActionBlock<Func<CancellationToken, Task>> _actionExecutor;
     private readonly CancellationTokenSource _cancellationTokenSource = new();
 
-    public ProcessLauncher()
+    public ProcessLauncher(IMessageService messageService)
     {
         _actionExecutor = new(ProcessActionAsync, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = 1 });
+        _messageService = messageService;
     }
 
     public async Task StartAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken = default)
@@ -57,8 +59,6 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
 
         var processStartInfo = new ProcessStartInfo(executable, executableArguments);
 
-
-
         if (applyDelay)
         {
             _actionExecutor.Post(DelayExecutionAsync);
@@ -72,7 +72,18 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
     {
         _cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-        await action(_cancellationTokenSource.Token);
+        try
+        {
+            await action(_cancellationTokenSource.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            _messageService.ShowError("Start process action failed", ex);
+        }
     }
 
     private async Task DelayExecutionAsync(CancellationToken cancellationToken)
@@ -84,7 +95,14 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        Process.Start(processStartInfo)?.Dispose();
+        try
+        {
+            Process.Start(processStartInfo)?.Dispose();
+        }
+        catch (Exception ex)
+        {
+
+        }
 
         return Task.CompletedTask;
     }
