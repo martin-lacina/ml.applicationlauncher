@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>..\ML.ApplicationLauncher.Shell.Assets\Resources\Application.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Prism.Unity" />
+    <PackageReference Include="Prism.Wpf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Core\ML.ApplicationLauncher.Core.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Source\ML.ApplicationLauncher.Source.csproj" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)\ML.ApplicationLauncher.Shell.Shared.projitems" Label="Shared" />
+
+  <Import Project="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Shell.Assets\LinkResources.targets" />
+</Project>

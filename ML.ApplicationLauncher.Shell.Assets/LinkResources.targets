@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup>
+    <Resource Include="$(MSBuildThisFileDirectory)\Resources\**\*" LinkBase="Resources" />
+  </ItemGroup>
+</Project>

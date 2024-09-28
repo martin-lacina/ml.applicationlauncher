@@ -14,6 +14,7 @@ public class ShellServiceInstaller : IDependencyInstaller
         registry
             .RegisterSingleton<IMessageService, MessageService>()
             .RegisterSingleton<ICommandFactory, RefreshableCommandFactory>()
+            .Register<IConfigurationProvider, ConfigurationProvider>()
             ;
     }
 }

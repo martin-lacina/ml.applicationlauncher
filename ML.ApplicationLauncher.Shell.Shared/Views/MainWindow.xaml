@@ -7,9 +7,11 @@
               xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
               mc:Ignorable="d"
               Title="Universal Application Launcher" Height="700" Width="900"
-              Icon="pack://application:,,,/Resources/Application.ico"
+              
               d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}"
->
+><!--
+Icon="pack://application:,,,/Resources/Application.ico"
+    -->
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

@@ -13,7 +13,6 @@ public class SourceServiceInstaller : IDependencyInstaller
         registry
             .Register<IProcessListProvider, ProcessListProvider>()
             .Register<IProcessLauncher, ProcessLauncher>()
-            .Register<IConfigurationProvider, ConfigurationProvider>()
             ;
     }
 }

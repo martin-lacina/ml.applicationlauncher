@@ -95,14 +95,7 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        try
-        {
-            Process.Start(processStartInfo)?.Dispose();
-        }
-        catch (Exception ex)
-        {
-
-        }
+        Process.Start(processStartInfo)?.Dispose();
 
         return Task.CompletedTask;
     }
