@@ -3,8 +3,8 @@
     "DisplayName": "Tools",
     "Groups": [
       {
-        "DisplayName": "Consoles",
-		"CanLaunch": false,
+        "DisplayName": "Examples",
+        "CanLaunch": false,
         "Groups": [],
         "Processes": [
           {

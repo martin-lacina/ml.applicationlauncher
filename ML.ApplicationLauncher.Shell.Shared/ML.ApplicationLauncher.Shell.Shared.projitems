@@ -55,7 +55,7 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)CommandDefinitions.json">
+    <None Include="$(MSBuildThisFileDirectory)CommandDefinitions.examples.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="$(MSBuildThisFileDirectory)ProjectSharedConfig.targets" />

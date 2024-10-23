@@ -2,6 +2,7 @@
 
 using System.Security.Principal;
 using System.Windows;
+using ML.ApplicationLauncher.Source.Services;
 
 namespace ML.ApplicationLauncher.Shell.Views;
 
@@ -10,19 +11,22 @@ namespace ML.ApplicationLauncher.Shell.Views;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
+    public MainWindow(IConfigurationProvider configurationProvider)
     {
         InitializeComponent();
-        SetTitle();
+        SetTitle(configurationProvider.ConfigurationFileName);
     }
 
-    private void SetTitle()
+    private void SetTitle(string configurationFileName)
     {
-        var title = Title;
-
+        string title;
         if (IsAdministrator(out var userName))
         {
-            title = $"{title} (Administrator: userName)";
+            title = $"{Title} ({configurationFileName}, Administrator: userName)";
+        }
+        else
+        {
+            title = $"{Title} ({configurationFileName})";
         }
         Title = title;
     }
