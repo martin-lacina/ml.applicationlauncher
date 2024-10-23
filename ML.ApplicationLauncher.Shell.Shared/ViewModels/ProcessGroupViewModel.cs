@@ -1,8 +1,10 @@
 ﻿// Copyright © Martin Lacina
 
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using ML.ApplicationLauncher.Shell.Services;
+using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
 
@@ -47,12 +49,12 @@ public class ProcessGroupViewModel : ProcessViewModelBase
 
     private void Populate(ProcessGroup processGroup)
     {
-        foreach (ProcessGroup group in processGroup.Groups)
+        foreach (ProcessGroup group in processGroup.Groups.Where(g => g.IsVisible()))
         {
             Children.Add(new ProcessGroupViewModel(group, _processLauncher, _commandFactory));
         }
 
-        foreach (ProcessLaunchInformation process in processGroup.Processes)
+        foreach (ProcessLaunchInformation process in processGroup.Processes.Where(p => p.IsVisible()))
         {
             Children.Add(new ProcessViewModel(process, _processLauncher, _commandFactory));
         }

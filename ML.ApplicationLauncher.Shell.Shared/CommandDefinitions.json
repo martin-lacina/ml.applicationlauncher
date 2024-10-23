@@ -29,6 +29,13 @@
             "Executable": "C:\\Windows\\System32\\cmd.exe",
             "Arguments": [],
             "ExecutionMode": "Raw"
+          },
+          {
+            "DisplayName": "Command line - hidden",
+            "Executable": "C:\\Windows\\System32\\cmd.exe",
+            "Arguments": [],
+            "ExecutionMode": "Raw",
+            "Hidden": true
           }
         ]
       }
