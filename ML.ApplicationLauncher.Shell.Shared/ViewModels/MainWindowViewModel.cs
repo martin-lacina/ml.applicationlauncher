@@ -21,22 +21,26 @@ public class MainWindowViewModel : BindableBase
     private readonly IProcessLauncher _processLauncher;
     private readonly IProcessListProvider _processListProvider;
     private readonly ICommandFactory _commandFactory;
+    private readonly IMyDialogService _dialogService;
 
     public MainWindowViewModel(
         IConfigurationProvider configurationProvider,
         IProcessListProvider processListProvider,
         IProcessLauncher processLauncher,
-        ICommandFactory commandFactory)
+        ICommandFactory commandFactory,
+        IMyDialogService dialogService)
     {
         _configurationProvider = configurationProvider.ShouldNotBeNull();
         _processLauncher = processLauncher.ShouldNotBeNull();
         _processListProvider = processListProvider.ShouldNotBeNull();
         _commandFactory = commandFactory.ShouldNotBeNull();
+        _dialogService = dialogService.ShouldNotBeNull();
 
         ExitCommand = new DelegateCommand(Exit);
         LoadListCommand = new DelegateCommand(LoadList);
         EditListCommand = new DelegateCommand(EditList);
         ClearLastExecutedTimeCommand = new DelegateCommand(ClearLastExecutedTime);
+        ShowAboutDialogCommand = new DelegateCommand(ShowAboutDialog);
 
         LoadList();
 
@@ -47,6 +51,7 @@ public class MainWindowViewModel : BindableBase
     public DelegateCommand LoadListCommand { get; }
     public DelegateCommand EditListCommand { get; }
     public DelegateCommand ClearLastExecutedTimeCommand { get; }
+    public DelegateCommand ShowAboutDialogCommand { get; }
 
     public ObservableCollection<ProcessGroupViewModel> ProcessGroups { get; } = new();
 
@@ -74,6 +79,11 @@ public class MainWindowViewModel : BindableBase
         {
             model.ClearLastExecuted();
         }
+    }
+
+    private void ShowAboutDialog()
+    {
+        _dialogService.ShowAboutDialog();
     }
 
     private async Task ExpireLastExecutionTimeLoopAsync(CancellationToken cancellationToken)

@@ -34,6 +34,10 @@ Icon="pack://application:,,,/Resources/Application.ico"
                 <Button Command="{Binding Path=ClearLastExecutedTimeCommand, Mode=OneWay}" ToolTip="Clear last executed time">
                     <Image Source="pack://application:,,,/Resources/clear-icon-9211-Windows.ico" MaxHeight="16" />
                 </Button>
+                <Separator />
+                <Button Command="{Binding Path=ShowAboutDialogCommand, Mode=OneWay}" ToolTip="About application">
+                    <Image Source="pack://application:,,,/Resources/question-icon-my.ico" MaxHeight="16" />
+                </Button>
             </ToolBar>
 
         </ToolBarTray>

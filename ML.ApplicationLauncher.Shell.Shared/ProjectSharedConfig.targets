@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Core\ML.ApplicationLauncher.Core.csproj" />
     <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Source\ML.ApplicationLauncher.Source.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Shell.Assets\ML.ApplicationLauncher.Shell.Assets.csproj" />
   </ItemGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\ML.ApplicationLauncher.Shell.Shared.projitems" Label="Shared" />

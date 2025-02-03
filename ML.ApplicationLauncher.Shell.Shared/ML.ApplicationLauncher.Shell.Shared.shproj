@@ -14,6 +14,10 @@
 
   <!-- Our definitions bellow -->
 
+  <PropertyGroup>
+      <RootNamespace>ML.ApplicationLauncher.Shell</RootNamespace>
+  </PropertyGroup>
+      
   <ItemGroup>
     <None Update="DefaultEnvironment.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

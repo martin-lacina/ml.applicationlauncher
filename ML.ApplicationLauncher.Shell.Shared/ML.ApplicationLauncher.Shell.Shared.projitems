@@ -23,14 +23,22 @@
       <DependentUpon>StartButtonControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Dependencies\ShellServiceInstaller.cs" />
+    <Compile Include="..\ML.ApplicationLauncher.Shell.Shared\Extensions\HyperlinkExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ConfigurationProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\MyDialogService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICommandFactory.cs" />
+    <Compile Include="..\ML.ApplicationLauncher.Shell.Shared\Services\IMyDialogService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MessageService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RefreshableCommandFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\IDialogViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainWindowViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessGroupViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
@@ -43,6 +51,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Controls\StartButtonControl.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\DialogWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\MainWindow.xaml">

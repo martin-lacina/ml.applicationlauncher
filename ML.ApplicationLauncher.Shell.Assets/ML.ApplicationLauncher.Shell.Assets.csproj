@@ -14,4 +14,8 @@
     <Resource Include="Resources\*" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Include="..\LICENSE" Link="EmbeddedResources\LICENSE" />
+  </ItemGroup>
+
 </Project>
