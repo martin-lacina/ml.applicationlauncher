@@ -66,8 +66,8 @@ internal class ProcessListProvider : IProcessListProvider
     {
         return processGroup with
         {
-            Groups = Filter(processGroup.Groups),
-            Processes = processGroup.Processes.Where(process => !process.Disabled)
+            Groups = Filter(processGroup.Groups ?? Array.Empty<ProcessGroup>()),
+            Processes = processGroup.Processes?.Where(process => !process.Disabled) ?? Array.Empty<ProcessLaunchInformation>()
         };
     }
 }
