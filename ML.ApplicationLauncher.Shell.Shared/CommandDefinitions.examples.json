@@ -28,7 +28,8 @@
             "DisplayName": "Command line - raw",
             "Executable": "C:\\Windows\\System32\\cmd.exe",
             "Arguments": [],
-            "ExecutionMode": "Raw"
+            "ExecutionMode": "Raw",
+            "WorkingDirectory": "C:\\Windows\\System32"
           },
           {
             "DisplayName": "Command line - hidden",

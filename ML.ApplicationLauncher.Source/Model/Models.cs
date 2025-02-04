@@ -13,6 +13,19 @@ public enum ExecutionMode
     Raw = 3
 }
 
-public record ProcessGroup(string DisplayName, bool CanLaunch, IEnumerable<ProcessGroup> Groups, IEnumerable<ProcessLaunchInformation> Processes, bool Disabled = false, bool Hidden = false);
+public record ProcessGroup(
+    string DisplayName,
+    bool CanLaunch,
+    IEnumerable<ProcessGroup> Groups,
+    IEnumerable<ProcessLaunchInformation> Processes,
+    bool Disabled = false,
+    bool Hidden = false);
 
-public record ProcessLaunchInformation(string DisplayName, string Executable, string[] Arguments, ExecutionMode ExecutionMode, bool Disabled = false, bool Hidden = false);
+public record ProcessLaunchInformation(
+    string DisplayName,
+    string Executable,
+    string[] Arguments,
+    ExecutionMode ExecutionMode,
+    bool Disabled = false,
+    bool Hidden = false,
+    string? WorkingDirectory = null);

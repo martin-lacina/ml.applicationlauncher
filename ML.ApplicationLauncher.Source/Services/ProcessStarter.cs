@@ -58,6 +58,10 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
         }
 
         var processStartInfo = new ProcessStartInfo(executable, executableArguments);
+        if (!string.IsNullOrEmpty(processToLaunch.WorkingDirectory))
+        {
+            processStartInfo.WorkingDirectory = processToLaunch.WorkingDirectory;
+        }
 
         if (applyDelay)
         {

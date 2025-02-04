@@ -49,6 +49,7 @@ Each `Process` has following properties:
 | Arguments | List of strings | `Executable` commandline parameters | Optional |
 | ExecutionMode | string/enum | Desired execution mode. <br> One of `PowerShell`, `Direct`, `Standalone`, `Raw` | Optional. <br> Default `PowerShell` |
 | Hidden| boolean | Allows to hide process entry from UI without removing it from configuration. Such entry is ignored during configuration loading. | Optional. <br> Default `false` |
+| WorkingDirectory | Allows to specify working directory for the executed process | Optional. <br> Default unspecified |
 
 #### Execution modes
 
