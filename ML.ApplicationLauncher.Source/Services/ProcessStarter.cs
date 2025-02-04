@@ -33,18 +33,18 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
         if (processToLaunch.ExecutionMode != ExecutionMode.Raw && !File.Exists(processToLaunch.Executable))
             return;
 
-        var executableArguments = string.Join(" ", processToLaunch.Arguments.Select(a => $"\"{a}\""));
+        var executableArguments = string.Join(" ", processToLaunch.Arguments?.Select(a => $"\"{a}\"") ?? Array.Empty<string>());
 
         bool applyDelay = true;
         string executable = "wt.exe";
         switch (processToLaunch.ExecutionMode)
         {
             case ExecutionMode.PowerShell:
-                executableArguments = $" -w VBO new-tab --title \"{processToLaunch.DisplayName}\" PowerShell -c \"{processToLaunch.Executable} {executableArguments}\"";
+                executableArguments = $" -w ML.ApplicationLauncher new-tab --title \"{processToLaunch.DisplayName}\" PowerShell -c \"{processToLaunch.Executable} {executableArguments}\"";
                 break;
 
             case ExecutionMode.Direct:
-                executableArguments = $" -w VBO new-tab --title \"{processToLaunch.DisplayName}\" \"{processToLaunch.Executable}\" {executableArguments}";
+                executableArguments = $" -w ML.ApplicationLauncher new-tab --title \"{processToLaunch.DisplayName}\" \"{processToLaunch.Executable}\" {executableArguments}";
                 break;
 
             case ExecutionMode.Standalone:
