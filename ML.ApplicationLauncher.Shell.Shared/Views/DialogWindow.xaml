@@ -7,9 +7,11 @@
               xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
               xmlns:extensions="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Extensions"
               mc:Ignorable="d"
-              Title="Universal Application Launcher" Height="500" Width="600"
+              Title="Universal Application Launcher"
+              Height="500" Width="600"
+              MinHeight="500" MinWidth="600"
               WindowStartupLocation="CenterOwner"
-              
+              ResizeMode="CanResizeWithGrip"
               d:DataContext="{d:DesignInstance Type=viewModels:IDialogViewModel, IsDesignTimeCreatable=False}"
 >
     <ContentControl Content="{Binding Mode=OneWay}">
