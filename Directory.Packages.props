@@ -5,6 +5,7 @@
     <EnablePackageVersionOverride>false</EnablePackageVersionOverride>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.115" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="ConsoleControl.WPF" Version="1.4.0" />
     <PackageVersion Include="Prism.Core" Version="8.1.97" />
