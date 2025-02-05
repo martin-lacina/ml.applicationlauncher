@@ -15,7 +15,12 @@ internal class AboutViewModel : BindableBase, IDialogViewModel
         License = EmbeddedResources.License;
     }
 
-    public string DialogTitle { get; } = "About";
+    public string DialogTitle { get; } = "About application";
+
+    public string VersionInformation { get; } = BuildVersionInformation();
 
     public string License { get; }
+
+    private static string BuildVersionInformation()
+        => $"{ThisAssembly.AssemblyInformationalVersion}, {ThisAssembly.GitCommitDate:s}, {ThisAssembly.GitCommitId}";
 }

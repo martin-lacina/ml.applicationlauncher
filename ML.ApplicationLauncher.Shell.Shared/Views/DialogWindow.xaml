@@ -7,40 +7,17 @@
               xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
               xmlns:extensions="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Extensions"
               mc:Ignorable="d"
-              Title="Universal Application Launcher" Height="500" Width="600"
+              Title="Universal Application Launcher"
+              Height="500" Width="600"
+              MinHeight="500" MinWidth="600"
               WindowStartupLocation="CenterOwner"
-              
+              ResizeMode="CanResizeWithGrip"
               d:DataContext="{d:DesignInstance Type=viewModels:IDialogViewModel, IsDesignTimeCreatable=False}"
 >
     <ContentControl Content="{Binding Mode=OneWay}">
         <ContentControl.Resources>
             <DataTemplate DataType="{x:Type viewModels:AboutViewModel}">
-                <Grid Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Grid.Row="0"
-                               Text="Universal Application Launcher"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               />
-                    <TextBlock Grid.Row="1">
-                        <Hyperlink NavigateUri="https://github.com/martin-lacina/ml.applicationlauncher" extensions:HyperlinkExtensions.IsExternal="True">
-                            https://github.com/martin-lacina/ml.applicationlauncher
-                        </Hyperlink>
-                    </TextBlock>
-
-                    <TextBox Grid.Row="3"
-                             Text="{Binding License, Mode=OneTime}"
-                             IsReadOnly="True"
-                             TextWrapping="NoWrap"
-                             HorizontalScrollBarVisibility="Auto"
-                             VerticalScrollBarVisibility="Auto" />
-                </Grid>
+                <controls:AboutApplicationView />
             </DataTemplate>
 
         </ContentControl.Resources>

@@ -13,6 +13,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\AboutApplicationView.xaml.cs">
+      <DependentUpon>AboutApplicationView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView.xaml.cs">
       <DependentUpon>ProcessGroupView.xaml</DependentUpon>
     </Compile>
@@ -44,6 +47,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\AboutApplicationView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView.xaml">
       <SubType>Designer</SubType>
     </Page>
