@@ -42,5 +42,5 @@ jobs:
         name: pdbs
         path: |
           PublishSln/**/*.pdb
-        retrntion-days: 1
+        retention-days: 1
   
