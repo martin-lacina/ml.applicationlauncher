@@ -8,9 +8,9 @@
     <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.115" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="ConsoleControl.WPF" Version="1.4.0" />
-    <PackageVersion Include="Prism.Core" Version="8.1.97" />
-    <PackageVersion Include="Prism.Unity" Version="8.1.97" />
-    <PackageVersion Include="Prism.Wpf" Version="8.1.97" />
-    <PackageVersion Include="System.Threading.Tasks.Dataflow" Version="8.0.0" />
+    <PackageVersion Include="Prism.Core" Version="9.0.537" />
+    <PackageVersion Include="Prism.Unity" Version="9.0.537" />
+    <PackageVersion Include="Prism.Wpf" Version="9.0.537" />
+    <PackageVersion Include="System.Threading.Tasks.Dataflow" Version="9.0.1" />
   </ItemGroup>
 </Project>
