@@ -6,15 +6,8 @@
     "^refs/heads/v\\d+(?:\\.\\d+)?$"
   ],
   "cloudBuild": {
-    "setVersionVariables": true,
     "buildNumber": {
       "enabled": true
     }
-  },
-  "release" : {
-    "tagName" : "v{version}",
-    "branchName" : "v{version}",
-    "versionIncrement" : "minor",
-    "firstUnstableTag" : "alpha"
   }
 }
