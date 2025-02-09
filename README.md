@@ -14,6 +14,9 @@ Notice from author:
 Main window title contains file name of used configuration file name and indication the application is running with administrator priviledges (usually if you use `ML.ApplicationLauncher.Shell.Admin.exe`).
 
 Toolbar buttons from left to right
+
+| Button | Description |
+| ------ | ----------- |
 | Exit | Exists application |
 | Load commands | Reloads list of commands. Use after changes to the configuration JSON file. <br> Note: JSON parsing is not resilient and it will not load malformed JSON file (like missing commas `,`). You need to fix the issue manually and try again. |
 | Edit commands | Allows to open Notepad to edit the JSON file. <br> Note: It does not work well on Windows 11 (24H2) with new Notepad. |
@@ -61,7 +64,7 @@ Application supports several execution modes.
   * `Windows Terminal` parameters: ` -w ML.ApplicationLauncher new-tab --title PowerShell -c "{processToLaunch.Executable} {executableArguments}"`
 * `Direct` process is launched directly in `Windows Terminal` window with ID `ML.ApplicationLauncher` to group launched processed in single Window
   * Launch button checks executable presence if it can be clicked
-  * Useful for launching `cmd.exe` directly  
+  * Useful for launching `cmd.exe` directly
   * `Windows Terminal` parameters: ` -w ML.ApplicationLauncher new-tab --title "{processToLaunch.Executable}" {executableArguments}`
 * `Standalone` process is launched directly without `Windows Terminal`
   * Useful for launching UI applications like Notepad
@@ -69,4 +72,19 @@ Application supports several execution modes.
 * `Raw` is same as `Standalone`, but there is no check if the executable exists
   * Useful for running simple commands you know will work like `cmd.exe` without full path
 
+## Local build
 
+### Prerequisities
+
+* Installed .NET SDK compatible with [`global.json`](global.json), i. e. .NET SDK 8
+* Installed PowerShell Core 7
+
+### Steps to build
+
+* Decide if you want `Debug` or `Release` build,. `Release` is meant for general usage.
+* Run one of following commands
+  * `Publish-Release.cmd` in Windows commandline `cmd.exe` in repository root to create `Release` build
+  * `Publish-Debug.cmd` in Windows commandline `cmd.exe` in repository root to create `Debug` build
+  * Directly run `Build\Scripts\Publish-Release.ps1` in PowerShell Core 7 `pwsh.exe` to create `Release` build or specify additional parameter `-Config 'Debug'` to create `Debug` build
+* Review the build output for any red errors
+* The build output folder is `Publish\ML.ApplicationLauncher`

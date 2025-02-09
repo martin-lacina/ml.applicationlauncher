@@ -16,16 +16,15 @@ process {
 
     $projects = @("ML.ApplicationLauncher.Shell", "ML.ApplicationLauncher.Shell.Admin")
 
-    
     @($publishDir, $workDir) | ForEach-Object {
         $path = $_
-        
+
         if (Test-Path $path -ErrorAction SilentlyContinue)
         {
-            Remove-Item -Path $path -Recurse -Force
-        }
-        
-        New-Item -Path $path -ItemType Directory | Out-Null
+            Get-ChildItem -Path $path -Exclude 'CommandDefinitions.json' | Remove-Item -Recurse -Force
+        } else {
+            New-Item -Path $path -ItemType Directory | Out-Null
+        }        
     }
 
     $index = 0
