@@ -24,7 +24,7 @@ process {
             Get-ChildItem -Path $path -Exclude 'CommandDefinitions.json' | Remove-Item -Recurse -Force
         } else {
             New-Item -Path $path -ItemType Directory | Out-Null
-        }        
+        }
     }
 
     $index = 0

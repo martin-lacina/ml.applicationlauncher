@@ -15,7 +15,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Scripts\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Scripts\*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="..\LICENSE" Link="EmbeddedResources\LICENSE" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Scripts\run-in-folder.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
