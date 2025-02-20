@@ -31,6 +31,8 @@ public class ProcessGroupViewModel : ProcessViewModelBase
 
     public override string DisplayName => _processGroup.DisplayName;
 
+    public override string Comment => _processGroup.Comment;
+
     public ObservableCollection<ProcessViewModelBase> Children { get; } = new();
 
     protected override bool CanStartInternal() => _processGroup.CanLaunch;

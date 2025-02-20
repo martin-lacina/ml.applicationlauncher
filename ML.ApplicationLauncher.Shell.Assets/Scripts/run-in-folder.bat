@@ -12,7 +12,6 @@ echo Processing: %0
 echo Command: %V_COMMAND%
 echo Work directory: %V_WORKDIR%
 echo ------------------------------------------------------------
-echo[
 
 pushd %V_WORKDIR%%
 

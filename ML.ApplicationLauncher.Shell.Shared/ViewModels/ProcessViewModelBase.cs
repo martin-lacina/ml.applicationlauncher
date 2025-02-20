@@ -24,6 +24,8 @@ public abstract class ProcessViewModelBase : BindableBase
 
     public abstract string DisplayName { get; }
 
+    public abstract string Comment { get; }
+
     public ICommand StartCommand => _lazyStartCommand.Value;
 
     public TimeOnly? LastExecuted

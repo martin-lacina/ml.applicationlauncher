@@ -10,11 +10,13 @@ public enum ExecutionMode
     PowerShell = Default,
     Direct = 1,
     Standalone = 2,
-    Raw = 3
+    Raw = 3,
+    CmdScript = 4
 }
 
 public record ProcessGroup(
     string DisplayName,
+    string Comment,
     bool CanLaunch,
     IEnumerable<ProcessGroup> Groups,
     IEnumerable<ProcessLaunchInformation> Processes,
@@ -23,6 +25,7 @@ public record ProcessGroup(
 
 public record ProcessLaunchInformation(
     string DisplayName,
+    string Comment,
     string Executable,
     string[] Arguments,
     ExecutionMode ExecutionMode,

@@ -2,6 +2,7 @@
 
 using System.IO;
 using ML.ApplicationLauncher.Shell.Services;
+using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
 
@@ -24,6 +25,9 @@ public class ProcessViewModel : ProcessViewModelBase
 
     public override string DisplayName => _process.DisplayName;
 
+    public override string Comment => $"{_process.Comment}{ (string.IsNullOrEmpty(_process.Comment) ? string.Empty : "\n") }Execution Mode: {_process.ExecutionMode}\n{_process.Executable} {_process.GetArgumentsForProcessLaunch()}" ;
+
+    // TODO fix with common validator
     protected override bool CanStartInternal() => File.Exists(_process.Executable);
 
     protected override void StartInternal()

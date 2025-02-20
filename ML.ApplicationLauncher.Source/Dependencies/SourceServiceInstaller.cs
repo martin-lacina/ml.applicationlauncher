@@ -1,6 +1,7 @@
 ﻿// Copyright © Martin Lacina
 
 using ML.ApplicationLauncher.Core.Dependencies;
+using ML.ApplicationLauncher.Source.ExecutorResolvers;
 using ML.ApplicationLauncher.Source.Services;
 using Prism.Ioc;
 
@@ -13,6 +14,7 @@ public class SourceServiceInstaller : IDependencyInstaller
         registry
             .Register<IProcessListProvider, ProcessListProvider>()
             .Register<IProcessLauncher, ProcessLauncher>()
+            .Register<IProcessStartInfoResolverSelector, ProcessStartInfoResolverSelector>()
             ;
     }
 }

@@ -66,8 +66,25 @@ internal class ProcessListProvider : IProcessListProvider
     {
         return processGroup with
         {
+            DisplayName = processGroup.DisplayName ?? string.Empty,
+            Comment = processGroup.Comment ?? string.Empty,
             Groups = Filter(processGroup.Groups ?? Array.Empty<ProcessGroup>()),
-            Processes = processGroup.Processes?.Where(process => !process.Disabled) ?? Array.Empty<ProcessLaunchInformation>()
+            Processes = Filter(processGroup.Processes),
         };
+    }
+
+    private IEnumerable<ProcessLaunchInformation> Filter(IEnumerable<ProcessLaunchInformation> processLaunchInformation)
+    {
+        if (processLaunchInformation == null)
+            return Array.Empty<ProcessLaunchInformation>();
+
+        return processLaunchInformation.Where(process => !process.Disabled).Select(process => process with
+        {
+            DisplayName = process.DisplayName ?? string.Empty,
+            Comment = process.Comment ?? string.Empty,
+            WorkingDirectory = process.WorkingDirectory ?? string.Empty,
+            Executable = process.Executable ?? string.Empty,
+            Arguments = process.Arguments ?? Array.Empty<string>(),
+        });
     }
 }

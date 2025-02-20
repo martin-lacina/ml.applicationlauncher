@@ -8,35 +8,46 @@
         "Groups": [],
         "Processes": [
           {
-            "DisplayName": "Command line - default",
+            "DisplayName": "Command line - default/PowerShell",
+            "Comment": "Run with PowerShell in Windows Terminal",
             "Executable": "C:\\Windows\\System32\\cmd.exe",
             "Arguments": []
           },
           {
-            "DisplayName": "Command line - standalone",
-            "Executable": "C:\\Windows\\System32\\cmd.exe",
-            "Arguments": [],
-            "ExecutionMode": "standalone"
-          },
-          {
             "DisplayName": "Command line - direct",
+            "Comment": "Run directly in Windows Terminal",
             "Executable": "C:\\Windows\\System32\\cmd.exe",
             "Arguments": [],
             "ExecutionMode": "direct"
           },
           {
+            "DisplayName": "Calc - standalone",
+            "Comment": "Run as direct application",
+            "Executable": "C:\\Windows\\System32\\calc.exe",
+            "Arguments": [],
+            "ExecutionMode": "standalone"
+          },
+          {
             "DisplayName": "Command line - raw",
+            "Comment": "Run as is",
             "Executable": "C:\\Windows\\System32\\cmd.exe",
             "Arguments": [],
             "ExecutionMode": "Raw",
             "WorkingDirectory": "C:\\Windows\\System32"
           },
           {
-            "DisplayName": "Command line - hidden",
+            "DisplayName": "Command line - hidden from view",
             "Executable": "C:\\Windows\\System32\\cmd.exe",
             "Arguments": [],
             "ExecutionMode": "Raw",
             "Hidden": true
+          },
+          {
+            "DisplayName": "Command line script",
+            "Comment": "Run as commandline script",
+            "Executable": "Scripts\\run-in-folder.bat",
+            "Arguments": [ "hostname" ],
+            "ExecutionMode": "CmdScript"
           }
         ]
       }

@@ -64,7 +64,7 @@ public class MainWindowViewModel : BindableBase
     private void EditList()
     {
         var editCommand =
-            new ProcessLaunchInformation("Edit list", "notepad.exe", new[] { _configurationProvider.ConfigurationFilePath }, ExecutionMode.Raw);
+            new ProcessLaunchInformation("Edit list", string.Empty, "notepad.exe", new[] { _configurationProvider.ConfigurationFilePath }, ExecutionMode.Raw);
 
         _processLauncher.StartAsync(editCommand);
     }

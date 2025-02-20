@@ -15,7 +15,11 @@
                 <Setter Property="ContentTemplate">
                     <Setter.Value>
                         <DataTemplate>
-                            <Button HorizontalContentAlignment="Stretch" Command="{Binding Path=StartCommand, Mode=OneWay}" DataContext="{Binding Path=DataContext, ElementName=ContentContainer}">
+                            <Button
+                                HorizontalContentAlignment="Stretch"
+                                Command="{Binding Path=StartCommand, Mode=OneWay}"
+                                ToolTip="{Binding Path=Comment, Mode=OneWay}"
+                                DataContext="{Binding Path=DataContext, ElementName=ContentContainer}">
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="8" />
