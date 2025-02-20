@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param (
-    $Config = 'Release'
+    $Config = 'Release',
+    [switch]$NoSingleFile
 )
 
 begin {
@@ -13,6 +14,11 @@ process {
     $publishDir = Join-Path $publishRoot 'ML.ApplicationLauncher'
     $workDir = Join-Path $publishRoot 'work'
     $projectRoot =  $repoRoot
+
+    $singleFile = "/p:PublishSingleFile=true"
+    if ($NoSingleFile){
+        $singleFile = "/p:PublishSingleFile=false"
+    }
 
     $projects = @("ML.ApplicationLauncher.Shell", "ML.ApplicationLauncher.Shell.Admin")
 
@@ -36,7 +42,7 @@ process {
         Write-Host "Publishing $project ($index/$count)" -ForegroundColor Magenta
 
         $projectFilePath = Join-Path $projectRoot $project
-        . dotnet publish $projectFilePath -c $Config -o $publishDir '/p:PublicRelease=true'
+        . dotnet publish $projectFilePath -c $Config -o $publishDir '/p:PublicRelease=true' $singleFile
     }
 
     Remove-Item -Path $workDir -Recurse -Force
