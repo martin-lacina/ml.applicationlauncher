@@ -32,9 +32,9 @@ jobs:
 #    - name: Test
 #      run: dotnet test --no-build --verbosity normal
     - name: Publish ML.ApplicationLauncher.Shell
-      run: dotnet publish ML.ApplicationLauncher.Shell/ML.ApplicationLauncher.Shell.csproj --no-build -c Release -o PublishSln /p:PublishSingleFile=false
+      run: dotnet publish ML.ApplicationLauncher.Shell/ML.ApplicationLauncher.Shell.csproj --no-build -c Release -o PublishSln /p:PublishSingleFile=true
     - name: Publish ML.ApplicationLauncher.Shell.Admin
-      run: dotnet publish ML.ApplicationLauncher.Shell.Admin/ML.ApplicationLauncher.Shell.Admin.csproj --no-build -c Release -o PublishSln /p:PublishSingleFile=false
+      run: dotnet publish ML.ApplicationLauncher.Shell.Admin/ML.ApplicationLauncher.Shell.Admin.csproj --no-build -c Release -o PublishSln /p:PublishSingleFile=true
     - name: Archive production artifacts
       uses: actions/upload-artifact@v4
       with:
