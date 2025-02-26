@@ -12,23 +12,23 @@ using ML.ApplicationLauncher.Source.Model;
 
 namespace ML.ApplicationLauncher.Source.ExecutorResolvers;
 
-internal class CmdScriptExecutableProcessStartInfoResolver : ExecutableProcessStartInfoResolverBase
+internal class WindowsTerminalCmdScriptExecutableProcessStartInfoResolver : WindowsTerminalExecutableResolverBase
 {
-    public CmdScriptExecutableProcessStartInfoResolver()
+    public WindowsTerminalCmdScriptExecutableProcessStartInfoResolver()
         : base(ExecutionMode.CmdScript)
     {
     }
 
     public bool CheckExistance => false;
 
-    protected override Task<string> GetStartExecutableAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
+    protected override Task<string> GetWindowsTerminalStartExecutableAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {
         var executable = GetExecutableVariants(processToLaunch).FirstOrDefault(File.Exists) ?? throw new InvalidOperationException($"Executable not found {processToLaunch.Executable}");
 
         return Task.FromResult(executable);
     }
 
-    protected override Task<string> GetExecutableArgumentsAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
+    protected override Task<string> GetWindowsTerminalArgumentsAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {
         var arguments = new List<string>();
         if (!string.IsNullOrWhiteSpace(processToLaunch.WorkingDirectory))

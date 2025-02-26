@@ -33,7 +33,9 @@ internal class ProcessStartInfoResolverSelector : IProcessStartInfoResolverSelec
         [ExecutionMode.Direct] = new WindowsTerminalDirectExecutableResolver(),
         [ExecutionMode.Raw] = new RawExecutableProcessStartInfoResolver(),
         [ExecutionMode.Standalone] = new StandaloneExecutableProcessStartInfoResolver(),
-        [ExecutionMode.CmdScript] = new CmdScriptExecutableProcessStartInfoResolver()
+        [ExecutionMode.CmdScript] = new WindowsTerminalCmdScriptExecutableProcessStartInfoResolver(),
+        [ExecutionMode.PowerShellScript] = new WindowsTerminalPowerShellScriptExecutableResolver(false),
+        [ExecutionMode.PowerShellCoreScript] = new WindowsTerminalPowerShellScriptExecutableResolver(true),
     };
 
     public Task<IProcessStartInfoResolver> SelectProcessStartInfoResolverAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)

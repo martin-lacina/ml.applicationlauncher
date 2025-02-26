@@ -6,12 +6,17 @@ namespace ML.ApplicationLauncher.Source.Model;
 
 public enum ExecutionMode
 {
+    // Run in Windows Terminal
     Default = 0,
     PowerShell = Default,
-    Direct = 1,
-    Standalone = 2,
-    Raw = 3,
-    CmdScript = 4
+    PowerShellScript,
+    PowerShellCoreScript,
+    CmdScript,
+
+    // Run without Windows Terminal
+    Direct,
+    Standalone,
+    Raw,
 }
 
 public record ProcessGroup(

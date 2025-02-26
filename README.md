@@ -37,6 +37,7 @@ Each `Group` has following properties:
 | Property | Type | Description | Presence |
 | -------- | ---- | ----------- | -------- |
 | DisplayName | string | Name of group to show in UI | Mandatory |
+| Comment | string | Comment to show in tooltip in UI | Optional |
 | CanLaunch | boolean | Controls if the group can launch all its children with one button. <br> Ignored for top level group like `false` is used  | Optional <br> Default `true` for child `Group` |
 | Groups | List of `Groups` | List of nested child groups | Optional |
 | Processes | List of `Processes` | List of nested processes | Optional |
@@ -48,9 +49,10 @@ Each `Process` has following properties:
 | Property | Type | Description | Presence |
 | -------- | ---- | ----------- | -------- |
 | DisplayName | string | Name of group to show in UI | Mandatory |
+| Comment | string | Comment to show in tooltip in UI | Optional |
 | Executable| string | Name and full path to executable. <br> Non existent executable leads to disabling the run button (unless `ExecutionMode` is `Raw`) | Mandatory |
 | Arguments | List of strings | `Executable` commandline parameters | Optional |
-| ExecutionMode | string/enum | Desired execution mode. <br> One of `PowerShell`, `Direct`, `Standalone`, `Raw` | Optional. <br> Default `PowerShell` |
+| ExecutionMode | string/enum | Desired execution mode. <br> One of `PowerShell`, `Direct`, `Standalone`, `Raw`, `CmdScript`, `PowerShellScript`, `PowerShellCoreScript` | Optional. <br> Default `PowerShell` |
 | Hidden| boolean | Allows to hide process entry from UI without removing it from configuration. Such entry is ignored during configuration loading. | Optional. <br> Default `false` |
 | WorkingDirectory | Allows to specify working directory for the executed process | Optional. <br> Default unspecified |
 
@@ -71,6 +73,16 @@ Application supports several execution modes.
   * Launch button checks executable presence if it can be clicked
 * `Raw` is same as `Standalone`, but there is no check if the executable exists
   * Useful for running simple commands you know will work like `cmd.exe` without full path
+* `CmdScript` process is launched with configured script in `Windows Terminal`
+  * Following parameters are passed to the script:
+    * Working directory path
+    * Arguments of the process to launch
+  * See <ML.ApplicationLauncher.Shell.Assets/Scripts/run-in-folder.bat> as example script
+* `PowerShellScript` process is launched as PowerShell running configured script in `Windows Terminal`
+  * Set `Executable` as full or relative path to the script
+  * Only one parameter is passed to the script `Base64Context` that contains Base64 encoded JSON value with `Title`, `WorkingDirectory` and list of `Commands`
+  * See <ML.ApplicationLauncher.Shell.Assets/Scripts/run-in-folder.ps1> as example script and how to decode the parameter
+* `PowerShellCoreScript` same as `PowerShellScript` just `pwsh.exe` is used to start the script
 
 ## Local build
 

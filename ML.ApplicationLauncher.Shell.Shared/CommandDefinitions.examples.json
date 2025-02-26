@@ -44,10 +44,24 @@
           },
           {
             "DisplayName": "Command line script",
-            "Comment": "Run as commandline script",
+            "Comment": "Run as commandline script in Windows Terminal",
             "Executable": "Scripts\\run-in-folder.bat",
             "Arguments": [ "hostname" ],
             "ExecutionMode": "CmdScript"
+          },
+          {
+            "DisplayName": "PowerShell script",
+            "Comment": "Run as PowerShell script in Windows Terminal, each argument is executed as separate expression",
+            "Executable": "Scripts\\run-in-folder.ps1",
+            "Arguments": [ "Write-Host $env:ComputerName", "hostname" ],
+            "ExecutionMode": "PowerShellScript"
+          },
+          {
+            "DisplayName": "PowerShell Core script",
+            "Comment": "Run as PowerShell Core script in Windows Terminal, each argument is executed as separate expression",
+            "Executable": "Scripts\\run-in-folder.ps1",
+            "Arguments": [ "Write-Host $env:ComputerName", "hostname" ],
+            "ExecutionMode": "PowerShellCoreScript"
           }
         ]
       }

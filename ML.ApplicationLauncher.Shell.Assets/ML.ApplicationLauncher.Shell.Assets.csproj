@@ -19,17 +19,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Scripts\*" />
+    <Content Include="Scripts\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="..\LICENSE" Link="EmbeddedResources\LICENSE" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Scripts\run-in-folder.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

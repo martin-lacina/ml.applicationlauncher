@@ -82,7 +82,7 @@ internal class ProcessListProvider : IProcessListProvider
         {
             DisplayName = process.DisplayName ?? string.Empty,
             Comment = process.Comment ?? string.Empty,
-            WorkingDirectory = process.WorkingDirectory ?? string.Empty,
+            WorkingDirectory = process.WorkingDirectory ?? Environment.CurrentDirectory,
             Executable = process.Executable ?? string.Empty,
             Arguments = process.Arguments ?? Array.Empty<string>(),
         });

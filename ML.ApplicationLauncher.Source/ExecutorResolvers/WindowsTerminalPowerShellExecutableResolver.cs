@@ -1,5 +1,7 @@
 ﻿// Copyright © Martin Lacina
 
+using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ML.ApplicationLauncher.Source.Extensions;
@@ -21,8 +23,8 @@ internal class WindowsTerminalPowerShellExecutableResolver : WindowsTerminalExec
 
     protected override Task<string> GetWindowsTerminalArgumentsAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {
-        var executableArguments = $"\"{processToLaunch.Executable} {processToLaunch.GetArgumentsForProcessLaunch()}\"";
-
+        var executableArguments = $"\"{processToLaunch.Executable}\" {processToLaunch.GetArgumentsForProcessLaunch()}";
+        
         return Task.FromResult(executableArguments);
     }
 }
