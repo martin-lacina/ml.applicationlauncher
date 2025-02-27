@@ -18,25 +18,40 @@ begin {
 }
 
 process {
-    $commands | ForEach-Object {
-        $skipLoggingExitCode = $false
-        Push-Location $workdir
-        try {
-            Write-Host $_ -ForegroundColor Magenta
-            Invoke-Expression $_
-            $exitCode = $LASTEXITCODE
-            if ($null -eq $exitCode)
-            {
-                $exitCode = 0
+    try {
+        $commands | ForEach-Object {
+            $skipLoggingExitCode = $false
+            Push-Location $workdir
+            try {
+                Write-Host $_ -ForegroundColor Magenta
+                Invoke-Expression $_
+                $exitCode = $LASTEXITCODE
+                if ($null -eq $exitCode)
+                {
+                    $exitCode = 0
+                    $skipLoggingExitCode = $true
+                }
+            }
+            catch {
+                $exitCode = -1
                 $skipLoggingExitCode = $true
+                Write-Error $_
+            }
+            Pop-Location
+
+            if ($exitCode -ne 0)
+            {
+                if (-not $skipLoggingExitCode)
+                {
+                    Write-Host "Exit code: $exitCode" -ForegroundColor Magenta
+                }
+                Write-Error "Command failed"
+                throw "Command failed"
             }
         }
-        catch {
-            $exitCode = -1
-            $skipLoggingExitCode = $true
-            Write-Error $_
-        }
-        Pop-Location
+    }
+    catch {
+        # Nothing to do, just finish
     }
 }
 

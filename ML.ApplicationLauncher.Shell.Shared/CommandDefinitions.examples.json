@@ -53,14 +53,14 @@
             "DisplayName": "PowerShell script",
             "Comment": "Run as PowerShell script in Windows Terminal, each argument is executed as separate expression",
             "Executable": "Scripts\\run-in-folder.ps1",
-            "Arguments": [ "Write-Host $env:ComputerName", "hostname" ],
+            "Arguments": [ "Write-Host $env:ComputerName", "hostname", "throw 'something is wrong'", "hostname" ],
             "ExecutionMode": "PowerShellScript"
           },
           {
             "DisplayName": "PowerShell Core script",
             "Comment": "Run as PowerShell Core script in Windows Terminal, each argument is executed as separate expression",
-            "Executable": "Scripts\\run-in-folder.ps1",
-            "Arguments": [ "Write-Host $env:ComputerName", "hostname" ],
+            "Executable": "Scripts\\run-in-folder-check-exit-code.ps1",
+            "Arguments": [ "Write-Host $env:ComputerName", "hostname", "throw 'something is wrong'", "Write-Host 'This will not be run'" ],
             "ExecutionMode": "PowerShellCoreScript"
           }
         ]
