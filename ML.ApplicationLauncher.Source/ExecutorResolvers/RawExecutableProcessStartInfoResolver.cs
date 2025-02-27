@@ -11,5 +11,5 @@ internal class RawExecutableProcessStartInfoResolver : StandaloneExecutableProce
     {
     }
 
-
+    public override bool CheckExistance => false;
 }

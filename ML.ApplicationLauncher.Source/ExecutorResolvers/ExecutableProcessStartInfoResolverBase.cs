@@ -17,6 +17,10 @@ internal abstract class ExecutableProcessStartInfoResolverBase : IProcessStartIn
 
     public ExecutionMode Mode { get; }
 
+    public virtual bool CheckExistance => true;
+
+    public virtual bool ApplyDelay => true;
+
     public async Task<ProcessStartInfo> ResolveAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {
         var startExecutable = await GetStartExecutableAsync(processToLaunch, cancellationToken);

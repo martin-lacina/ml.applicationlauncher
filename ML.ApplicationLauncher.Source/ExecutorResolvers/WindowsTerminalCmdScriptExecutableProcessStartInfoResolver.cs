@@ -19,7 +19,7 @@ internal class WindowsTerminalCmdScriptExecutableProcessStartInfoResolver : Wind
     {
     }
 
-    public bool CheckExistance => false;
+    public override bool CheckExistance => false;
 
     protected override Task<string> GetWindowsTerminalStartExecutableAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {

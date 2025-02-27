@@ -19,7 +19,7 @@ internal class StandaloneExecutableProcessStartInfoResolver : ExecutableProcessS
     {
     }
 
-    public bool ApplyDelay => false;
+    public override bool ApplyDelay => false;
 
     protected override Task<string> GetStartExecutableAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {

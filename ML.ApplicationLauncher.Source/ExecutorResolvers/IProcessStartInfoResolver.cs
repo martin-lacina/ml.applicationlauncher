@@ -1,7 +1,5 @@
 ﻿// Copyright © Martin Lacina
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,36 +11,9 @@ public interface IProcessStartInfoResolver
 {
     ExecutionMode Mode { get; }
 
-    bool CheckExistance => true;
+    bool CheckExistance { get; }
 
-    bool ApplyDelay => true;
+    bool ApplyDelay { get; }
 
     Task<ProcessStartInfo> ResolveAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken);
-}
-
-public interface IProcessStartInfoResolverSelector
-{
-    Task<IProcessStartInfoResolver> SelectProcessStartInfoResolverAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken);
-}
-
-internal class ProcessStartInfoResolverSelector : IProcessStartInfoResolverSelector
-{
-    private readonly Dictionary<ExecutionMode, IProcessStartInfoResolver> _resolvers = new()
-    {
-        [ExecutionMode.PowerShell] = new WindowsTerminalPowerShellExecutableResolver(),
-        [ExecutionMode.Direct] = new WindowsTerminalDirectExecutableResolver(),
-        [ExecutionMode.Raw] = new RawExecutableProcessStartInfoResolver(),
-        [ExecutionMode.Standalone] = new StandaloneExecutableProcessStartInfoResolver(),
-        [ExecutionMode.CmdScript] = new WindowsTerminalCmdScriptExecutableProcessStartInfoResolver(),
-        [ExecutionMode.PowerShellScript] = new WindowsTerminalPowerShellScriptExecutableResolver(false),
-        [ExecutionMode.PowerShellCoreScript] = new WindowsTerminalPowerShellScriptExecutableResolver(true),
-    };
-
-    public Task<IProcessStartInfoResolver> SelectProcessStartInfoResolverAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
-    {
-        if (_resolvers.TryGetValue(processToLaunch.ExecutionMode, out var result))
-            return Task.FromResult(result);
-
-        throw new InvalidOperationException($"Missing process start info resolver for {processToLaunch.ExecutionMode}");
-    }
 }
