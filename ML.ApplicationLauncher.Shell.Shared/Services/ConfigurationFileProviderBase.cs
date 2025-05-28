@@ -1,37 +1,35 @@
 ﻿// Copyright © Martin Lacina
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ML.ApplicationLauncher.Core.Validation;
 using ML.ApplicationLauncher.Source.Services;
 
 namespace ML.ApplicationLauncher.Shell.Services;
 
-internal class ConfigurationProvider : IConfigurationProvider
+internal abstract class ConfigurationFileProviderBase<T> : IConfigurationLocationProvider<T>
 {
-    private static readonly string[] ConfigurationFileNames = new[]
-    {
-        @"CommandDefinitions.json",
-        @"CommandDefinitions.examples.json"
-    };
-
     private readonly ConfigurationFile _configurationFile;
 
-    public ConfigurationProvider(IMessageService messageService)
+    protected ConfigurationFileProviderBase(IMessageService messageService, params string[] configurationFileNames)
     {
-        _configurationFile = BuildConfigurationFilePath(messageService);
+        messageService.ShouldNotBeNull();
+        configurationFileNames.ShouldNotBeNullOrEmpty();
+
+        _configurationFile = BuildConfigurationFilePath(messageService, configurationFileNames);
     }
 
     public string ConfigurationFilePath => _configurationFile.Path;
 
     public string ConfigurationFileName => _configurationFile.FileName;
 
-
-    private static ConfigurationFile BuildConfigurationFilePath(IMessageService messageService)
+    private static ConfigurationFile BuildConfigurationFilePath(IMessageService messageService, IEnumerable<string> configurationFileNames)
     {
         var location = AppDomain.CurrentDomain.BaseDirectory;
 
-        var options = ConfigurationFileNames
+        var options = configurationFileNames
             .Select(fileName => new ConfigurationFile(fileName, Path.Combine(location, fileName)))
             .ToArray();
 

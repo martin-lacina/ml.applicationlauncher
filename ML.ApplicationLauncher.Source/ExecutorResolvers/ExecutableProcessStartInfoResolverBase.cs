@@ -30,7 +30,8 @@ internal abstract class ExecutableProcessStartInfoResolverBase : IProcessStartIn
         if (!string.IsNullOrEmpty(processToLaunch.WorkingDirectory))
         {
             processStartInfo.WorkingDirectory = processToLaunch.WorkingDirectory;
-        } else
+        }
+        else
         {
             processStartInfo.WorkingDirectory = Environment.CurrentDirectory;
         }
@@ -40,6 +41,4 @@ internal abstract class ExecutableProcessStartInfoResolverBase : IProcessStartIn
     protected abstract Task<string> GetStartExecutableAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken);
 
     protected abstract Task<string> GetExecutableArgumentsAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken);
-
-
 }

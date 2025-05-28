@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ML.ApplicationLauncher.Source.Configuration;
 using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 
@@ -14,8 +15,8 @@ namespace ML.ApplicationLauncher.Source.ExecutorResolvers;
 
 internal class WindowsTerminalCmdScriptExecutableProcessStartInfoResolver : WindowsTerminalExecutableResolverBase
 {
-    public WindowsTerminalCmdScriptExecutableProcessStartInfoResolver()
-        : base(ExecutionMode.CmdScript)
+    public WindowsTerminalCmdScriptExecutableProcessStartInfoResolver(WindowsTerminalConfig config)
+        : base(ExecutionMode.CmdScript, config)
     {
     }
 

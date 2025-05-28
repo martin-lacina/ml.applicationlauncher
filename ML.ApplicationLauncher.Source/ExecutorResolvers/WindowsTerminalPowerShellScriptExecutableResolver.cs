@@ -5,6 +5,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ML.ApplicationLauncher.Source.Configuration;
+using ML.ApplicationLauncher.Source.ExecutorResolvers.PowerShell;
 using ML.ApplicationLauncher.Source.Model;
 
 namespace ML.ApplicationLauncher.Source.ExecutorResolvers;
@@ -13,10 +15,10 @@ internal class WindowsTerminalPowerShellScriptExecutableResolver : WindowsTermin
 {
     private readonly bool _isCore;
 
-    public WindowsTerminalPowerShellScriptExecutableResolver(bool isCore)
-        : base(isCore ? ExecutionMode.PowerShellCoreScript : ExecutionMode.PowerShellScript)
+    public WindowsTerminalPowerShellScriptExecutableResolver(WindowsTerminalConfig config, bool isPowerShellCore)
+        : base(isPowerShellCore ? ExecutionMode.PowerShellCoreScript : ExecutionMode.PowerShellScript, config)
     {
-        _isCore = isCore;
+        _isCore = isPowerShellCore;
     }
 
     protected override Task<string> GetWindowsTerminalStartExecutableAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
@@ -26,13 +28,10 @@ internal class WindowsTerminalPowerShellScriptExecutableResolver : WindowsTermin
 
     protected override Task<string> GetWindowsTerminalArgumentsAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {
-        var context = new WindowsTerminalPowerShellScriptExecutionContext(
+        var base64encoded = new PowerShellScriptExecutionContext(
             processToLaunch.DisplayName,
             processToLaunch.WorkingDirectory ?? Environment.CurrentDirectory,
-            processToLaunch.Arguments);
-
-        var serialized = System.Text.Json.JsonSerializer.Serialize(context);
-        var base64encoded = System.Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
+            processToLaunch.Arguments).EncodeToBase64();
 
         var executable = Path.GetFullPath(processToLaunch.Executable);
 
@@ -40,6 +39,4 @@ internal class WindowsTerminalPowerShellScriptExecutableResolver : WindowsTermin
 
         return Task.FromResult(executableArguments);
     }
-
-    private record WindowsTerminalPowerShellScriptExecutionContext(string Title, string WorkingDirectory, string[] Commands);
 }

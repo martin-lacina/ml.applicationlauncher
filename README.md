@@ -23,7 +23,12 @@ Toolbar buttons from left to right
 | Clear last executed time | Removes time when the command was last executed from all buttons. |
 | About application | Displays dialog with basic information about application, copyright and license. |
 
-## Configuration
+## Application configuration
+
+JSON configuration file `appsettings.json` can be created as a copy of `appsettings.template.json`.
+The template file is used as a fallback in case main file does not exist.
+
+## Configuration of commands to launch
 
 JSON configuration file `CommandDefinitions.json` can be created as a copy of `CommandDefinitions.examples.json`.
 The example file is used as a fallback in case main file does not exist.
@@ -84,11 +89,14 @@ Application supports several execution modes.
   * See <ML.ApplicationLauncher.Shell.Assets/Scripts/run-in-folder.ps1> as example script and how to decode the parameter
 * `PowerShellCoreScript` same as `PowerShellScript` just `pwsh.exe` is used to start the script
 
+Note: When Windows Terminal explicit usage is disabled in application settings, processes will be started directly in all execution modes
+and your system configuration determines what shell will be launched and this can be Windows Terminal on Windows 11 anyway.
+
 ## Local build
 
 ### Prerequisities
 
-* Installed .NET SDK compatible with [`global.json`](global.json), i. e. .NET SDK 8
+* Installed .NET SDK compatible with [`global.json`](global.json), i. e. currently .NET SDK 8
 * Installed PowerShell Core 7
 
 ### Steps to build

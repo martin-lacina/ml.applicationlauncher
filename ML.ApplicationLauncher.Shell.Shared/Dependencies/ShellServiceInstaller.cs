@@ -2,6 +2,8 @@
 
 using ML.ApplicationLauncher.Core.Dependencies;
 using ML.ApplicationLauncher.Shell.Services;
+using ML.ApplicationLauncher.Source.Configuration;
+using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
 using Prism.Ioc;
 
@@ -15,7 +17,8 @@ public class ShellServiceInstaller : IDependencyInstaller
             .RegisterSingleton<IMessageService, MessageService>()
             .RegisterSingleton<ICommandFactory, RefreshableCommandFactory>()
             .RegisterSingleton<IMyDialogService, MyDialogService>()
-            .Register<IConfigurationProvider, ConfigurationProvider>()            
+            .Register<IConfigurationLocationProvider<ProcessGroup[]>, ProcessToLaunchConfigurationProvider>()
+            .Register<IConfigurationLocationProvider<ApplicationConfiguration>, ApplicationConfigurationProvider>()
             ;
     }
 }

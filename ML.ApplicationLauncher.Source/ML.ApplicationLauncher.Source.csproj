@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Prism.Wpf" />
     <PackageReference Include="System.Threading.Tasks.Dataflow" />
+    <PackageReference Include="System.Linq.Async" />
   </ItemGroup>
   
   <ItemGroup>

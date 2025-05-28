@@ -26,11 +26,13 @@
       <DependentUpon>StartButtonControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Dependencies\ShellServiceInstaller.cs" />
-    <Compile Include="..\ML.ApplicationLauncher.Shell.Shared\Extensions\HyperlinkExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ConfigurationProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ApplicationConfigurationProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ConfigurationFileProviderBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Extensions\HyperlinkExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Services\ProcessToLaunchConfigurationProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MyDialogService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ICommandFactory.cs" />
-    <Compile Include="..\ML.ApplicationLauncher.Shell.Shared\Services\IMyDialogService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)\Services\IMyDialogService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MessageService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\RefreshableCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
@@ -72,6 +74,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)appsettings.template.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)CommandDefinitions.examples.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

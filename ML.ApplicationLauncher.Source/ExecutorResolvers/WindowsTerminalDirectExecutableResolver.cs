@@ -2,6 +2,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using ML.ApplicationLauncher.Source.Configuration;
 using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 
@@ -9,8 +10,8 @@ namespace ML.ApplicationLauncher.Source.ExecutorResolvers;
 
 internal class WindowsTerminalDirectExecutableResolver : WindowsTerminalExecutableResolverBase
 {
-    public WindowsTerminalDirectExecutableResolver()
-        : base(ExecutionMode.Direct)
+    public WindowsTerminalDirectExecutableResolver(WindowsTerminalConfig config)
+        : base(ExecutionMode.Direct, config)
     {
     }
     protected override Task<string> GetWindowsTerminalStartExecutableAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)

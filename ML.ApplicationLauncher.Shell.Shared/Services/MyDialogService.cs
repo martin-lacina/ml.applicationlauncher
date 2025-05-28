@@ -1,8 +1,5 @@
 ﻿// Copyright © Martin Lacina
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using ML.ApplicationLauncher.Shell.ViewModels;
 using ML.ApplicationLauncher.Shell.Views;
 

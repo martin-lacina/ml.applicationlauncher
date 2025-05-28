@@ -4,22 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ML.ApplicationLauncher.Source.Configuration;
 using ML.ApplicationLauncher.Source.Model;
 
 namespace ML.ApplicationLauncher.Source.ExecutorResolvers;
 
 internal class ProcessStartInfoResolverSelector : IProcessStartInfoResolverSelector
 {
-    private readonly Dictionary<ExecutionMode, IProcessStartInfoResolver> _resolvers = new()
+    private readonly Dictionary<ExecutionMode, IProcessStartInfoResolver> _resolvers;
+
+    public ProcessStartInfoResolverSelector(WindowsTerminalConfig config)
     {
-        [ExecutionMode.PowerShell] = new WindowsTerminalPowerShellExecutableResolver(),
-        [ExecutionMode.Direct] = new WindowsTerminalDirectExecutableResolver(),
-        [ExecutionMode.Raw] = new RawExecutableProcessStartInfoResolver(),
-        [ExecutionMode.Standalone] = new StandaloneExecutableProcessStartInfoResolver(),
-        [ExecutionMode.CmdScript] = new WindowsTerminalCmdScriptExecutableProcessStartInfoResolver(),
-        [ExecutionMode.PowerShellScript] = new WindowsTerminalPowerShellScriptExecutableResolver(false),
-        [ExecutionMode.PowerShellCoreScript] = new WindowsTerminalPowerShellScriptExecutableResolver(true),
-    };
+        _resolvers = Buildxecutors(config);
+    }
 
     public Task<IProcessStartInfoResolver> SelectProcessStartInfoResolverAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {
@@ -28,4 +25,15 @@ internal class ProcessStartInfoResolverSelector : IProcessStartInfoResolverSelec
 
         throw new InvalidOperationException($"Missing process start info resolver for {processToLaunch.ExecutionMode}");
     }
+
+    private static Dictionary<ExecutionMode, IProcessStartInfoResolver> Buildxecutors(WindowsTerminalConfig windowsTerminalConfig) => new()
+    {
+        [ExecutionMode.PowerShell] = new WindowsTerminalPowerShellExecutableResolver(windowsTerminalConfig),
+        [ExecutionMode.Direct] = new WindowsTerminalDirectExecutableResolver(windowsTerminalConfig),
+        [ExecutionMode.Raw] = new RawExecutableProcessStartInfoResolver(),
+        [ExecutionMode.Standalone] = new StandaloneExecutableProcessStartInfoResolver(),
+        [ExecutionMode.CmdScript] = new WindowsTerminalCmdScriptExecutableProcessStartInfoResolver(windowsTerminalConfig),
+        [ExecutionMode.PowerShellScript] = new WindowsTerminalPowerShellScriptExecutableResolver(windowsTerminalConfig, false),
+        [ExecutionMode.PowerShellCoreScript] = new WindowsTerminalPowerShellScriptExecutableResolver(windowsTerminalConfig, true),
+    };
 }

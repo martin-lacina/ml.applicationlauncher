@@ -2,54 +2,33 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Runtime.CompilerServices;
+using System.Threading;
 using ML.ApplicationLauncher.Core.Validation;
 using ML.ApplicationLauncher.Source.Model;
 
 namespace ML.ApplicationLauncher.Source.Services;
 
-public interface IProcessListProvider
-{
-    IEnumerable<ProcessGroup> ProcessGroups { get; }
-}
-
 internal class ProcessListProvider : IProcessListProvider
 {
-    private readonly IMessageService _messageService;
-    private readonly IConfigurationProvider _configurationProvider;
+    private readonly IConfigurationProvider<ProcessGroup[]> _configurationProvider;
 
-    public ProcessListProvider(IConfigurationProvider configurationProvider, IMessageService messageService)
+    public ProcessListProvider(IConfigurationProvider<ProcessGroup[]> configurationProvider)
     {
-        _messageService = messageService.ShouldNotBeNull();
         _configurationProvider = configurationProvider.ShouldNotBeNull();
     }
 
-    public IEnumerable<ProcessGroup> ProcessGroups => LoadConfiguration();
-
-    private IEnumerable<ProcessGroup> LoadConfiguration()
+    public async IAsyncEnumerable<ProcessGroup> LoadProcessGroupsAsync([EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        try
-        {
-            var fileContent = File.ReadAllText(_configurationProvider.ConfigurationFilePath, Encoding.UTF8);
+        var config = await _configurationProvider.LoadConfigurationAsync(cancellationToken);
 
-            var options = new JsonSerializerOptions
+        foreach (var group in config)
+        {
             {
-                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-            };
-
-            IEnumerable<ProcessGroup> result = JsonSerializer.Deserialize<ProcessGroup[]>(fileContent, options) ?? Array.Empty<ProcessGroup>();
-
-            result = Filter(result);
-            return result;
-        }
-        catch (Exception ex)
-        {
-            _messageService.ShowError("Failed to load process list", ex);
-            return Array.Empty<ProcessGroup>();
+                cancellationToken.ThrowIfCancellationRequested();
+                yield return group;
+            }
         }
     }
 

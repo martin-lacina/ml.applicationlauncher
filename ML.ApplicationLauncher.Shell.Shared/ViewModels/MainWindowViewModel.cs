@@ -17,14 +17,14 @@ namespace ML.ApplicationLauncher.Shell.ViewModels;
 
 public class MainWindowViewModel : BindableBase
 {
-    private readonly IConfigurationProvider _configurationProvider;
+    private readonly IConfigurationLocationProvider<ProcessGroup[]> _configurationProvider;
     private readonly IProcessLauncher _processLauncher;
     private readonly IProcessListProvider _processListProvider;
     private readonly ICommandFactory _commandFactory;
     private readonly IMyDialogService _dialogService;
 
     public MainWindowViewModel(
-        IConfigurationProvider configurationProvider,
+        IConfigurationLocationProvider<ProcessGroup[]> configurationProvider,
         IProcessListProvider processListProvider,
         IProcessLauncher processLauncher,
         ICommandFactory commandFactory,
@@ -37,36 +37,41 @@ public class MainWindowViewModel : BindableBase
         _dialogService = dialogService.ShouldNotBeNull();
 
         ExitCommand = new DelegateCommand(Exit);
-        LoadListCommand = new DelegateCommand(LoadList);
-        EditListCommand = new DelegateCommand(EditList);
+        LoadListCommand = new AsyncDelegateCommand(LoadListAsync);
+        EditListCommand = new AsyncDelegateCommand(EditListAsync);
         ClearLastExecutedTimeCommand = new DelegateCommand(ClearLastExecutedTime);
         ShowAboutDialogCommand = new DelegateCommand(ShowAboutDialog);
 
-        LoadList();
+        LoadListCommand.Execute();
 
         Task.Run(async () => await ExpireLastExecutionTimeLoopAsync(CancellationToken.None));
     }
 
     public DelegateCommand ExitCommand { get; }
-    public DelegateCommand LoadListCommand { get; }
-    public DelegateCommand EditListCommand { get; }
+    public AsyncDelegateCommand LoadListCommand { get; }
+    public AsyncDelegateCommand EditListCommand { get; }
     public DelegateCommand ClearLastExecutedTimeCommand { get; }
     public DelegateCommand ShowAboutDialogCommand { get; }
 
     public ObservableCollection<ProcessGroupViewModel> ProcessGroups { get; } = new();
 
-    private void LoadList()
+    private async Task LoadListAsync(CancellationToken cancellationToken)
     {
+        var processGroups = await _processListProvider
+            .LoadProcessGroupsAsync(cancellationToken)
+            .Select(pg => new ProcessGroupViewModel(pg, _processLauncher, _commandFactory))
+            .ToListAsync(cancellationToken);
+
         ProcessGroups.Clear();
-        ProcessGroups.AddRange(_processListProvider.ProcessGroups.Select(pg => new ProcessGroupViewModel(pg, _processLauncher, _commandFactory)));
+        ProcessGroups.AddRange(processGroups);
     }
 
-    private void EditList()
+    private async Task EditListAsync(CancellationToken cancellationToken)
     {
         var editCommand =
             new ProcessLaunchInformation("Edit list", string.Empty, "notepad.exe", new[] { _configurationProvider.ConfigurationFilePath }, ExecutionMode.Raw);
 
-        _processLauncher.StartAsync(editCommand);
+        await _processLauncher.StartAsync(editCommand, cancellationToken);
     }
 
     private void ClearLastExecutedTime()

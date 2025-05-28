@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ML.ApplicationLauncher.Source.Configuration;
 using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 
@@ -11,8 +12,8 @@ namespace ML.ApplicationLauncher.Source.ExecutorResolvers;
 
 internal class WindowsTerminalPowerShellExecutableResolver : WindowsTerminalExecutableResolverBase
 {
-    public WindowsTerminalPowerShellExecutableResolver()
-        : base(ExecutionMode.PowerShell)
+    public WindowsTerminalPowerShellExecutableResolver(WindowsTerminalConfig config)
+        : base(ExecutionMode.PowerShell, config)
     {
     }
 
