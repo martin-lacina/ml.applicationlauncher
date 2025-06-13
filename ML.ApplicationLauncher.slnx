@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/Solution Root/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="LICENSE" />
+    <File Path="nuget.config" />
+    <File Path="README.md" />
+    <File Path="version.json" />
+  </Folder>
+  <Project Path="ML.ApplicationLauncher.Core/ML.ApplicationLauncher.Core.csproj" />
+  <Project Path="ML.ApplicationLauncher.Shell.Admin/ML.ApplicationLauncher.Shell.Admin.csproj" />
+  <Project Path="ML.ApplicationLauncher.Shell.Assets/ML.ApplicationLauncher.Shell.Assets.csproj" />
+  <Project Path="ML.ApplicationLauncher.Shell.Shared/ML.ApplicationLauncher.Shell.Shared.shproj" />
+  <Project Path="ML.ApplicationLauncher.Shell/ML.ApplicationLauncher.Shell.csproj" />
+  <Project Path="ML.ApplicationLauncher.Source/ML.ApplicationLauncher.Source.csproj" />
+</Solution>
