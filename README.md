@@ -96,7 +96,7 @@ and your system configuration determines what shell will be launched and this ca
 
 ### Prerequisities
 
-* Installed .NET SDK compatible with [`global.json`](global.json), i. e. currently .NET SDK 8
+* Installed .NET SDK compatible with [`global.json`](global.json), i. e. currently .NET SDK 9
 * Installed PowerShell Core 7
 
 ### Steps to build
