@@ -202,6 +202,7 @@ indent_size = 2
 
 [*.{csproj,vbproj,proj,nativeproj,locproj}]
 charset = utf-8
+indent_size = 2
 
 # Xml build files
 [*.builds]
