@@ -41,6 +41,7 @@ public class MainWindowViewModel : BindableBase
         EditListCommand = new AsyncDelegateCommand(EditListAsync);
         ClearLastExecutedTimeCommand = new DelegateCommand(ClearLastExecutedTime);
         ShowAboutDialogCommand = new DelegateCommand(ShowAboutDialog);
+        OpenProcessGroupEditorCommand = new AsyncDelegateCommand(OpenProcessGroupEditorAsync);
 
         LoadListCommand.Execute();
 
@@ -52,6 +53,7 @@ public class MainWindowViewModel : BindableBase
     public AsyncDelegateCommand EditListCommand { get; }
     public DelegateCommand ClearLastExecutedTimeCommand { get; }
     public DelegateCommand ShowAboutDialogCommand { get; }
+    public AsyncDelegateCommand OpenProcessGroupEditorCommand { get; }
 
     public ObservableCollection<ProcessGroupViewModel> ProcessGroups { get; } = new();
 
@@ -143,5 +145,14 @@ public class MainWindowViewModel : BindableBase
     private static void Exit()
     {
         Application.Current?.MainWindow?.Close();
+    }
+
+    private async Task OpenProcessGroupEditorAsync(CancellationToken cancellationToken)
+    {
+        var processGroups = await _processListProvider
+            .LoadProcessGroupsAsync(cancellationToken)
+            .ToListAsync(cancellationToken);
+
+        _dialogService.ShowProcessGroupEditorDialog(processGroups);
     }
 }

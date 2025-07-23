@@ -1,0 +1,85 @@
+<Window x:Class="ML.ApplicationLauncher.Shell.Views.ProcessGroupEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ML.ApplicationLauncher.Shell.Views"
+        xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shell.Controls"
+        xmlns:model="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
+        mc:Ignorable="d"
+        Title="Process Group Editor" Height="600" Width="900"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+    <DockPanel>
+        <!-- Toolbar -->
+        <ToolBar DockPanel.Dock="Top">
+            <Button Content="Save" Command="{Binding SaveCommand}" />
+            <Button Content="Cancel" Command="{Binding CancelCommand}" />
+        </ToolBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <!-- Navigation Tree -->
+            <TreeView Grid.Column="0" ItemsSource="{Binding RootGroups}"
+                      SelectedItemChanged="TreeView_SelectedItemChanged"
+                      x:Name="treeView">
+                <!-- HierarchicalDataTemplate for EditProcessGroupViewModel -->
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type model:EditProcessGroupViewModel}" ItemsSource="{Binding Groups}">
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding}" >
+                                    <ContentControl.Resources>
+                                        <DataTemplate DataType="{x:Type model:ProcessLaunchInformationViewModel}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                        <DataTemplate DataType="{x:Type model:EditProcessGroupViewModel}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                </ContentControl>
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
+                        
+                        <!--<HierarchicalDataTemplate.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add Group" Command="{Binding DataContext.AddGroupCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                                <MenuItem Header="Add Process" Command="{Binding DataContext.AddProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                                <Separator />
+                                <MenuItem Header="Delete" Command="{Binding DataContext.DeleteGroupCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                            </ContextMenu>
+                        </HierarchicalDataTemplate.ContextMenu>-->
+                    </HierarchicalDataTemplate>
+                    <!-- DataTemplate for ProcessLaunchInformationViewModel -->
+                    <DataTemplate DataType="{x:Type model:ProcessLaunchInformationViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </StackPanel>
+                        <!--<DataTemplate.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Delete" Command="{Binding DataContext.DeleteProcessCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
+                            </ContextMenu>
+                        </DataTemplate.ContextMenu>-->
+                    </DataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+            <!-- Detail View -->
+            <ContentControl Grid.Column="1" Content="{Binding SelectedItem}">
+                <ContentControl.Resources>
+                    <DataTemplate DataType="{x:Type model:EditProcessGroupViewModel}">
+                        <controls:ProcessGroupDetailControl DataContext="{Binding}" />
+                    </DataTemplate>
+                    <DataTemplate DataType="{x:Type model:ProcessLaunchInformationViewModel}">
+                        <controls:ProcessLaunchInformationDetailControl DataContext="{Binding}" />
+                    </DataTemplate>
+                </ContentControl.Resources>
+            </ContentControl>
+        </Grid>
+    </DockPanel>
+</Window>

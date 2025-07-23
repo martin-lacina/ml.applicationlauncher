@@ -5,7 +5,7 @@
               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shell.Controls"
               xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
-              xmlns:extensions="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Extensions"
+              xmlns:extensions="clr-namespace:ML.ApplicationLauncher.Shell.Extensions"
               mc:Ignorable="d"
               Title="Universal Application Launcher"
               Height="500" Width="600"

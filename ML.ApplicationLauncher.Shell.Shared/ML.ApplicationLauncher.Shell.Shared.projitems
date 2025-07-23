@@ -6,7 +6,7 @@
     <SharedGUID>d6c3be47-d5c5-41e6-8caf-f96c8fb3e950</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>ML.ApplicationLauncher.Shell.Shared</Import_RootNamespace>
+    <Import_RootNamespace>ML.ApplicationLauncher.Shell</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)App.xaml.cs">
@@ -15,6 +15,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)AssemblyInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\AboutApplicationView.xaml.cs">
       <DependentUpon>AboutApplicationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView - Copy (2).xaml.cs">
+      <DependentUpon>ProcessGroupView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView - Copy.xaml.cs">
+      <DependentUpon>ProcessGroupView.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView.xaml.cs">
       <DependentUpon>ProcessGroupView.xaml</DependentUpon>
@@ -28,6 +34,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Dependencies\ShellServiceInstaller.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ApplicationConfigurationProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ConfigurationFileProviderBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\EditProcessGroupViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessGroupEditorDialogViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessLaunchInformationViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Views\ProcessGroupEditorDialog.xaml.cs">
+      <DependentUpon>ProcessGroupEditorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)\Extensions\HyperlinkExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)\Services\ProcessToLaunchConfigurationProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\MyDialogService.cs" />
@@ -52,8 +64,16 @@
     <Page Include="$(MSBuildThisFileDirectory)Controls\AboutApplicationView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupDetailControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView.xaml">
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\ProcessLaunchInformationDetailControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Controls\ProcessView.xaml">
       <SubType>Designer</SubType>
@@ -66,6 +86,10 @@
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\MainWindow.xaml">
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\ProcessGroupEditorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,7 @@ using System.Windows.Documents;
 using System.Windows;
 using ML.ApplicationLauncher.Core.Validation;
 
-namespace ML.ApplicationLauncher.Shell.Shared.Extensions;
+namespace ML.ApplicationLauncher.Shell.Extensions;
 
 /// <summary>
 /// From https://stackoverflow.com/questions/10238694/example-using-hyperlink-in-wpf

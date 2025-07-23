@@ -1,0 +1,16 @@
+<ContentControl x:Class="ML.ApplicationLauncher.Shell.Controls.ProcessGroupDetailControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="400">
+    <StackPanel Margin="10">
+        <TextBlock Text="Process Group Details" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+        <TextBox Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
+        <TextBox Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,5"/>
+        <CheckBox IsChecked="{Binding CanLaunch}" Content="Can Launch" Margin="0,0,0,5"/>
+        <CheckBox IsChecked="{Binding Disabled}" Content="Disabled" Margin="0,0,0,5"/>
+        <CheckBox IsChecked="{Binding Hidden}" Content="Hidden" Margin="0,0,0,5"/>
+    </StackPanel>
+</ContentControl>

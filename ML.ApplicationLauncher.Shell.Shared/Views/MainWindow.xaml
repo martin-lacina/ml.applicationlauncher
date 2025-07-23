@@ -31,6 +31,10 @@ Icon="pack://application:,,,/Resources/Application.ico"
                     <Image Source="pack://application:,,,/Resources/edit-icon-png-3585-Windows.ico" MaxHeight="16" />
                 </Button>
                 <Separator />
+                <Button Command="{Binding Path=OpenProcessGroupEditorCommand, Mode=OneWay}" ToolTip="Edit Process Groups">
+                    <Image Source="pack://application:,,,/Resources/edit-list-icon.ico" MaxHeight="16" />
+                </Button>
+                <Separator />
                 <Button Command="{Binding Path=ClearLastExecutedTimeCommand, Mode=OneWay}" ToolTip="Clear last executed time">
                     <Image Source="pack://application:,,,/Resources/clear-icon-9211-Windows.ico" MaxHeight="16" />
                 </Button>
