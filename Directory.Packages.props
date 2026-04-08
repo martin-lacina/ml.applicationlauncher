@@ -5,13 +5,10 @@
     <EnablePackageVersionOverride>false</EnablePackageVersionOverride>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.7.115" />
+    <PackageVersion Include="Nerdbank.GitVersioning" Version="3.9.50" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageVersion Include="ConsoleControl.WPF" Version="1.4.0" />
     <PackageVersion Include="Prism.Core" Version="9.0.537" />
     <PackageVersion Include="Prism.Unity" Version="9.0.537" />
     <PackageVersion Include="Prism.Wpf" Version="9.0.537" />
-    <PackageVersion Include="System.Threading.Tasks.Dataflow" Version="9.0.5" />
-    <PackageVersion Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 </Project>
