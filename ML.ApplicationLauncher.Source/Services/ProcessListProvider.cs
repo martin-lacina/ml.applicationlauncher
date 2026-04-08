@@ -23,12 +23,10 @@ internal class ProcessListProvider : IProcessListProvider
     {
         var config = await _configurationProvider.LoadConfigurationAsync(cancellationToken);
 
-        foreach (var group in config)
+        foreach (var group in Filter(config))
         {
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                yield return group;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            yield return group;
         }
     }
 
