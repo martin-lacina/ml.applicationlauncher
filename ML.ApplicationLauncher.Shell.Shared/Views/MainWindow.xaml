@@ -5,11 +5,11 @@
               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shell.Controls"
               xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
-              xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shell.Shared.ViewModels;assembly=ML.ApplicationLauncher.Shell.Shared"
-              xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Views;assembly=ML.ApplicationLauncher.Shell.Shared"
+              xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shell.Shared.ViewModels"
+              xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Views"
               mc:Ignorable="d"
               Title="Universal Application Launcher" Height="700" Width="900"
-              
+
               d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}"
 ><!--
 Icon="pack://application:,,,/Resources/Application.ico"
