@@ -88,7 +88,7 @@ public class MainWindowViewModel : BindableBase
         IsEditMode = !IsEditMode;
         if (IsEditMode)
         {
-            EditViewContent = new EditViewModel(_configFilePath);
+            EditViewContent = new global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configFilePath);
         }
         else
         {
