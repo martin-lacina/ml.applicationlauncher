@@ -45,8 +45,8 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 |12 | **Code review & refactor** | Team | Not‑started | Ensure adherence to Copilot CS instructions (naming, XML docs, async patterns). |
 |13 | **Async repository methods** | Core | Completed | `LoadAsync`, `SaveAsync`, `Add/Remove` async helpers implemented. |
 |14 | **Validation of command paths & arguments** | Core | Not‑started | Validate `Path` is a valid file/URL; `Args` are non‑empty strings; throw `ArgumentException` or return validation errors. |
-|15 | **Duplicate ID detection** | Core | Completed | `ValidateGroup` checks for duplicate IDs during add/validation. |
-|16 | **Circular reference guard** | Core | Completed | `ValidateCircularReference` helper added; to be integrated into add/modify flows. |
+|15 | **Duplicate ID detection** | Core | Completed | `ValidateGroup` checks for duplicate IDs; `ValidateAll` enforces unique IDs across the whole tree. |
+|16 | **Circular reference guard** | Core | Completed | `ValidateCircularReference` integrated and enforced before saves/adds. |
 |17 | **Graceful handling of missing/invalid config file** | Core | Completed | `LoadAsync` returns an empty default list when file is missing or invalid. |
 |18 | **Command execution validation** | Core | Not‑started | Ensure a command can actually run (file exists, args valid). |
 |19 | **Undo/Redo support** | Shell | Completed | Simple snapshot-based `UndoCommand`/`RedoCommand` implemented in `EditViewModel`.
