@@ -16,9 +16,9 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 
 ## Status
 
-- [ ] Data Model
-- [ ] Repository
-- [ ] ViewModel
+- [x] Data Model
+- [x] Repository
+- [x] ViewModel
 - [ ] UI
 - [ ] Unit Tests
 - [ ] Documentation
@@ -43,6 +43,19 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 |10 | **Documentation** | Docs | Not‑started | Update README with new Edit mode description, key shortcuts, and config schema changes. |
 |11 | **CI pipeline update** | DevOps | Not‑started | Add NUnit test step to existing build script. |
 |12 | **Code review & refactor** | Team | Not‑started | Ensure adherence to Copilot CS instructions (naming, XML docs, async patterns). |
+|13 | **Async repository methods** | Core | Not‑started | Add `LoadAsync`, `SaveAsync`, `AddGroupAsync`, etc. to keep UI responsive. |
+|14 | **Validation of command paths & arguments** | Core | Not‑started | Validate `Path` is a valid file/URL; `Args` are non‑empty strings; throw `ArgumentException` or return validation errors. |
+|15 | **Duplicate ID detection** | Core | Not‑started | Ensure IDs are unique across groups and processes; throw on duplicates. |
+|16 | **Circular reference guard** | Core | Not‑started | Prevent a group from being added as a child of itself (directly or indirectly). |
+|17 | **Graceful handling of missing/invalid config file** | Core | Not‑started | On load failure, create a default config and log warning. |
+|18 | **Command execution validation** | Core | Not‑started | Ensure a command can actually run (file exists, args valid). |
+|19 | **Undo/Redo support** | Shell | Not‑started | Keep a command stack or use `IUndoable` pattern; expose `UndoCommand`, `RedoCommand`. |
+|20 | **Thread‑safe collection updates** | Shell | Not‑started | Use `ObservableCollection<T>` on UI thread; marshal changes via `Dispatcher`. |
+|21 | **Persist UI state** | Shell | Not‑started | Remember last selected group/process, edit mode, window size. |
+|22 | **Edge‑case unit tests** | Tests | Not‑started | Duplicate IDs, circular refs, missing fields, async cancellation. |
+|23 | **Drag‑and‑drop reordering test** | Tests | Not‑started | Simulate drag‑and‑drop and assert collection order persists. |
+|24 | **CI NUnit test step** | DevOps | Not‑started | Ensure tests run on every commit (e.g., GitHub Actions or `dotnet test`). |
+|25 | **Code‑review checklist** | Team | Not‑started | Add `CODE_REVIEW.md` checklist referencing Copilot CS instructions. |
 
 ### Key Deliverables
 
