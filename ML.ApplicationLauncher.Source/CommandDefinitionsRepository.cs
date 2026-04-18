@@ -29,6 +29,8 @@ namespace ML.ApplicationLauncher.Source
 
         public async Task SaveAsync(List<CommandGroup> groups)
         {
+            // Validate entire tree for duplicates and circular refs before persisting
+            ValidateAll(groups);
             var json = JsonSerializer.Serialize(groups, _options);
             await File.WriteAllTextAsync(_filePath, json).ConfigureAwait(false);
         }
@@ -115,6 +117,7 @@ namespace ML.ApplicationLauncher.Source
         {
             var groups = await LoadAsync().ConfigureAwait(false);
             groups.Add(group);
+            ValidateAll(groups);
             await SaveAsync(groups).ConfigureAwait(false);
         }
 
@@ -123,6 +126,16 @@ namespace ML.ApplicationLauncher.Source
             var groups = await LoadAsync().ConfigureAwait(false);
             groups.RemoveAll(g => g.Id == id);
             await SaveAsync(groups).ConfigureAwait(false);
+        }
+
+        private void ValidateAll(List<CommandGroup> groups)
+        {
+            var seen = new HashSet<Guid>();
+            foreach (var g in groups)
+            {
+                ValidateGroup(g, seen);
+                ValidateCircularReference(g, null);
+            }
         }
     }
 }

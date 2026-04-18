@@ -85,5 +85,24 @@ namespace ML.ApplicationLauncher.Tests
             var after = (await _repo.LoadAsync()).First().Processes.Select(p => p.Name).ToList();
             Assert.AreEqual(new List<string>{"B","A"}, after);
         }
+
+        [Test]
+        public void SaveAsync_DuplicateIds_Throws()
+        {
+            var g1 = new CommandGroup { Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), Name = "G1" };
+            var g2 = new CommandGroup { Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), Name = "G2" };
+            var list = new List<CommandGroup> { g1, g2 };
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list));
+        }
+
+        [Test]
+        public void SaveAsync_CircularReference_Throws()
+        {
+            var g = new CommandGroup { Name = "Self" };
+            // create a direct circular reference
+            g.Children.Add(g);
+            var list = new List<CommandGroup> { g };
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list));
+        }
     }
 }
