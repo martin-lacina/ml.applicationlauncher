@@ -66,7 +66,11 @@
                     <RowDefinition Height="2*" />
                 </Grid.RowDefinitions>
 
-                <ListView Grid.Row="0" ItemsSource="{Binding SelectedGroup.Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}">
+                <ListView x:Name="ProcessesListView" Grid.Row="0" ItemsSource="{Binding SelectedGroup.Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
+                          AllowDrop="True"
+                          PreviewMouseLeftButtonDown="ProcessesListView_PreviewMouseLeftButtonDown"
+                          MouseMove="ProcessesListView_MouseMove"
+                          Drop="ProcessesListView_Drop">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
