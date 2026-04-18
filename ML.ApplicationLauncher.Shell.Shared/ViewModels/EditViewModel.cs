@@ -1,8 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Windows.Input;
+using ML.ApplicationLauncher.Source;
 
 namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
 {
@@ -17,14 +21,37 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
         }
 
         public ObservableCollection<CommandGroupViewModel> Groups { get; } = new();
+        private CommandGroupViewModel? _selectedGroup;
+        public CommandGroupViewModel? SelectedGroup
+        {
+            get => _selectedGroup;
+            set { _selectedGroup = value; OnPropertyChanged(); }
+        }
+
+        private CommandProcessViewModel? _selectedProcess;
+        public CommandProcessViewModel? SelectedProcess
+        {
+            get => _selectedProcess;
+            set { _selectedProcess = value; OnPropertyChanged(); }
+        }
+
         public ICommand ToggleEditCommand { get; }
         public ICommand AddGroupCommand { get; }
         public ICommand AddProcessCommand { get; }
         public ICommand RemoveCommand { get; }
-        public ICommand MoveCommand { get; }
+        public ICommand MoveUpCommand { get; }
+        public ICommand MoveDownCommand { get; }
         public ICommand SaveCommand { get; }
         public ICommand UndoCommand { get; }
         public ICommand RedoCommand { get; }
+
+        private readonly Stack<string> _undoStack = new();
+        private readonly Stack<string> _redoStack = new();
+        private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            PropertyNameCaseInsensitive = true
+        };
 
         public EditViewModel(string repositoryPath)
         {
@@ -33,7 +60,8 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             AddGroupCommand = new RelayCommand(_ => AddGroup());
             AddProcessCommand = new RelayCommand(_ => AddProcess());
             RemoveCommand = new RelayCommand(_ => RemoveSelected());
-            MoveCommand = new RelayCommand(_ => MoveSelected());
+            MoveUpCommand = new RelayCommand(_ => MoveSelected(up: true));
+            MoveDownCommand = new RelayCommand(_ => MoveSelected(up: false));
             SaveCommand = new RelayCommand(_ => Save());
             UndoCommand = new RelayCommand(_ => Undo());
             RedoCommand = new RelayCommand(_ => Redo());
@@ -70,23 +98,94 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
 
         private void AddGroup()
         {
+            PushUndo();
             var newGroup = new CommandGroupViewModel { Name = "New Group" };
             Groups.Add(newGroup);
+            SelectedGroup = newGroup;
         }
 
         private void AddProcess()
         {
-            // placeholder – actual selection logic omitted
+            if (SelectedGroup == null) return;
+            PushUndo();
+            var proc = new CommandProcessViewModel { Name = "New Process" };
+            SelectedGroup.Processes.Add(proc);
+            SelectedProcess = proc;
         }
 
         private void RemoveSelected()
         {
-            // placeholder – actual selection logic omitted
+            if (SelectedProcess != null && SelectedGroup != null)
+            {
+                PushUndo();
+                SelectedGroup.Processes.Remove(SelectedProcess);
+                SelectedProcess = null;
+                return;
+            }
+
+            if (SelectedGroup != null)
+            {
+                PushUndo();
+                // try to remove from root
+                if (!RemoveGroupById(SelectedGroup.Id, Groups))
+                {
+                    // not found in root - nothing
+                }
+                SelectedGroup = null;
+            }
         }
 
-        private void MoveSelected()
+        private void MoveSelected(bool up)
         {
-            // placeholder – actual selection logic omitted
+            if (SelectedProcess != null && SelectedGroup != null)
+            {
+                var list = SelectedGroup.Processes;
+                var idx = list.IndexOf(SelectedProcess);
+                if (idx < 0) return;
+                var newIdx = up ? idx - 1 : idx + 1;
+                if (newIdx < 0 || newIdx >= list.Count) return;
+                PushUndo();
+                list.Move(idx, newIdx);
+                return;
+            }
+
+            if (SelectedGroup != null)
+            {
+                // find parent collection
+                var parent = FindParentCollection(SelectedGroup.Id, Groups) ?? Groups;
+                var idx = parent.IndexOf(SelectedGroup);
+                if (idx < 0) return;
+                var newIdx = up ? idx - 1 : idx + 1;
+                if (newIdx < 0 || newIdx >= parent.Count) return;
+                PushUndo();
+                parent.Move(idx, newIdx);
+            }
+        }
+
+        private ObservableCollection<CommandGroupViewModel>? FindParentCollection(Guid id, ObservableCollection<CommandGroupViewModel> current)
+        {
+            foreach (var g in current)
+            {
+                if (g.Children.Any(c => c.Id == id)) return g.Children;
+                var nested = FindParentCollection(id, g.Children);
+                if (nested != null) return nested;
+            }
+            return null;
+        }
+
+        private bool RemoveGroupById(Guid id, ObservableCollection<CommandGroupViewModel> current)
+        {
+            var found = current.FirstOrDefault(g => g.Id == id);
+            if (found != null)
+            {
+                current.Remove(found);
+                return true;
+            }
+            foreach (var g in current)
+            {
+                if (RemoveGroupById(id, g.Children)) return true;
+            }
+            return false;
         }
 
         private async void Save()
@@ -95,6 +194,33 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             foreach (var vm in Groups)
                 groups.Add(ToModel(vm));
             await _repository.SaveAsync(groups);
+        }
+
+        private void PushUndo()
+        {
+            try
+            {
+                _undoStack.Push(SerializeGroups());
+                _redoStack.Clear();
+            }
+            catch { }
+        }
+
+        private string SerializeGroups()
+        {
+            var models = Groups.Select(g => ToModel(g)).ToList();
+            return JsonSerializer.Serialize(models, _jsonOptions);
+        }
+
+        private void LoadFromJson(string json)
+        {
+            var groups = JsonSerializer.Deserialize<List<CommandGroup>>(json, _jsonOptions) ?? new List<CommandGroup>();
+            Groups.Clear();
+            foreach (var g in groups) Groups.Add(ToViewModel(g));
+            SelectedGroup = null;
+            SelectedProcess = null;
+            OnPropertyChanged(nameof(SelectedGroup));
+            OnPropertyChanged(nameof(SelectedProcess));
         }
 
         private CommandGroup ToModel(CommandGroupViewModel vm)
@@ -117,8 +243,21 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             return group;
         }
 
-        private void Undo() { /* placeholder */ }
-        private void Redo() { /* placeholder */ }
+        private void Undo()
+        {
+            if (_undoStack.Count == 0) return;
+            var snap = _undoStack.Pop();
+            _redoStack.Push(SerializeGroups());
+            LoadFromJson(snap);
+        }
+
+        private void Redo()
+        {
+            if (_redoStack.Count == 0) return;
+            var snap = _redoStack.Pop();
+            _undoStack.Push(SerializeGroups());
+            LoadFromJson(snap);
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
