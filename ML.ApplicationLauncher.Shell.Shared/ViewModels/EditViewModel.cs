@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.IO;
 using System.Windows.Input;
 using ML.ApplicationLauncher.Source;
 
@@ -13,6 +14,7 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
     public class EditViewModel : INotifyPropertyChanged
     {
         private readonly CommandDefinitionsRepository _repository;
+        private readonly string _uiStatePath;
         private bool _isEditMode;
         public bool IsEditMode
         {
@@ -56,6 +58,7 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
         public EditViewModel(string repositoryPath)
         {
             _repository = new CommandDefinitionsRepository(repositoryPath);
+            _uiStatePath = Path.ChangeExtension(repositoryPath, ".ui.json");
             ToggleEditCommand = new RelayCommand(_ => IsEditMode = !IsEditMode);
             AddGroupCommand = new RelayCommand(_ => AddGroup());
             AddProcessCommand = new RelayCommand(_ => AddProcess());
@@ -74,6 +77,7 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             Groups.Clear();
             foreach (var g in groups)
                 Groups.Add(ToViewModel(g));
+            LoadUIState();
         }
 
         private CommandGroupViewModel ToViewModel(CommandGroup group)
@@ -194,6 +198,62 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             foreach (var vm in Groups)
                 groups.Add(ToModel(vm));
             await _repository.SaveAsync(groups);
+            SaveUIState();
+        }
+
+        private void LoadUIState()
+        {
+            try
+            {
+                if (!File.Exists(_uiStatePath)) return;
+                var json = File.ReadAllText(_uiStatePath);
+                var state = JsonSerializer.Deserialize<UiState>(json, _jsonOptions);
+                if (state == null) return;
+                IsEditMode = state.IsEditMode;
+                if (state.SelectedGroupId.HasValue)
+                {
+                    SelectedGroup = FindGroupById(state.SelectedGroupId.Value, Groups);
+                    if (state.SelectedProcessId.HasValue && SelectedGroup != null)
+                    {
+                        SelectedProcess = SelectedGroup.Processes.FirstOrDefault(p => p.Id == state.SelectedProcessId.Value);
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void SaveUIState()
+        {
+            try
+            {
+                var state = new UiState
+                {
+                    IsEditMode = IsEditMode,
+                    SelectedGroupId = SelectedGroup?.Id,
+                    SelectedProcessId = SelectedProcess?.Id
+                };
+                var json = JsonSerializer.Serialize(state, _jsonOptions);
+                File.WriteAllText(_uiStatePath, json);
+            }
+            catch { }
+        }
+
+        private CommandGroupViewModel? FindGroupById(Guid id, ObservableCollection<CommandGroupViewModel> current)
+        {
+            foreach (var g in current)
+            {
+                if (g.Id == id) return g;
+                var found = FindGroupById(id, g.Children);
+                if (found != null) return found;
+            }
+            return null;
+        }
+
+        private sealed class UiState
+        {
+            public bool IsEditMode { get; set; }
+            public Guid? SelectedGroupId { get; set; }
+            public Guid? SelectedProcessId { get; set; }
         }
 
         private void PushUndo()
