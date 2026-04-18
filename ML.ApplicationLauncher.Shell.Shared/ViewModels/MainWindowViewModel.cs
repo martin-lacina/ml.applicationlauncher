@@ -22,6 +22,8 @@ public class MainWindowViewModel : BindableBase
     private readonly IProcessListProvider _processListProvider;
     private readonly ICommandFactory _commandFactory;
     private readonly IMyDialogService _dialogService;
+    private readonly string _configFilePath;
+    private bool _isEditMode;
 
     public MainWindowViewModel(
         IConfigurationLocationProvider<ProcessGroup[]> configurationProvider,
@@ -35,6 +37,7 @@ public class MainWindowViewModel : BindableBase
         _processListProvider = processListProvider.ShouldNotBeNull();
         _commandFactory = commandFactory.ShouldNotBeNull();
         _dialogService = dialogService.ShouldNotBeNull();
+        _configFilePath = _configurationProvider.ConfigurationFilePath;
 
         ExitCommand = new DelegateCommand(Exit);
         LoadListCommand = new AsyncDelegateCommand(LoadListAsync);
@@ -52,6 +55,18 @@ public class MainWindowViewModel : BindableBase
     public AsyncDelegateCommand EditListCommand { get; }
     public DelegateCommand ClearLastExecutedTimeCommand { get; }
     public DelegateCommand ShowAboutDialogCommand { get; }
+    public bool IsEditMode
+    {
+        get => _isEditMode;
+        set { _isEditMode = value; OnPropertyChanged(); }
+    }
+
+    private object? _editViewContent;
+    public object? EditViewContent
+    {
+        get => _editViewContent;
+        private set { _editViewContent = value; OnPropertyChanged(); }
+    }
 
     public ObservableCollection<ProcessGroupViewModel> ProcessGroups { get; } = new();
 
@@ -68,10 +83,17 @@ public class MainWindowViewModel : BindableBase
 
     private async Task EditListAsync(CancellationToken cancellationToken)
     {
-        var editCommand =
-            new ProcessLaunchInformation("Edit list", string.Empty, "notepad.exe", new[] { _configurationProvider.ConfigurationFilePath }, ExecutionMode.Raw);
-
-        await _processLauncher.StartAsync(editCommand, cancellationToken);
+        // Toggle edit mode and host EditView when active.
+        IsEditMode = !IsEditMode;
+        if (IsEditMode)
+        {
+            EditViewContent = new ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configFilePath);
+        }
+        else
+        {
+            EditViewContent = null;
+            await LoadListAsync(cancellationToken);
+        }
     }
 
     private void ClearLastExecutedTime()
