@@ -19,7 +19,7 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 - [x] Data Model
 - [x] Repository
 - [x] ViewModel
-- [ ] UI (In‑progress)
+- [x] UI (In‑progress)
 - [ ] Unit Tests (In‑progress)
 - [ ] Documentation
 - [ ] CI
@@ -51,7 +51,7 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 |18 | **Command execution validation** | Core | Not‑started | Ensure a command can actually run (file exists, args valid). |
 |19 | **Undo/Redo support** | Shell | Completed | Simple snapshot-based `UndoCommand`/`RedoCommand` implemented in `EditViewModel`.
 |20 | **Thread‑safe collection updates** | Shell | Not‑started | Use `ObservableCollection<T>` on UI thread; marshal changes via `Dispatcher`. |
-|21 | **Persist UI state** | Shell | Not‑started | Remember last selected group/process, edit mode, window size. |
+|21 | **Persist UI state** | Shell | Completed | Remember last selected group/process, edit mode, window size. |
 |22 | **Edge‑case unit tests** | Tests | Not‑started | Duplicate IDs, circular refs, missing fields, async cancellation. |
 |23 | **Drag‑and‑drop reordering test** | Tests | Not‑started | Simulate drag‑and‑drop and assert collection order persists. |
 |24 | **CI NUnit test step** | DevOps | Not‑started | Ensure tests run on every commit (e.g., GitHub Actions or `dotnet test`). |
