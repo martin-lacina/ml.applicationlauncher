@@ -12,6 +12,7 @@ using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
 using Prism.Commands;
 using Prism.Mvvm;
+using ML.ApplicationLauncher.Shell.Shared.ViewModels;
 
 namespace ML.ApplicationLauncher.Shell.ViewModels;
 
@@ -58,14 +59,14 @@ public class MainWindowViewModel : BindableBase
     public bool IsEditMode
     {
         get => _isEditMode;
-        set { _isEditMode = value; OnPropertyChanged(); }
+        set => SetProperty(ref _isEditMode, value);
     }
 
     private object? _editViewContent;
     public object? EditViewContent
     {
         get => _editViewContent;
-        private set { _editViewContent = value; OnPropertyChanged(); }
+        private set => SetProperty(ref _editViewContent, value);
     }
 
     public ObservableCollection<ProcessGroupViewModel> ProcessGroups { get; } = new();
@@ -87,7 +88,7 @@ public class MainWindowViewModel : BindableBase
         IsEditMode = !IsEditMode;
         if (IsEditMode)
         {
-            EditViewContent = new ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configFilePath);
+            EditViewContent = new EditViewModel(_configFilePath);
         }
         else
         {
