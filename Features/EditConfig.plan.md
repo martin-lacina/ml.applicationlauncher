@@ -19,8 +19,8 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 - [x] Data Model
 - [x] Repository
 - [x] ViewModel
-- [ ] UI
-- [ ] Unit Tests
+- [ ] UI (In‑progress)
+- [ ] Unit Tests (In‑progress)
 - [ ] Documentation
 - [ ] CI
 
