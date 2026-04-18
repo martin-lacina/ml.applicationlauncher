@@ -38,6 +38,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\IDialogViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\CommandGroupViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\EditViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessGroupViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessViewModelBase.cs" />
@@ -62,6 +64,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Views\EditView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Views\MainWindow.xaml">
