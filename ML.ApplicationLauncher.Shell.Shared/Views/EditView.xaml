@@ -52,7 +52,11 @@
                 <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
 
-            <TreeView Grid.Column="0" ItemsSource="{Binding Groups}" SelectedItemChanged="TreeView_SelectedItemChanged">
+            <TreeView x:Name="GroupsTreeView" Grid.Column="0" ItemsSource="{Binding Groups}" SelectedItemChanged="TreeView_SelectedItemChanged"
+                      AllowDrop="True"
+                      PreviewMouseLeftButtonDown="GroupsTreeView_PreviewMouseLeftButtonDown"
+                      MouseMove="GroupsTreeView_MouseMove"
+                      Drop="GroupsTreeView_Drop">
                 <TreeView.ItemTemplate>
                     <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                         <TextBlock Text="{Binding Name}" />

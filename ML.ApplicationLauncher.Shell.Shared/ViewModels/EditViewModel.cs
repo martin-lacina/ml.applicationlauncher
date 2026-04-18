@@ -182,6 +182,21 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             SelectedProcess = proc;
         }
 
+        public void MoveGroup(Guid groupId, int newIndex)
+        {
+            var parent = FindParentCollection(groupId, Groups) ?? Groups;
+            var group = parent.FirstOrDefault(g => g.Id == groupId);
+            if (group == null) return;
+            var oldIndex = parent.IndexOf(group);
+            if (oldIndex < 0) return;
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= parent.Count) newIndex = parent.Count - 1;
+            if (oldIndex == newIndex) return;
+            PushUndo();
+            parent.Move(oldIndex, newIndex);
+            SelectedGroup = group;
+        }
+
         private ObservableCollection<CommandGroupViewModel>? FindParentCollection(Guid id, ObservableCollection<CommandGroupViewModel> current)
         {
             foreach (var g in current)
