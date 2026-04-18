@@ -6,5 +6,14 @@
     xmlns:prism="http://prismlibrary.com/"
     >
     <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary.MergedDictionaries>
+
+            <DataTemplate DataType="{x:Type sharedVM:EditViewModel}" xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shell.Shared.ViewModels"
+                          xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Views">
+                <sharedViews:EditView />
+            </DataTemplate>
+        </ResourceDictionary>
     </Application.Resources>
 </prism:PrismApplication>
