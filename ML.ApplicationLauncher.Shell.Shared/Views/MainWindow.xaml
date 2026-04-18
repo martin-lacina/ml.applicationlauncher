@@ -5,6 +5,8 @@
               xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shell.Controls"
               xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shell.ViewModels"
+              xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shell.Shared.ViewModels;assembly=ML.ApplicationLauncher.Shell.Shared"
+              xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Views;assembly=ML.ApplicationLauncher.Shell.Shared"
               mc:Ignorable="d"
               Title="Universal Application Launcher" Height="700" Width="900"
               
@@ -12,6 +14,12 @@
 ><!--
 Icon="pack://application:,,,/Resources/Application.ico"
     -->
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type sharedVM:EditViewModel}">
+            <sharedViews:EditView />
+        </DataTemplate>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
