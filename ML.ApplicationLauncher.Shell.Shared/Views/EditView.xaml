@@ -76,13 +76,7 @@
                     </ListView.View>
                 </ListView>
 
-                <ContentControl Grid.Row="1" Content="{Binding SelectedProcess}">
-                    <ContentControl.ContentTemplate>
-                        <DataTemplate>
-                            <ContentPresenter Content="{Binding}" />
-                        </DataTemplate>
-                    </ContentControl.ContentTemplate>
-                </ContentControl>
+                <ContentControl Grid.Row="1" Content="{Binding SelectedDetail}" />
             </Grid>
         </Grid>
     </DockPanel>

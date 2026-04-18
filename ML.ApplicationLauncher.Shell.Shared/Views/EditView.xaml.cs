@@ -9,8 +9,6 @@ namespace ML.ApplicationLauncher.Shell.Shared.Views
         public EditView()
         {
             InitializeComponent();
-            // Assuming the config file path is known; replace with actual path
-            DataContext = new EditViewModel("CommandDefinitions.json");
         }
 
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
