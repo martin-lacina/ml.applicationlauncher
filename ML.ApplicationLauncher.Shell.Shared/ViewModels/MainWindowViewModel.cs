@@ -88,11 +88,23 @@ public class MainWindowViewModel : BindableBase
         IsEditMode = !IsEditMode;
         if (IsEditMode)
         {
-            EditViewContent = new global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configFilePath);
+            var vm = new global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configFilePath);
+            EditViewContent = vm;
+            Console.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
+            try
+            {
+                var dt = Application.Current?.TryFindResource(typeof(global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel));
+                Console.WriteLine(dt == null ? "EditListAsync: No DataTemplate found for EditViewModel" : $"EditListAsync: DataTemplate found for EditViewModel: {dt.GetType().FullName}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"EditListAsync: Exception checking resources: {ex}");
+            }
         }
         else
         {
             EditViewContent = null;
+            Console.WriteLine("EditListAsync: Edit mode disabled; EditViewContent cleared.");
             await LoadListAsync(cancellationToken);
         }
     }
