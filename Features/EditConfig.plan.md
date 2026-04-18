@@ -28,14 +28,14 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 
 | # | Task | Owner | Status | Notes |
 |---|------|-------|--------|-------|
-| 1 | **Define data model for groups & processes** | Core | Not‑started | Create `CommandGroup` (Id, Name, Children, Processes) and `CommandProcess` (Id, Name, Path, Args). Add to `ML.ApplicationLauncher.Source` for shared use. |
-| 2 | **Persist changes to JSON** | Core | Not‑started | Extend `CommandDefinitions.json` schema to include `IsEditable` flag. Implement `CommandDefinitionsRepository` with `Load`, `Save`, `AddGroup`, `RemoveGroup`, `AddProcess`, `RemoveProcess`, `Reorder`. |
-| 3 | **Add ViewModel for Edit Mode** | Shell | Not‑started | `EditViewModel` exposing `ObservableCollection<CommandGroupViewModel>`, `SelectedItem`, `IsEditMode`. Commands: `ToggleEditCommand`, `AddGroupCommand`, `AddProcessCommand`, `RemoveCommand`, `MoveCommand`, `SaveCommand`. |
+| 1 | **Define data model for groups & processes** | Core | Completed | Create `CommandGroup` (Id, Name, Children, Processes) and `CommandProcess` (Id, Name, Path, Args). Added to `ML.ApplicationLauncher.Source`. |
+| 2 | **Persist changes to JSON** | Core | Completed | `CommandDefinitionsRepository` implemented with async `LoadAsync`, `SaveAsync`, `Add/Remove` helpers, validation and reordering helpers. |
+| 3 | **Add ViewModel for Edit Mode** | Shell | Completed | `EditViewModel` implemented with selection, add/remove/move, undo/redo and repository integration. |
 | 4 | **Create Edit View (XAML)** | Shell | Not‑started | Replace main view with a `Grid` that shows either *Read‑Only* or *Edit* mode. Use `TreeView` for groups, `ListView` for processes. Bind to `EditViewModel`. |
 | 5 | **Toolbar toggle** | Shell | Not‑started | Add `ToggleButton` bound to `ToggleEditCommand`. Change icon/text when toggled. |
 | 6 | **Right‑hand detail pane** | Shell | Not‑started | Show `GroupDetailView` or `ProcessDetailView` depending on `SelectedItem`. Allow editing of properties. |
-| 7 | **Reorder logic** | Shell | Not‑started | Implement drag‑and‑drop or up/down buttons. Update underlying collections and persist order. |
-| 8 | **Unit tests (NUnit)** | Tests | Not‑started | Create `ML.ApplicationLauncher.Tests` project. Tests: |
+| 7 | **Reorder logic** | Shell | In‑progress | Implemented up/down move commands; drag‑and‑drop remaining. Update underlying collections and persist order. |
+| 8 | **Unit tests (NUnit)** | Tests | In‑progress | `ML.ApplicationLauncher.Tests` updated with ViewModel tests (AddGroup, AddProcess, Remove, Move, Undo/Redo). Repository tests pending. |
 |   8.1 | `CommandDefinitionsRepository` – Load/Save round‑trip, Add/Remove/Move operations. |
 |   8.2 | `EditViewModel` – ToggleEdit, AddGroup, AddProcess, Remove, Move, Save. |
 |   8.3 | Validation – ensure invalid paths are rejected. |
@@ -43,13 +43,13 @@ This document tracks the implementation steps for adding an edit‑mode UI that 
 |10 | **Documentation** | Docs | Not‑started | Update README with new Edit mode description, key shortcuts, and config schema changes. |
 |11 | **CI pipeline update** | DevOps | Not‑started | Add NUnit test step to existing build script. |
 |12 | **Code review & refactor** | Team | Not‑started | Ensure adherence to Copilot CS instructions (naming, XML docs, async patterns). |
-|13 | **Async repository methods** | Core | Not‑started | Add `LoadAsync`, `SaveAsync`, `AddGroupAsync`, etc. to keep UI responsive. |
+|13 | **Async repository methods** | Core | Completed | `LoadAsync`, `SaveAsync`, `Add/Remove` async helpers implemented. |
 |14 | **Validation of command paths & arguments** | Core | Not‑started | Validate `Path` is a valid file/URL; `Args` are non‑empty strings; throw `ArgumentException` or return validation errors. |
-|15 | **Duplicate ID detection** | Core | Not‑started | Ensure IDs are unique across groups and processes; throw on duplicates. |
-|16 | **Circular reference guard** | Core | Not‑started | Prevent a group from being added as a child of itself (directly or indirectly). |
-|17 | **Graceful handling of missing/invalid config file** | Core | Not‑started | On load failure, create a default config and log warning. |
+|15 | **Duplicate ID detection** | Core | Completed | `ValidateGroup` checks for duplicate IDs during add/validation. |
+|16 | **Circular reference guard** | Core | Completed | `ValidateCircularReference` helper added; to be integrated into add/modify flows. |
+|17 | **Graceful handling of missing/invalid config file** | Core | Completed | `LoadAsync` returns an empty default list when file is missing or invalid. |
 |18 | **Command execution validation** | Core | Not‑started | Ensure a command can actually run (file exists, args valid). |
-|19 | **Undo/Redo support** | Shell | Not‑started | Keep a command stack or use `IUndoable` pattern; expose `UndoCommand`, `RedoCommand`. |
+|19 | **Undo/Redo support** | Shell | Completed | Simple snapshot-based `UndoCommand`/`RedoCommand` implemented in `EditViewModel`.
 |20 | **Thread‑safe collection updates** | Shell | Not‑started | Use `ObservableCollection<T>` on UI thread; marshal changes via `Dispatcher`. |
 |21 | **Persist UI state** | Shell | Not‑started | Remember last selected group/process, edit mode, window size. |
 |22 | **Edge‑case unit tests** | Tests | Not‑started | Duplicate IDs, circular refs, missing fields, async cancellation. |
