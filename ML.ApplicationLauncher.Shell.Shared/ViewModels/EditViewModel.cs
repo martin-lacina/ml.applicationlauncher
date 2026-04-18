@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.IO;
 using System.Windows.Input;
 using ML.ApplicationLauncher.Source;
+using ML.ApplicationLauncher.Shell.Shared;
 
 namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
 {
