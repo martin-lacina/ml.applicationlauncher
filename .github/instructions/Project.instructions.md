@@ -53,4 +53,4 @@
 
 - This is a quick-hack tool; prioritize pragmatic, working solutions over architectural purity.
 - Follow the structure and conventions as found—do not introduce major refactors unless requested.
-- For detailed C# coding standards and preferences, see [instructions/Copilot_cs.instructions.md](instructions/Copilot_cs.instructions.md).
+- For detailed C# coding standards and preferences, see [instructions/Copilot_cs.instructions.md](Copilot_cs.instructions.md).

@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System.Linq;
 using ML.ApplicationLauncher.Shell.Shared.ViewModels;
+using ML.ApplicationLauncher.Source.Model;
 
 namespace ML.ApplicationLauncher.Shell.Shared.Views
 {
@@ -164,6 +165,14 @@ namespace ML.ApplicationLauncher.Shell.Shared.Views
                 if (nested != null) return nested;
             }
             return null;
+        }
+
+        private void ExecutionModeCombo_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (sender is ComboBox cb)
+            {
+                cb.ItemsSource = Enum.GetValues(typeof(ExecutionMode));
+            }
         }
     }
 }

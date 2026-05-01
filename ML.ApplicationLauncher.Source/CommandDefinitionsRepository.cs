@@ -1,15 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using ML.ApplicationLauncher.Source.Model;
+using ML.ApplicationLauncher.Source.Services;
 
 namespace ML.ApplicationLauncher.Source
 {
     public class CommandDefinitionsRepository
     {
-        private readonly string _filePath;
-        private readonly JsonSerializerOptions _options = new JsonSerializerOptions
+        private readonly string? _filePath;
+        private readonly IConfigurationManager<ProcessGroup[]>? _configurationManager;
+
+        private readonly JsonSerializerOptions _legacyOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
             PropertyNameCaseInsensitive = true
@@ -20,19 +28,71 @@ namespace ML.ApplicationLauncher.Source
             _filePath = filePath;
         }
 
+        public CommandDefinitionsRepository(IConfigurationManager<ProcessGroup[]> configurationManager)
+        {
+            _configurationManager = configurationManager;
+        }
+
         public async Task<List<CommandGroup>> LoadAsync()
         {
-            if (!File.Exists(_filePath)) return new List<CommandGroup>();
+            // If a configuration manager is available (DI scenario), prefer it and map to CommandGroup
+            if (_configurationManager != null)
+            {
+                var config = await _configurationManager.LoadConfigurationAsync(CancellationToken.None).ConfigureAwait(false);
+                return MapProcessGroupsToCommandGroups(config!);
+            }
+
+            if (string.IsNullOrWhiteSpace(_filePath) || !File.Exists(_filePath))
+                return new List<CommandGroup>();
+
             var json = await File.ReadAllTextAsync(_filePath).ConfigureAwait(false);
-            return JsonSerializer.Deserialize<List<CommandGroup>>(json, _options) ?? new List<CommandGroup>();
+
+            // Try new configuration model first (unfiltered ProcessGroup[])
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                };
+
+                var processGroups = JsonSerializer.Deserialize<ProcessGroup[]>(json, options);
+                if (processGroups != null)
+                    return MapProcessGroupsToCommandGroups(processGroups);
+            }
+            catch { /* ignore and try legacy format */ }
+
+            // Fallback to legacy CommandGroup[] format
+            return JsonSerializer.Deserialize<List<CommandGroup>>(json, _legacyOptions) ?? new List<CommandGroup>();
         }
 
         public async Task SaveAsync(List<CommandGroup> groups)
         {
             // Validate entire tree for duplicates and circular refs before persisting
             ValidateAll(groups);
-            var json = JsonSerializer.Serialize(groups, _options);
-            await File.WriteAllTextAsync(_filePath, json).ConfigureAwait(false);
+
+            // Convert to new ProcessGroup[] model for persistence
+            var processGroups = MapCommandGroupsToProcessGroups(groups);
+
+            if (_configurationManager != null)
+            {
+                await _configurationManager.SaveConfigurationAsync(processGroups, CancellationToken.None).ConfigureAwait(false);
+                return;
+            }
+
+            // Persist to file path using the new model
+            if (string.IsNullOrWhiteSpace(_filePath))
+                throw new InvalidOperationException("No storage configured for saving command definitions.");
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                MaxDepth = 512,
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+            };
+
+            var json = JsonSerializer.Serialize(processGroups, options);
+            await File.WriteAllTextAsync(_filePath, json, Encoding.UTF8).ConfigureAwait(false);
         }
 
         // ---------------------------------------------------------------------
@@ -136,6 +196,114 @@ namespace ML.ApplicationLauncher.Source
                 ValidateGroup(g, seen);
                 ValidateCircularReference(g, null);
             }
+        }
+
+        // ---------------------------------------------------------------------
+        // Mapping helpers between ProcessGroup (configuration model) and CommandGroup (editor model)
+        // ---------------------------------------------------------------------
+        private static List<CommandGroup> MapProcessGroupsToCommandGroups(IEnumerable<ProcessGroup> processGroups)
+        {
+            var result = new List<CommandGroup>();
+            foreach (var pg in processGroups ?? Array.Empty<ProcessGroup>())
+                result.Add(MapProcessGroupToCommandGroup(pg));
+            return result;
+        }
+
+        private static CommandGroup MapProcessGroupToCommandGroup(ProcessGroup pg)
+        {
+            var cg = new CommandGroup
+            {
+                Id = Guid.NewGuid(),
+                Name = pg.DisplayName ?? string.Empty
+            };
+
+            if (pg.Groups != null)
+            {
+                foreach (var child in pg.Groups)
+                    cg.Children.Add(MapProcessGroupToCommandGroup(child));
+            }
+
+            if (pg.Processes != null)
+            {
+                foreach (var p in pg.Processes)
+                {
+                    cg.Processes.Add(new CommandProcess
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = p.DisplayName ?? string.Empty,
+                        Path = p.Executable ?? string.Empty,
+                        Arguments = (p.Arguments != null) ? string.Join(" ", p.Arguments) : string.Empty,
+                        Comment = p.Comment ?? string.Empty,
+                        ExecutionMode = p.ExecutionMode,
+                        Disabled = p.Disabled,
+                        Hidden = p.Hidden,
+                        WorkingDirectory = p.WorkingDirectory ?? string.Empty
+                    });
+                }
+            }
+
+            return cg;
+        }
+
+        private static ProcessGroup[] MapCommandGroupsToProcessGroups(IEnumerable<CommandGroup> groups)
+        {
+            var list = new List<ProcessGroup>();
+            foreach (var g in groups ?? new List<CommandGroup>())
+                list.Add(MapCommandGroupToProcessGroup(g));
+            return list.ToArray();
+        }
+
+        private static ProcessGroup MapCommandGroupToProcessGroup(CommandGroup g)
+        {
+            var childGroups = (g.Children ?? new List<CommandGroup>()).Select(MapCommandGroupToProcessGroup).ToArray();
+            var processes = (g.Processes ?? new List<CommandProcess>()).Select(p =>
+                new ProcessLaunchInformation(
+                    p.Name ?? string.Empty,
+                    p.Comment ?? string.Empty,
+                    p.Path ?? string.Empty,
+                    ParseArguments(p.Arguments),
+                    p.ExecutionMode,
+                    p.Disabled,
+                    p.Hidden,
+                    string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory
+                )).ToArray();
+
+            return new ProcessGroup(g.Name ?? string.Empty, string.Empty, true, childGroups, processes, false, false);
+        }
+
+        private static string[] ParseArguments(string args)
+        {
+            if (string.IsNullOrWhiteSpace(args)) return Array.Empty<string>();
+            var result = new List<string>();
+            var sb = new StringBuilder();
+            var inQuotes = false;
+            for (int i = 0; i < args.Length; i++)
+            {
+                var c = args[i];
+                if (c == '"')
+                {
+                    inQuotes = !inQuotes;
+                    continue;
+                }
+
+                if (char.IsWhiteSpace(c) && !inQuotes)
+                {
+                    if (sb.Length > 0)
+                    {
+                        result.Add(sb.ToString());
+                        sb.Clear();
+                    }
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (sb.Length > 0)
+                result.Add(sb.ToString());
+
+            return result.ToArray();
         }
     }
 }

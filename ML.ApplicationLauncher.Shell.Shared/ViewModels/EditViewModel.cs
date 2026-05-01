@@ -9,6 +9,7 @@ using System.IO;
 using System.Windows.Input;
 using ML.ApplicationLauncher.Source;
 using ML.ApplicationLauncher.Shell.Shared;
+using System.Threading.Tasks;
 
 namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
 {
@@ -69,10 +70,10 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             SaveCommand = new RelayCommand(_ => Save());
             UndoCommand = new RelayCommand(_ => Undo());
             RedoCommand = new RelayCommand(_ => Redo());
-            Load();
+            var _ =Task.Run(async () => await Load()).ConfigureAwait(false);
         }
 
-        private async void Load()
+        private async Task Load()
         {
             var groups = await _repository.LoadAsync();
             Groups.Clear();
@@ -96,7 +97,12 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
                     Id = proc.Id,
                     Name = proc.Name,
                     Path = proc.Path,
-                    Arguments = proc.Arguments
+                    Arguments = proc.Arguments,
+                    Comment = proc.Comment,
+                    ExecutionMode = proc.ExecutionMode,
+                    Disabled = proc.Disabled,
+                    Hidden = proc.Hidden,
+                    WorkingDirectory = proc.WorkingDirectory
                 });
             return vm;
         }
@@ -289,7 +295,12 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
                     Id = procVm.Id,
                     Name = procVm.Name,
                     Path = procVm.Path,
-                    Arguments = procVm.Arguments
+                    Arguments = procVm.Arguments,
+                    Comment = procVm.Comment,
+                    ExecutionMode = procVm.ExecutionMode,
+                    Disabled = procVm.Disabled,
+                    Hidden = procVm.Hidden,
+                    WorkingDirectory = procVm.WorkingDirectory
                 });
             return group;
         }

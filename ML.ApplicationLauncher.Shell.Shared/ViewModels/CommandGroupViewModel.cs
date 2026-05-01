@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using ML.ApplicationLauncher.Source.Model;
 
 namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
 {
@@ -34,6 +35,21 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
 
         private string _arguments = string.Empty;
         public string Arguments { get => _arguments; set { _arguments = value; OnPropertyChanged(); } }
+
+        private string _comment = string.Empty;
+        public string Comment { get => _comment; set { _comment = value; OnPropertyChanged(); } }
+
+        private ExecutionMode _executionMode = ExecutionMode.Default;
+        public ExecutionMode ExecutionMode { get => _executionMode; set { _executionMode = value; OnPropertyChanged(); } }
+
+        private bool _disabled = false;
+        public bool Disabled { get => _disabled; set { _disabled = value; OnPropertyChanged(); } }
+
+        private bool _hidden = false;
+        public bool Hidden { get => _hidden; set { _hidden = value; OnPropertyChanged(); } }
+
+        private string _workingDirectory = string.Empty;
+        public string WorkingDirectory { get => _workingDirectory; set { _workingDirectory = value; OnPropertyChanged(); } }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? name = null)

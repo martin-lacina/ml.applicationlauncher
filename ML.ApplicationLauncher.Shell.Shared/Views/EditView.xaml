@@ -1,24 +1,11 @@
 <UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:ML.ApplicationLauncher.Shell.Shared.ViewModels"
+             xmlns:views="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Views"
              x:Class="ML.ApplicationLauncher.Shell.Shared.Views.EditView">
     <UserControl.Resources>
         <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
-            <StackPanel Margin="8">
-                <TextBlock Text="Process Details" FontWeight="Bold" />
-                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                    <TextBlock Text="Name:" Width="60" />
-                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                    <TextBlock Text="Path:" Width="60" />
-                    <TextBox Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
-                    <TextBlock Text="Args:" Width="60" />
-                    <TextBox Text="{Binding Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" />
-                </StackPanel>
-            </StackPanel>
+            <views:ProcessDetailsControl />
         </DataTemplate>
 
         <DataTemplate DataType="{x:Type vm:CommandGroupViewModel}">
