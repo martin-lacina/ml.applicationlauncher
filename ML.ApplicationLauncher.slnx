@@ -14,4 +14,5 @@
   <Project Path="ML.ApplicationLauncher.Shell.Shared/ML.ApplicationLauncher.Shell.Shared.shproj" />
   <Project Path="ML.ApplicationLauncher.Shell/ML.ApplicationLauncher.Shell.csproj" />
   <Project Path="ML.ApplicationLauncher.Source/ML.ApplicationLauncher.Source.csproj" />
+  <Project Path="ML.ApplicationLauncher.Tests/ML.ApplicationLauncher.Tests.csproj" />
 </Solution>

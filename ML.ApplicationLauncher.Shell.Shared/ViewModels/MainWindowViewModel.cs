@@ -19,26 +19,27 @@ namespace ML.ApplicationLauncher.Shell.ViewModels;
 public class MainWindowViewModel : BindableBase
 {
     private readonly IConfigurationLocationProvider<ProcessGroup[]> _configurationProvider;
+    private readonly IConfigurationManager<ProcessGroup[]> _configurationManager;
     private readonly IProcessLauncher _processLauncher;
     private readonly IProcessListProvider _processListProvider;
     private readonly ICommandFactory _commandFactory;
     private readonly IMyDialogService _dialogService;
-    private readonly string _configFilePath;
     private bool _isEditMode;
 
     public MainWindowViewModel(
         IConfigurationLocationProvider<ProcessGroup[]> configurationProvider,
+        IConfigurationManager<ProcessGroup[]> configurationManager,
         IProcessListProvider processListProvider,
         IProcessLauncher processLauncher,
         ICommandFactory commandFactory,
         IMyDialogService dialogService)
     {
         _configurationProvider = configurationProvider.ShouldNotBeNull();
+        _configurationManager = configurationManager.ShouldNotBeNull();
         _processLauncher = processLauncher.ShouldNotBeNull();
         _processListProvider = processListProvider.ShouldNotBeNull();
         _commandFactory = commandFactory.ShouldNotBeNull();
         _dialogService = dialogService.ShouldNotBeNull();
-        _configFilePath = _configurationProvider.ConfigurationFilePath;
 
         ExitCommand = new DelegateCommand(Exit);
         LoadListCommand = new AsyncDelegateCommand(LoadListAsync);
@@ -88,7 +89,7 @@ public class MainWindowViewModel : BindableBase
         IsEditMode = !IsEditMode;
         if (IsEditMode)
         {
-            var vm = new global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configFilePath);
+            var vm = new global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configurationManager);
             EditViewContent = vm;
             Console.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
             try

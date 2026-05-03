@@ -10,6 +10,8 @@ using System.Windows.Input;
 using ML.ApplicationLauncher.Source;
 using ML.ApplicationLauncher.Shell.Shared;
 using System.Threading.Tasks;
+using ML.ApplicationLauncher.Source.Model;
+using ML.ApplicationLauncher.Source.Services;
 
 namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
 {
@@ -58,9 +60,9 @@ namespace ML.ApplicationLauncher.Shell.Shared.ViewModels
             PropertyNameCaseInsensitive = true
         };
 
-        public EditViewModel(string repositoryPath)
+        public EditViewModel(IConfigurationManager<ProcessGroup[]> configurationManager)
         {
-            _repository = new CommandDefinitionsRepository(repositoryPath);
+            _repository = new CommandDefinitionsRepository(configurationManager);
             ToggleEditCommand = new RelayCommand(_ => IsEditMode = !IsEditMode);
             AddGroupCommand = new RelayCommand(_ => AddGroup());
             AddProcessCommand = new RelayCommand(_ => AddProcess());

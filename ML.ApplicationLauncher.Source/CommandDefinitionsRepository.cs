@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,56 +13,17 @@ namespace ML.ApplicationLauncher.Source
 {
     public class CommandDefinitionsRepository
     {
-        private readonly string? _filePath;
-        private readonly IConfigurationManager<ProcessGroup[]>? _configurationManager;
-
-        private readonly JsonSerializerOptions _legacyOptions = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            PropertyNameCaseInsensitive = true
-        };
-
-        public CommandDefinitionsRepository(string filePath)
-        {
-            _filePath = filePath;
-        }
+        private readonly IConfigurationManager<ProcessGroup[]> _configurationManager;
 
         public CommandDefinitionsRepository(IConfigurationManager<ProcessGroup[]> configurationManager)
         {
-            _configurationManager = configurationManager;
+            _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
         }
 
         public async Task<List<CommandGroup>> LoadAsync()
         {
-            // If a configuration manager is available (DI scenario), prefer it and map to CommandGroup
-            if (_configurationManager != null)
-            {
-                var config = await _configurationManager.LoadConfigurationAsync(CancellationToken.None).ConfigureAwait(false);
-                return MapProcessGroupsToCommandGroups(config!);
-            }
-
-            if (string.IsNullOrWhiteSpace(_filePath) || !File.Exists(_filePath))
-                return new List<CommandGroup>();
-
-            var json = await File.ReadAllTextAsync(_filePath).ConfigureAwait(false);
-
-            // Try new configuration model first (unfiltered ProcessGroup[])
-            try
-            {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-                };
-
-                var processGroups = JsonSerializer.Deserialize<ProcessGroup[]>(json, options);
-                if (processGroups != null)
-                    return MapProcessGroupsToCommandGroups(processGroups);
-            }
-            catch { /* ignore and try legacy format */ }
-
-            // Fallback to legacy CommandGroup[] format
-            return JsonSerializer.Deserialize<List<CommandGroup>>(json, _legacyOptions) ?? new List<CommandGroup>();
+            var config = await _configurationManager.LoadConfigurationAsync(CancellationToken.None).ConfigureAwait(false);
+            return MapProcessGroupsToCommandGroups(config ?? Array.Empty<ProcessGroup>());
         }
 
         public async Task SaveAsync(List<CommandGroup> groups)
@@ -74,31 +34,13 @@ namespace ML.ApplicationLauncher.Source
             // Convert to new ProcessGroup[] model for persistence
             var processGroups = MapCommandGroupsToProcessGroups(groups);
 
-            if (_configurationManager != null)
-            {
-                await _configurationManager.SaveConfigurationAsync(processGroups, CancellationToken.None).ConfigureAwait(false);
-                return;
-            }
-
-            // Persist to file path using the new model
-            if (string.IsNullOrWhiteSpace(_filePath))
-                throw new InvalidOperationException("No storage configured for saving command definitions.");
-
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                MaxDepth = 512,
-                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-            };
-
-            var json = JsonSerializer.Serialize(processGroups, options);
-            await File.WriteAllTextAsync(_filePath, json, Encoding.UTF8).ConfigureAwait(false);
+            await _configurationManager.SaveConfigurationAsync(processGroups, CancellationToken.None).ConfigureAwait(false);
         }
 
         // ---------------------------------------------------------------------
         // Validation helpers
         // ---------------------------------------------------------------------
-        private void ValidateGroup(CommandGroup group, HashSet<Guid> seenIds = null)
+        private void ValidateGroup(CommandGroup group, HashSet<Guid>? seenIds = null)
         {
             seenIds ??= new HashSet<Guid>();
             if (!seenIds.Add(group.Id))
@@ -161,7 +103,7 @@ namespace ML.ApplicationLauncher.Source
             await SaveAsync(groups).ConfigureAwait(false);
         }
 
-        private CommandGroup FindGroup(List<CommandGroup> groups, Guid id)
+        private CommandGroup? FindGroup(List<CommandGroup> groups, Guid id)
         {
             foreach (var g in groups)
             {
