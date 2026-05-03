@@ -35,9 +35,9 @@ Icon="pack://application:,,,/Resources/Application.ico"
                 <Button Command="{Binding Path=LoadListCommand, Mode=OneWay}" ToolTip="Load commands">
                     <Image Source="pack://application:,,,/Resources/export-icon-12649-Windows.ico" MaxHeight="16" />
                 </Button>
-                <Button Command="{Binding Path=EditListCommand, Mode=OneWay}" ToolTip="Edit commands">
+                <ToggleButton Command="{Binding Path=EditListCommand, Mode=OneWay}" IsChecked="{Binding IsEditMode}" ToolTip="Edit commands">
                     <Image Source="pack://application:,,,/Resources/edit-icon-png-3585-Windows.ico" MaxHeight="16" />
-                </Button>
+                </ToggleButton>
                 <Separator />
                 <Button Command="{Binding Path=ClearLastExecutedTimeCommand, Mode=OneWay}" ToolTip="Clear last executed time">
                     <Image Source="pack://application:,,,/Resources/clear-icon-9211-Windows.ico" MaxHeight="16" />

@@ -21,7 +21,6 @@
 
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
-            <ToggleButton Content="Edit" IsChecked="{Binding IsEditMode, Mode=TwoWay}" ToolTip="Toggle edit mode" />
             <Button Content="Add Group" Command="{Binding AddGroupCommand}" />
             <Button Content="Add Process" Command="{Binding AddProcessCommand}" />
             <Button Content="Remove" Command="{Binding RemoveCommand}" />

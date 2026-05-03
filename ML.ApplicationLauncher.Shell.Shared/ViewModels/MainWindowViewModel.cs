@@ -85,16 +85,14 @@ public class MainWindowViewModel : BindableBase
 
     private async Task EditListAsync(CancellationToken cancellationToken)
     {
-        // Toggle edit mode and host EditView when active.
-        IsEditMode = !IsEditMode;
         if (IsEditMode)
         {
-            var vm = new global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel(_configurationManager);
+            var vm = new EditViewModel(_configurationManager);
             EditViewContent = vm;
             Console.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
             try
             {
-                var dt = Application.Current?.TryFindResource(typeof(global::ML.ApplicationLauncher.Shell.Shared.ViewModels.EditViewModel));
+                var dt = Application.Current?.TryFindResource(typeof(EditViewModel));
                 Console.WriteLine(dt == null ? "EditListAsync: No DataTemplate found for EditViewModel" : $"EditListAsync: DataTemplate found for EditViewModel: {dt.GetType().FullName}");
             }
             catch (Exception ex)
