@@ -38,6 +38,9 @@ Icon="pack://application:,,,/Resources/Application.ico"
                 <ToggleButton Command="{Binding Path=EditListCommand, Mode=OneWay}" IsChecked="{Binding IsEditMode}" ToolTip="Edit commands">
                     <Image Source="pack://application:,,,/Resources/edit-icon-png-3585-Windows.ico" MaxHeight="16" />
                 </ToggleButton>
+                <Button Command="{Binding Path=EditJsonDefinitionCommand, Mode=OneWay}" ToolTip="Edit JSON defintion in Notepad">
+                    <Image Source="pack://application:,,,/Resources/edit-icon-png-3585-Windows.ico" MaxHeight="16" />
+                </Button>
                 <Separator />
                 <Button Command="{Binding Path=ClearLastExecutedTimeCommand, Mode=OneWay}" ToolTip="Clear last executed time">
                     <Image Source="pack://application:,,,/Resources/clear-icon-9211-Windows.ico" MaxHeight="16" />

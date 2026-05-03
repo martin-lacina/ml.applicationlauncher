@@ -44,6 +44,7 @@ public class MainWindowViewModel : BindableBase
         ExitCommand = new DelegateCommand(Exit);
         LoadListCommand = new AsyncDelegateCommand(LoadListAsync);
         EditListCommand = new AsyncDelegateCommand(EditListAsync);
+        EditJsonDefinitionCommand = new AsyncDelegateCommand(EditJsonDefinitionAsync);
         ClearLastExecutedTimeCommand = new DelegateCommand(ClearLastExecutedTime);
         ShowAboutDialogCommand = new DelegateCommand(ShowAboutDialog);
 
@@ -55,6 +56,7 @@ public class MainWindowViewModel : BindableBase
     public DelegateCommand ExitCommand { get; }
     public AsyncDelegateCommand LoadListCommand { get; }
     public AsyncDelegateCommand EditListCommand { get; }
+    public AsyncDelegateCommand EditJsonDefinitionCommand { get; }
     public DelegateCommand ClearLastExecutedTimeCommand { get; }
     public DelegateCommand ShowAboutDialogCommand { get; }
     public bool IsEditMode
@@ -177,5 +179,17 @@ public class MainWindowViewModel : BindableBase
     private static void Exit()
     {
         Application.Current?.MainWindow?.Close();
+    }
+
+    private async Task EditJsonDefinitionAsync(CancellationToken cancellationToken)
+    {
+        var editCommand = new ProcessLaunchInformation(
+            "Edit JSON defition in Notepad",
+            string.Empty,
+            "notepad.exe",
+            [_configurationProvider.ConfigurationFilePath],
+            ExecutionMode.Raw);
+
+        await _processLauncher.StartAsync(editCommand, cancellationToken);
     }
 }
