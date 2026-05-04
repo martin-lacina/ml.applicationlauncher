@@ -44,6 +44,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessGroupViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\CommandProcessViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ValidatableViewModelBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Views\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
     </Compile>
@@ -58,7 +60,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Views\ProcessDetailsControl.xaml.cs">
       <DependentUpon>ProcessDetailsControl.xaml</DependentUpon>
     </Compile>
-
     <Page Include="$(MSBuildThisFileDirectory)Controls\AboutApplicationView.xaml">
       <SubType>Designer</SubType>
     </Page>
