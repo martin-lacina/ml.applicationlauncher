@@ -9,6 +9,7 @@
     <File Path="version.json" />
   </Folder>
   <Project Path="ML.ApplicationLauncher.Core/ML.ApplicationLauncher.Core.csproj" />
+  <Project Path="ML.ApplicationLauncher.Shared/ML.ApplicationLauncher.Shared.csproj" />
   <Project Path="ML.ApplicationLauncher.Shell.Admin/ML.ApplicationLauncher.Shell.Admin.csproj" />
   <Project Path="ML.ApplicationLauncher.Shell.Assets/ML.ApplicationLauncher.Shell.Assets.csproj" />
   <Project Path="ML.ApplicationLauncher.Shell.Shared/ML.ApplicationLauncher.Shell.Shared.shproj" />

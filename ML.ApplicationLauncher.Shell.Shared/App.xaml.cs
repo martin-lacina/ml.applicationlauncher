@@ -3,8 +3,8 @@
 using System;
 using System.Windows;
 using ML.ApplicationLauncher.Core.Dependencies;
-using ML.ApplicationLauncher.Shell.Dependencies;
-using ML.ApplicationLauncher.Shell.Views;
+using ML.ApplicationLauncher.Shared.Dependencies;
+using ML.ApplicationLauncher.Shared.Views;
 using ML.ApplicationLauncher.Source.Dependencies;
 using ML.ApplicationLauncher.Source.Services;
 using Prism.Ioc;

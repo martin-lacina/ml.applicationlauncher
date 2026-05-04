@@ -10,8 +10,8 @@
             <ResourceDictionary.MergedDictionaries>
             </ResourceDictionary.MergedDictionaries>
 
-            <DataTemplate DataType="{x:Type sharedVM:EditViewModel}" xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shell.Shared.ViewModels"
-                          xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shell.Shared.Views">
+            <DataTemplate DataType="{x:Type sharedVM:EditViewModel}" xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shared.ViewModels;assembly=ML.ApplicationLauncher.Shared"
+                          xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shared.Views;assembly=ML.ApplicationLauncher.Shared">
                 <sharedViews:EditView />
             </DataTemplate>
         </ResourceDictionary>

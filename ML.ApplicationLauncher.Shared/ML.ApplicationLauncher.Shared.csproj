@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Prism.Core" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Core\ML.ApplicationLauncher.Core.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Source\ML.ApplicationLauncher.Source.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)\..\ML.ApplicationLauncher.Shell.Assets\ML.ApplicationLauncher.Shell.Assets.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,89 @@
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ML.ApplicationLauncher.Shared.ViewModels"
+             xmlns:views="clr-namespace:ML.ApplicationLauncher.Shared.Views"
+             xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shared.Controls"
+             x:Class="ML.ApplicationLauncher.Shared.Views.EditView">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
+            <views:ProcessDetailsControl />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:CommandGroupViewModel}">
+            <StackPanel Margin="8">
+                <TextBlock Text="Group Details" FontWeight="Bold" />
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <TextBlock Text="Name:" Width="60" />
+                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <!--<DataTemplate DataType="{x:Type vm:ProcessGroupViewModel}">
+            <controls:ProcessGroupView />
+        </DataTemplate>-->
+    </UserControl.Resources>
+
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top">
+            <Button Content="Add Group" Command="{Binding AddGroupCommand}" />
+            <Button Content="Add Process" Command="{Binding AddProcessCommand}" />
+            <Button Content="Remove" Command="{Binding RemoveCommand}" />
+            <Button Content="Move Up" Command="{Binding MoveUpCommand}" />
+            <Button Content="Move Down" Command="{Binding MoveDownCommand}" />
+            <Separator />
+            <Button Content="Save" Command="{Binding SaveCommand}" />
+            <Button Content="Undo" Command="{Binding UndoCommand}" />
+            <Button Content="Redo" Command="{Binding RedoCommand}" />
+        </ToolBar>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="300" />
+            </Grid.ColumnDefinitions>
+
+            <TreeView x:Name="GroupsTreeView" Grid.Column="0" ItemsSource="{Binding Groups}" SelectedItemChanged="TreeView_SelectedItemChanged"
+                      AllowDrop="True"
+                      PreviewMouseLeftButtonDown="GroupsTreeView_PreviewMouseLeftButtonDown"
+                      MouseMove="GroupsTreeView_MouseMove"
+                      Drop="GroupsTreeView_Drop">
+                <TreeView.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                        <TextBlock Text="{Binding Name}" />
+                    </HierarchicalDataTemplate>
+                </TreeView.ItemTemplate>
+            </TreeView>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="2*" />
+                </Grid.RowDefinitions>
+
+                <ListView x:Name="ProcessesListView" Grid.Row="0" ItemsSource="{Binding SelectedGroup.Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
+                          AllowDrop="True"
+                          PreviewMouseLeftButtonDown="ProcessesListView_PreviewMouseLeftButtonDown"
+                          MouseMove="ProcessesListView_MouseMove"
+                          Drop="ProcessesListView_Drop">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
+                            <GridViewColumn Header="Path" DisplayMemberBinding="{Binding Path}" />
+                            <GridViewColumn Header="Args" DisplayMemberBinding="{Binding Arguments}" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <ContentControl Grid.Row="1" Content="{Binding SelectedDetail}" />
+            </Grid>
+
+            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1,0,0,0" Margin="5">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ContentControl Content="{Binding SelectedGroup}" />
+                </ScrollViewer>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>
