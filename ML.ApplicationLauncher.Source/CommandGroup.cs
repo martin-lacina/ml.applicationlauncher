@@ -1,16 +1,23 @@
 using System;
 using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ML.ApplicationLauncher.Source
 {
     /// <summary>
     /// Represents a group of commands. Groups can contain nested groups and processes.
     /// </summary>
-    public class CommandGroup
+    public partial class CommandGroup : ObservableObject
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Name { get; set; } = string.Empty;
-        public List<CommandGroup> Children { get; set; } = new();
-        public List<CommandProcess> Processes { get; set; } = new();
+
+        [ObservableProperty]
+        string _name = string.Empty;
+
+        [ObservableProperty]
+        List<CommandGroup> _children = new();
+
+        [ObservableProperty]
+        List<CommandProcess> _processes = new();
     }
 }

@@ -1,24 +1,39 @@
 using System;
-using System.Collections.Generic;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace ML.ApplicationLauncher.Source
 {
     /// <summary>
     /// Represents a launchable process.
     /// </summary>
-    public class CommandProcess
+    public partial class CommandProcess : ObservableObject
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public string Name { get; set; } = string.Empty;
-        public string Path { get; set; } = string.Empty;
+
+        [ObservableProperty]
+        string _name = string.Empty;
+
+        [ObservableProperty]
+        string _path = string.Empty;
+
         // Free-form arguments string for editor compatibility. Persisted configuration uses ProcessLaunchInformation.Arguments (string[]).
-        public string Arguments { get; set; } = string.Empty;
+        [ObservableProperty]
+        string _arguments = string.Empty;
 
         // Extended fields to mirror ProcessLaunchInformation
-        public string Comment { get; set; } = string.Empty;
-        public Model.ExecutionMode ExecutionMode { get; set; } = Model.ExecutionMode.Default;
-        public bool Disabled { get; set; } = false;
-        public bool Hidden { get; set; } = false;
-        public string WorkingDirectory { get; set; } = string.Empty;
+        [ObservableProperty]
+        string _comment = string.Empty;
+
+        [ObservableProperty]
+        Model.ExecutionMode _executionMode = Model.ExecutionMode.Default;
+
+        [ObservableProperty]
+        bool _disabled = false;
+
+        [ObservableProperty]
+        bool _hidden = false;
+
+        [ObservableProperty]
+        string _workingDirectory = string.Empty;
     }
 }

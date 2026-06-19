@@ -1,37 +1,49 @@
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ML.ApplicationLauncher.Source.Model;
 
 namespace ML.ApplicationLauncher.Shared.ViewModels
 {
-    public class CommandProcessViewModel : ValidatableViewModelBase
+    /// <summary>
+    /// ViewModel for editing a command process definition.
+    /// </summary>
+    public partial class CommandProcessViewModel : ValidatableViewModelBase
     {
-        private Guid _id = Guid.NewGuid();
-        public Guid Id { get => _id; set => SetProperty(ref _id, value); }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        private string _name = string.Empty;
-        public string Name { get => _name; set { SetProperty(ref _name, value); ValidateProperty(nameof(Name), value); } }
+        [ObservableProperty]
+        string _name = string.Empty;
 
-        private string _path = string.Empty;
-        public string Path { get => _path; set { SetProperty(ref _path, value); ValidateProperty(nameof(Path), value); } }
+        [ObservableProperty]
+        string _path = string.Empty;
 
-        private string _arguments = string.Empty;
-        public string Arguments { get => _arguments; set => SetProperty(ref _arguments, value); }
+        [ObservableProperty]
+        string _arguments = string.Empty;
 
-        private string _comment = string.Empty;
-        public string Comment { get => _comment; set => SetProperty(ref _comment, value); }
+        [ObservableProperty]
+        string _comment = string.Empty;
 
-        private ExecutionMode _executionMode = ExecutionMode.Default;
-        public ExecutionMode ExecutionMode { get => _executionMode; set => SetProperty(ref _executionMode, value); }
+        [ObservableProperty]
+        ExecutionMode _executionMode = ExecutionMode.Default;
 
-        private bool _disabled = false;
-        public bool Disabled { get => _disabled; set => SetProperty(ref _disabled, value); }
+        [ObservableProperty]
+        bool _disabled = false;
 
-        private bool _hidden = false;
-        public bool Hidden { get => _hidden; set => SetProperty(ref _hidden, value); }
+        [ObservableProperty]
+        bool _hidden = false;
 
-        private string _workingDirectory = string.Empty;
-        public string WorkingDirectory { get => _workingDirectory; set => SetProperty(ref _workingDirectory, value); }
+        [ObservableProperty]
+        string _workingDirectory = string.Empty;
+
+        partial void OnNameChanged(string value)
+        {
+            SetValidation(nameof(Name), string.IsNullOrWhiteSpace(value) ? "Name cannot be empty." : null);
+        }
+
+        partial void OnPathChanged(string value)
+        {
+            SetValidation(nameof(Path), string.IsNullOrWhiteSpace(value) ? "Path cannot be empty." : null);
+        }
     }
 }

@@ -3,12 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CommunityToolkit.Mvvm.ComponentModel;
 using ML.ApplicationLauncher.Shell.Assets;
-using Prism.Mvvm;
 
 namespace ML.ApplicationLauncher.Shared.ViewModels;
 
-internal class AboutViewModel : BindableBase, IDialogViewModel
+/// <summary>
+/// ViewModel for the About dialog.
+/// </summary>
+internal partial class AboutViewModel : ObservableObject, IDialogViewModel
 {
     public AboutViewModel()
     {

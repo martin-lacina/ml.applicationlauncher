@@ -3,46 +3,41 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Prism.Mvvm;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ML.ApplicationLauncher.Shared.ViewModels;
-
-public abstract class ValidatableViewModelBase : BindableBase, INotifyDataErrorInfo
+namespace ML.ApplicationLauncher.Shared.ViewModels
 {
-    private readonly Dictionary<string, List<string>> _errors = new(StringComparer.Ordinal);
-
-    public bool HasErrors => _errors.Any();
-
-    public IEnumerable GetErrors(string? propertyName)
-        => _errors.TryGetValue(propertyName ?? string.Empty, out var errorList) ? errorList : Enumerable.Empty<string>();
-
-    public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
-
-    protected void ValidateProperty(string propertyName, object? value)
+    /// <summary>
+    /// Base class that combines CommunityToolkit.Mvvm property notification with manual <see cref="INotifyDataErrorInfo"/> support.
+    /// </summary>
+    public abstract class ValidatableViewModelBase : ObservableObject, INotifyDataErrorInfo
     {
-        ClearErrors(propertyName);
-        if (value is string stringValue && string.IsNullOrWhiteSpace(stringValue))
+        private readonly Dictionary<string, List<string>> _errors = new(StringComparer.Ordinal);
+
+        public bool HasErrors => _errors.Any();
+
+        public IEnumerable GetErrors(string? propertyName)
+            => _errors.TryGetValue(propertyName ?? string.Empty, out var errorList) ? errorList : Enumerable.Empty<string>();
+
+        public event EventHandler<DataErrorsChangedEventArgs>? ErrorsChanged;
+
+        /// <summary>
+        /// Adds an error or clears all errors for the specified property and raises <see cref="ErrorsChanged"/>.
+        /// </summary>
+        protected void SetValidation(string propertyName, string? error)
         {
-            AddError(propertyName, $"{propertyName} cannot be empty.");
+            if (error is not null)
+            {
+                if (!_errors.ContainsKey(propertyName))
+                    _errors[propertyName] = new List<string>();
+                _errors[propertyName].Add(error);
+            }
+            else
+            {
+                _errors.Remove(propertyName);
+            }
+
+            ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
         }
     }
-
-    protected void AddError(string propertyName, string error)
-    {
-        if (!_errors.ContainsKey(propertyName))
-            _errors[propertyName] = new List<string>();
-        _errors[propertyName].Add(error);
-        OnErrorsChanged(propertyName);
-    }
-
-    protected void ClearErrors(string propertyName)
-    {
-        if (_errors.Remove(propertyName))
-        {
-            OnErrorsChanged(propertyName);
-        }
-    }
-
-    protected void OnErrorsChanged(string propertyName)
-        => ErrorsChanged?.Invoke(this, new DataErrorsChangedEventArgs(propertyName));
 }
