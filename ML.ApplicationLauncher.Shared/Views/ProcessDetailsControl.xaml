@@ -26,8 +26,8 @@
         <TextBlock Grid.Row="2" Grid.Column="0" Text="Working dir:" VerticalAlignment="Center" />
         <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding WorkingDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Args:" VerticalAlignment="Center" />
-        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Args:" VerticalAlignment="Top" />
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="80" MinWidth="200" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
 
         <TextBlock Grid.Row="4" Grid.Column="0" Text="Comment:" VerticalAlignment="Top" />
         <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" Height="60" />

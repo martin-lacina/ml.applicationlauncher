@@ -5,19 +5,7 @@
              xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shared.Controls"
              x:Class="ML.ApplicationLauncher.Shared.Views.EditView">
     <UserControl.Resources>
-        <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
-            <views:ProcessDetailsControl />
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:CommandGroupViewModel}">
-            <StackPanel Margin="8">
-                <TextBlock Text="Group Details" FontWeight="Bold" />
-                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                    <TextBlock Text="Name:" Width="60" />
-                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" />
-                </StackPanel>
-            </StackPanel>
-        </DataTemplate>
+       
 
         <!--<DataTemplate DataType="{x:Type vm:ProcessGroupViewModel}">
             <controls:ProcessGroupView />
@@ -76,12 +64,29 @@
                     </ListView.View>
                 </ListView>
 
-                <ContentControl Grid.Row="1" Content="{Binding SelectedDetail}" />
+                <ContentControl Grid.Row="1" Content="{Binding SelectedDetail}">
+                    <ContentControl.Resources>
+                        <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
+                            <views:ProcessDetailsControl />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="{x:Type vm:CommandGroupViewModel}">
+                            <StackPanel Margin="8">
+                                <TextBlock Text="Group Details" FontWeight="Bold" />
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                    <TextBlock Text="Name:" Width="60" />
+                                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" />
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
             </Grid>
 
             <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1,0,0,0" Margin="5">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <ContentControl Content="{Binding SelectedGroup}" />
+                    <controls:ProcessGroupView Content="{Binding SelectedGroup}" />
+                    <!-- <ContentControl Content="{Binding SelectedGroup}" /> -->
                 </ScrollViewer>
             </Border>
         </Grid>

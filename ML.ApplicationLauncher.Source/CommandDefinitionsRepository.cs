@@ -174,7 +174,7 @@ namespace ML.ApplicationLauncher.Source
                         Id = Guid.NewGuid(),
                         Name = p.DisplayName ?? string.Empty,
                         Path = p.Executable ?? string.Empty,
-                        Arguments = (p.Arguments != null) ? string.Join(" ", p.Arguments) : string.Empty,
+                        Arguments = (p.Arguments != null) ? string.Join("\n", p.Arguments) : string.Empty,
                         Comment = p.Comment ?? string.Empty,
                         ExecutionMode = p.ExecutionMode,
                         Disabled = p.Disabled,
@@ -215,37 +215,11 @@ namespace ML.ApplicationLauncher.Source
 
         private static string[] ParseArguments(string args)
         {
-            if (string.IsNullOrWhiteSpace(args)) return Array.Empty<string>();
-            var result = new List<string>();
-            var sb = new StringBuilder();
-            var inQuotes = false;
-            for (int i = 0; i < args.Length; i++)
-            {
-                var c = args[i];
-                if (c == '"')
-                {
-                    inQuotes = !inQuotes;
-                    continue;
-                }
+            if (string.IsNullOrWhiteSpace(args))
+                return Array.Empty<string>();
 
-                if (char.IsWhiteSpace(c) && !inQuotes)
-                {
-                    if (sb.Length > 0)
-                    {
-                        result.Add(sb.ToString());
-                        sb.Clear();
-                    }
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-
-            if (sb.Length > 0)
-                result.Add(sb.ToString());
-
-            return result.ToArray();
+            // Each line represents one argument to preserve spaces within each argument.
+            return args.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         }
     }
 }
