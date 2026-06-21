@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using ML.ApplicationLauncher.Source;
 using System.Threading.Tasks;
+using ML.ApplicationLauncher.Shared.Services;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -18,6 +19,8 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
     public partial class EditViewModel : ObservableObject
     {
         private readonly CommandDefinitionsRepository _repository;
+        private readonly IProcessLauncher? _processLauncher;
+        private readonly ICommandFactory? _commandFactory;
 
         [ObservableProperty]
         bool _isEditMode;
@@ -44,9 +47,11 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             PropertyNameCaseInsensitive = true
         };
 
-        public EditViewModel(IConfigurationManager<ProcessGroup[]> configurationManager)
+        public EditViewModel(IConfigurationManager<ProcessGroup[]> configurationManager, IProcessLauncher? processLauncher = null, ICommandFactory? commandFactory = null)
         {
             _repository = new CommandDefinitionsRepository(configurationManager);
+            _processLauncher = processLauncher;
+            _commandFactory = commandFactory;
             var _ = Task.Run(async () => await Load()).ConfigureAwait(false);
         }
 
@@ -57,7 +62,8 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         private void AddGroup()
         {
             PushUndo();
-            var newGroup = new CommandGroupViewModel { Name = "New Group" };
+            var newGroup = CreateGroupViewModel();
+            newGroup.Name = "New Group";
             Groups.Add(newGroup);
             SelectedGroup = newGroup;
         }
@@ -67,7 +73,8 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         {
             if (SelectedGroup == null) return;
             PushUndo();
-            var proc = new CommandProcessViewModel { Name = "New Process" };
+            var proc = CreateProcessViewModel();
+            proc.Name = "New Process";
             SelectedGroup.Processes.Add(proc);
             SelectedProcess = proc;
         }
@@ -166,28 +173,37 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         private CommandGroupViewModel ToViewModel(CommandGroup group)
         {
-            var vm = new CommandGroupViewModel
-            {
-                Id = group.Id,
-                Name = group.Name
-            };
+            var vm = CreateGroupViewModel();
+            vm.Id = group.Id;
+            vm.Name = group.Name;
             foreach (var child in group.Children)
                 vm.Children.Add(ToViewModel(child));
             foreach (var proc in group.Processes)
-                vm.Processes.Add(new CommandProcessViewModel
-                {
-                    Id = proc.Id,
-                    Name = proc.Name,
-                    Path = proc.Path,
-                    Arguments = proc.Arguments,
-                    Comment = proc.Comment,
-                    ExecutionMode = proc.ExecutionMode,
-                    Disabled = proc.Disabled,
-                    Hidden = proc.Hidden,
-                    WorkingDirectory = proc.WorkingDirectory
-                });
+            {
+                var processVm = CreateProcessViewModel();
+                processVm.Id = proc.Id;
+                processVm.Name = proc.Name;
+                processVm.Path = proc.Path;
+                processVm.Arguments = proc.Arguments;
+                processVm.Comment = proc.Comment;
+                processVm.ExecutionMode = proc.ExecutionMode;
+                processVm.Disabled = proc.Disabled;
+                processVm.Hidden = proc.Hidden;
+                processVm.WorkingDirectory = proc.WorkingDirectory;
+                vm.Processes.Add(processVm);
+            }
             return vm;
         }
+
+        private CommandGroupViewModel CreateGroupViewModel()
+            => _processLauncher is not null && _commandFactory is not null
+                ? new CommandGroupViewModel(_processLauncher, _commandFactory)
+                : new CommandGroupViewModel();
+
+        private CommandProcessViewModel CreateProcessViewModel()
+            => _processLauncher is not null && _commandFactory is not null
+                ? new CommandProcessViewModel(_processLauncher, _commandFactory)
+                : new CommandProcessViewModel();
 
         public void MoveProcess(Guid processId, int newIndex)
         {

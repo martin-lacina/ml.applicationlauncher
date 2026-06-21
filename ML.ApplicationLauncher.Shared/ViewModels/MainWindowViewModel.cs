@@ -88,7 +88,7 @@ public class MainWindowViewModel : BindableBase
     {
         if (IsEditMode)
         {
-            var vm = new EditViewModel(_configurationManager);
+            var vm = new EditViewModel(_configurationManager, _processLauncher, _commandFactory);
             EditViewContent = vm;
             Console.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
             try

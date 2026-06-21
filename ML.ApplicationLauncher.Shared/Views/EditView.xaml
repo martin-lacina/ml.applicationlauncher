@@ -26,13 +26,19 @@
         </ToolBar>
 
         <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" />
                 <ColumnDefinition Width="3*" />
                 <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
 
-            <TreeView x:Name="GroupsTreeView" Grid.Column="0" ItemsSource="{Binding Groups}" SelectedItemChanged="TreeView_SelectedItemChanged"
+            <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,8,5,5" FontWeight="Bold" Text="Groups" />
+
+            <TreeView x:Name="GroupsTreeView" Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Groups}" SelectedItemChanged="TreeView_SelectedItemChanged"
                       AllowDrop="True"
                       PreviewMouseLeftButtonDown="GroupsTreeView_PreviewMouseLeftButtonDown"
                       MouseMove="GroupsTreeView_MouseMove"
@@ -44,7 +50,9 @@
                 </TreeView.ItemTemplate>
             </TreeView>
 
-            <Grid Grid.Column="1">
+            <TextBlock Grid.Column="1" Grid.Row="0" Margin="5,8,5,5" FontWeight="Bold" Text="Process definitions" />
+
+            <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="3*" />
                     <RowDefinition Height="2*" />
@@ -83,12 +91,46 @@
                 </ContentControl>
             </Grid>
 
-            <Border Grid.Column="2" BorderBrush="Gray" BorderThickness="1,0,0,0" Margin="5">
+            <TextBlock Grid.Column="2" Grid.Row="0" Margin="5,8,5,5" FontWeight="Bold" Text="Process preview" />
+
+            <Grid Grid.Column="2" Grid.Row="1">
+
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <controls:ProcessGroupView Content="{Binding SelectedGroup}" />
-                    <!-- <ContentControl Content="{Binding SelectedGroup}" /> -->
+                    <StackPanel>
+                        <!-- Process list -->
+                        <controls:CommandGroupProcessList DataContext="{Binding SelectedGroup}">
+                            <controls:CommandGroupProcessList.Style>
+                                <Style TargetType="controls:CommandGroupProcessList">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedGroup.Processes.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:CommandGroupProcessList.Style>
+                        </controls:CommandGroupProcessList>
+
+                        <!-- Empty state message -->
+                        <TextBlock Text="No process definitions created"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="Gray"
+                                   FontSize="14">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedGroup.Processes.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
                 </ScrollViewer>
-            </Border>
+            </Grid>
         </Grid>
     </DockPanel>
 </UserControl>

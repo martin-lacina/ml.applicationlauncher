@@ -1,15 +1,23 @@
 using System;
-using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using ML.ApplicationLauncher.Shared.Services;
+using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
+using ML.ApplicationLauncher.Source.Services;
 
 namespace ML.ApplicationLauncher.Shared.ViewModels
 {
     /// <summary>
-    /// ViewModel for editing a command process definition.
+    /// ViewModel for editing a command process definition with launch capability.
     /// </summary>
     public partial class CommandProcessViewModel : ValidatableViewModelBase
     {
+        private readonly IProcessLauncher? _processLauncher;
+        private DateTime? _lastExecuted;
+
         public Guid Id { get; set; } = Guid.NewGuid();
 
         [ObservableProperty]
@@ -36,6 +44,71 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         [ObservableProperty]
         string _workingDirectory = string.Empty;
 
+        public string DisplayName => Name;
+
+        public bool CanBeStarted => !Disabled && File.Exists(Path);
+
+        public TimeOnly? LastExecuted
+        {
+            get
+            {
+                if (_lastExecuted != null)
+                    return TimeOnly.FromDateTime(_lastExecuted.Value.ToLocalTime());
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new process view model with launch capability.
+        /// </summary>
+        public CommandProcessViewModel(IProcessLauncher processLauncher, ICommandFactory commandFactory)
+        {
+            _processLauncher = processLauncher;
+        }
+
+        /// <summary>
+        /// Legacy parameterless constructor for serialization/editing scenarios where launcher is not available.
+        /// </summary>
+        public CommandProcessViewModel()
+        {
+            _processLauncher = null!;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanStart))]
+        private async Task StartAsync()
+        {
+            var processInfo = BuildProcessLaunchInformation();
+            await _processLauncher!.StartAsync(processInfo);
+            SetLastExecuted();
+        }
+
+        private bool CanStart() => !Disabled && File.Exists(Path);
+
+        private ProcessLaunchInformation BuildProcessLaunchInformation()
+        {
+            return new ProcessLaunchInformation(
+                Name,
+                Comment,
+                Path,
+                Arguments.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries),
+                ExecutionMode,
+                Disabled,
+                Hidden,
+                string.IsNullOrEmpty(WorkingDirectory) ? null : WorkingDirectory);
+        }
+
+        public void SetLastExecuted()
+        {
+            _lastExecuted = DateTime.UtcNow;
+            OnPropertyChanged(nameof(LastExecuted));
+        }
+
+        public void ClearLastExecuted()
+        {
+            _lastExecuted = null;
+            OnPropertyChanged(nameof(LastExecuted));
+        }
+
         partial void OnNameChanged(string value)
         {
             SetValidation(nameof(Name), string.IsNullOrWhiteSpace(value) ? "Name cannot be empty." : null);
@@ -45,5 +118,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         {
             SetValidation(nameof(Path), string.IsNullOrWhiteSpace(value) ? "Path cannot be empty." : null);
         }
+
+        partial void OnDisabledChanged(bool value) => StartCommand.NotifyCanExecuteChanged();
     }
 }
