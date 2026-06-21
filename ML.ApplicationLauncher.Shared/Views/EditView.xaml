@@ -5,7 +5,7 @@
              xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shared.Controls"
              x:Class="ML.ApplicationLauncher.Shared.Views.EditView">
     <UserControl.Resources>
-       
+
 
         <!--<DataTemplate DataType="{x:Type vm:ProcessGroupViewModel}">
             <controls:ProcessGroupView />
@@ -75,7 +75,7 @@
                                 <TextBlock Text="Group Details" FontWeight="Bold" />
                                 <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
                                     <TextBlock Text="Name:" Width="60" />
-                                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="300" />
+                                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Width="300" />
                                 </StackPanel>
                             </StackPanel>
                         </DataTemplate>

@@ -10,10 +10,74 @@
             <ResourceDictionary.MergedDictionaries>
             </ResourceDictionary.MergedDictionaries>
 
-            <DataTemplate DataType="{x:Type sharedVM:EditViewModel}" xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shared.ViewModels;assembly=ML.ApplicationLauncher.Shared"
-                          xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shared.Views;assembly=ML.ApplicationLauncher.Shared">
-                <sharedViews:EditView />
-            </DataTemplate>
+            <!-- Global validation error template: shows error message as tooltip -->
+            <ControlTemplate x:Key="ValidationToolTipTemplate">
+                <Grid x:Name="Root" Margin="5,0" Opacity="1" RenderTransformOrigin="0,0">
+                    <Grid.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1"/>
+                    </Grid.RenderTransform>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="OpenStates">
+                            <VisualState x:Name="Closed">
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0"
+                                        To="0"
+                                        Storyboard.TargetProperty="Opacity"
+                                        Storyboard.TargetName="Root"/>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Open">
+                                <Storyboard>
+                                    <DoubleAnimation Duration="0"
+                                        To="1"
+                                        Storyboard.TargetProperty="Opacity"
+                                        Storyboard.TargetName="Root"/>
+                                    <DoubleAnimation Duration="0"
+                                        To="1.6"
+                                        Storyboard.TargetProperty="ScaleX"
+                                        Storyboard.TargetName="Root"/>
+                                    <DoubleAnimation Duration="0"
+                                        To="1.6"
+                                        Storyboard.TargetProperty="ScaleY"
+                                        Storyboard.TargetName="Root"/>
+                                </Storyboard>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Border Background="#052A2E"
+                        Margin="4, 4, 4, 4"
+                        CornerRadius="5"
+                        Opacity="0.9">
+                        <TextBlock Foreground="White"
+                            MaxWidth="250"
+                            TextWrapping="Wrap"
+                            Text="{Binding (Validation.Errors)[0].ErrorContent}" />
+                    </Border>
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <DataTrigger Binding="{Binding Direction}" Value="Show">
+                        <Setter TargetName="Root" Property="Visibility" Value="Visible"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Direction}" Value="Hide">
+                        <Setter TargetName="Root" Property="Visibility" Value="Collapsed"/>
+                    </DataTrigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+
+            <!-- Global style: apply validation tooltip + red border to all TextBox controls -->
+            <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ValidationToolTipTemplate}" />
+                <Style.Triggers>
+                    <Trigger Property="Validation.HasError" Value="True">
+                        <Setter Property="BorderBrush" Value="Red" />
+                        <Setter Property="ToolTip"
+                            Value="{Binding RelativeSource={x:Static RelativeSource.Self},
+                                    Path=(Validation.Errors)[0].ErrorContent}" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- DataTemplate for EditViewModel -->
         </ResourceDictionary>
     </Application.Resources>
 </prism:PrismApplication>
