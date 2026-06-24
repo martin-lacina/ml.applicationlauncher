@@ -67,9 +67,9 @@ Icon="pack://application:,,,/Resources/Application.ico"
             </ContentControl.Style>
         </ContentControl>
 
-        <ItemsControl Grid.Row="1" ItemsSource="{Binding Path=ProcessGroups, Mode=OneWay}" Margin="5">
-            <ItemsControl.Style>
-                <Style TargetType="ItemsControl">
+        <controls:ProcessGroupsView Grid.Row="1" ItemsSource="{Binding Path=ProcessGroups, Mode=OneWay}">
+            <controls:ProcessGroupsView.Style>
+                <Style TargetType="controls:ProcessGroupsView">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding EditViewContent}" Value="{x:Null}">
@@ -77,32 +77,8 @@ Icon="pack://application:,,,/Resources/Application.ico"
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </ItemsControl.Style>
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.Resources>
-                <DataTemplate DataType="{x:Type viewModels:ProcessGroupViewModel}">
-                    <controls:ProcessGroupView />
-                </DataTemplate>
-                <DataTemplate DataType="{x:Type viewModels:ProcessViewModel}">
-                    <controls:ProcessView />
-                </DataTemplate>
-            </ItemsControl.Resources>
-            <ItemsControl.Template>
-                <ControlTemplate>
-                    <ScrollViewer
-                            x:Name="ScrollViewer"
-                            Padding="{TemplateBinding Padding}"
-                            HorizontalScrollBarVisibility="Auto"
-                            VerticalScrollBarVisibility="Auto">
-                        <ItemsPresenter />
-                    </ScrollViewer>
-                </ControlTemplate>
-            </ItemsControl.Template>
-        </ItemsControl>
+            </controls:ProcessGroupsView.Style>
+        </controls:ProcessGroupsView>
 
     </Grid>
 </Window>

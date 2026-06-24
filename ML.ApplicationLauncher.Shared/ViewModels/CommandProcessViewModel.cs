@@ -16,7 +16,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
     public partial class CommandProcessViewModel : ValidatableViewModelBase
     {
         private readonly IProcessLauncher? _processLauncher;
-        private DateTime? _lastExecuted;
+        public LastExecutedTracker LastExecutedTracker { get; } = new();
 
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -48,15 +48,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         public bool CanBeStarted => !Disabled && File.Exists(Path);
 
-        public TimeOnly? LastExecuted
-        {
-            get
-            {
-                if (_lastExecuted != null)
-                    return TimeOnly.FromDateTime(_lastExecuted.Value.ToLocalTime());
-                return null;
-            }
-        }
+        public TimeOnly? LastExecuted => LastExecutedTracker.LastExecuted;
 
         /// <summary>
         /// Creates a new process view model with launch capability.
@@ -79,7 +71,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         {
             var processInfo = BuildProcessLaunchInformation();
             await _processLauncher!.StartAsync(processInfo);
-            SetLastExecuted();
+            LastExecutedTracker.SetLastExecuted();
         }
 
         private bool CanStart() => !Disabled && File.Exists(Path);
@@ -97,17 +89,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                 string.IsNullOrEmpty(WorkingDirectory) ? null : WorkingDirectory);
         }
 
-        public void SetLastExecuted()
-        {
-            _lastExecuted = DateTime.UtcNow;
-            OnPropertyChanged(nameof(LastExecuted));
-        }
 
-        public void ClearLastExecuted()
-        {
-            _lastExecuted = null;
-            OnPropertyChanged(nameof(LastExecuted));
-        }
 
         partial void OnNameChanged(string value)
         {

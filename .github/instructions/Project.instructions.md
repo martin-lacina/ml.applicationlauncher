@@ -49,6 +49,17 @@
 - See `appsettings.template.json` for app settings structure.
 - See `Extensions/HyperlinkExtensions.cs` for WPF attached property usage.
 
+## Workflow: Todo List Management
+
+**Always use the todo list to track multi-step work.** When starting any task that involves more than one step:
+
+1. **Create or update the todo list** using `manage_todo_list` before beginning work — each item should be a specific, actionable step.
+2. **Mark items as `in-progress`** before starting work on them, and **mark as `completed`** immediately after finishing each item — do not batch completions.
+3. **Report status at the end of every session** — after completing all work, summarize what was done and explicitly state which todo items remain (if any). If all items are complete, say so clearly.
+4. **Resume from the todo list** when continuing a previous session — check what's incomplete and pick up where you left off without asking the user.
+
+This ensures the user never has to ask "any items left?" — the assistant always proactively reports remaining work.
+
 ## Contribution Notes
 
 - This is a quick-hack tool; prioritize pragmatic, working solutions over architectural purity.

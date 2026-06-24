@@ -17,7 +17,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
     public partial class CommandGroupViewModel : ValidatableViewModelBase
     {
         private readonly IProcessLauncher? _processLauncher;
-        private DateTime? _lastExecuted;
+        public LastExecutedTracker LastExecutedTracker { get; } = new();
 
         public Guid Id { get; set; } = Guid.NewGuid();
 
@@ -29,15 +29,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         public string DisplayName => Name;
 
-        public TimeOnly? LastExecuted
-        {
-            get
-            {
-                if (_lastExecuted != null)
-                    return TimeOnly.FromDateTime(_lastExecuted.Value.ToLocalTime());
-                return null;
-            }
-        }
+        public TimeOnly? LastExecuted => LastExecutedTracker.LastExecuted;
 
         /// <summary>
         /// Creates a new group view model with launch capability.
@@ -59,13 +51,13 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         private async Task StartAsync()
         {
             await LaunchAllProcessesAsync();
-            SetLastExecuted();
+            LastExecutedTracker.SetLastExecuted();
 
             foreach (var child in Children)
-                child.SetLastExecuted();
+                child.LastExecutedTracker.SetLastExecuted();
 
             foreach (var process in Processes)
-                process.SetLastExecuted();
+                process.LastExecutedTracker.SetLastExecuted();
         }
 
         private bool CanStart() => GetLaunchableProcesses().Any();
@@ -116,18 +108,6 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         public bool CanBeStarted => GetLaunchableProcesses().Any();
-
-        public void SetLastExecuted()
-        {
-            _lastExecuted = DateTime.UtcNow;
-            OnPropertyChanged(nameof(LastExecuted));
-        }
-
-        public void ClearLastExecuted()
-        {
-            _lastExecuted = null;
-            OnPropertyChanged(nameof(LastExecuted));
-        }
 
         partial void OnNameChanged(string value)
         {

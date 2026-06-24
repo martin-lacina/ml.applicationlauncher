@@ -1,4 +1,4 @@
-﻿// Copyright © Martin Lacina
+// Copyright © Martin Lacina
 
 using System;
 using System.Collections.ObjectModel;
@@ -6,16 +6,17 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using ML.ApplicationLauncher.Core.Validation;
 using ML.ApplicationLauncher.Shared.Services;
+using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
-using Prism.Commands;
-using Prism.Mvvm;
 
 namespace ML.ApplicationLauncher.Shared.ViewModels;
 
-public class MainWindowViewModel : BindableBase
+public partial class MainWindowViewModel : ObservableObject
 {
     private readonly IConfigurationLocationProvider<ProcessGroup[]> _configurationProvider;
     private readonly IConfigurationManager<ProcessGroup[]> _configurationManager;
@@ -40,24 +41,12 @@ public class MainWindowViewModel : BindableBase
         _commandFactory = commandFactory.ShouldNotBeNull();
         _dialogService = dialogService.ShouldNotBeNull();
 
-        ExitCommand = new DelegateCommand(Exit);
-        LoadListCommand = new AsyncDelegateCommand(LoadListAsync);
-        EditListCommand = new AsyncDelegateCommand(EditListAsync);
-        EditJsonDefinitionCommand = new AsyncDelegateCommand(EditJsonDefinitionAsync);
-        ClearLastExecutedTimeCommand = new DelegateCommand(ClearLastExecutedTime);
-        ShowAboutDialogCommand = new DelegateCommand(ShowAboutDialog);
-
-        LoadListCommand.Execute();
+        Task.Run(async () => await LoadListAsync(CancellationToken.None));
 
         Task.Run(async () => await ExpireLastExecutionTimeLoopAsync(CancellationToken.None));
     }
 
-    public DelegateCommand ExitCommand { get; }
-    public AsyncDelegateCommand LoadListCommand { get; }
-    public AsyncDelegateCommand EditListCommand { get; }
-    public AsyncDelegateCommand EditJsonDefinitionCommand { get; }
-    public DelegateCommand ClearLastExecutedTimeCommand { get; }
-    public DelegateCommand ShowAboutDialogCommand { get; }
+
     public bool IsEditMode
     {
         get => _isEditMode;
@@ -71,19 +60,56 @@ public class MainWindowViewModel : BindableBase
         private set => SetProperty(ref _editViewContent, value);
     }
 
-    public ObservableCollection<ProcessGroupViewModel> ProcessGroups { get; } = new();
+    public ObservableCollection<CommandGroupViewModel> ProcessGroups { get; } = new();
 
+    [RelayCommand]
     private async Task LoadListAsync(CancellationToken cancellationToken)
     {
         var processGroups = await _processListProvider
             .LoadProcessGroupsAsync(cancellationToken)
-            .Select(pg => new ProcessGroupViewModel(pg, _processLauncher, _commandFactory))
+            .Select(pg => MapGroup(pg))
             .ToListAsync(cancellationToken);
 
         ProcessGroups.Clear();
         ProcessGroups.AddRange(processGroups);
     }
 
+    private CommandGroupViewModel MapGroup(ProcessGroup group)
+    {
+        var vm = new CommandGroupViewModel(_processLauncher, _commandFactory)
+        {
+            Name = group.DisplayName,
+        };
+
+        foreach (var childGroup in group.Groups.Where(g => g.IsVisible()))
+        {
+            vm.Children.Add(MapGroup(childGroup));
+        }
+
+        foreach (var process in group.Processes.Where(p => p.IsVisible()))
+        {
+            vm.Processes.Add(MapProcess(process));
+        }
+
+        return vm;
+    }
+
+    private CommandProcessViewModel MapProcess(ProcessLaunchInformation process)
+    {
+        return new CommandProcessViewModel(_processLauncher, _commandFactory)
+        {
+            Name = process.DisplayName,
+            Path = process.Executable,
+            Arguments = string.Join(" ", process.Arguments),
+            Comment = process.Comment,
+            ExecutionMode = process.ExecutionMode,
+            Disabled = process.Disabled,
+            Hidden = process.Hidden,
+            WorkingDirectory = process.WorkingDirectory ?? string.Empty,
+        };
+    }
+
+    [RelayCommand]
     private async Task EditListAsync(CancellationToken cancellationToken)
     {
         if (IsEditMode)
@@ -109,18 +135,13 @@ public class MainWindowViewModel : BindableBase
         }
     }
 
+    [RelayCommand]
     private void ClearLastExecutedTime()
     {
-        RunOnProcessGroups(ClearLastExecuted, ClearLastExecuted);
-
-        return;
-
-        static void ClearLastExecuted<T>(T model) where T : ProcessViewModelBase
-        {
-            model.ClearLastExecuted();
-        }
+        RunOnProcessGroups(clear: true);
     }
 
+    [RelayCommand]
     private void ShowAboutDialog()
     {
         _dialogService.ShowAboutDialog();
@@ -141,45 +162,41 @@ public class MainWindowViewModel : BindableBase
 
     private void ExpireLastExecutionTime(TimeSpan expirationInterval)
     {
-        RunOnProcessGroups(ExpireLastExecuted, ExpireLastExecuted);
-
-        return;
-
-        void ExpireLastExecuted<T>(T model) where T : ProcessViewModelBase
-        {
-            model.ExpireLastExecuted(expirationInterval);
-        }
+        RunOnProcessGroups(expire: true, expirationInterval: expirationInterval);
     }
 
-    private void RunOnProcessGroups(Action<ProcessGroupViewModel> executeOnGroup, Action<ProcessViewModel> executeOnChild)
+    private void RunOnProcessGroups(bool clear = false, bool expire = false, TimeSpan? expirationInterval = null)
     {
         foreach (var processGroup in ProcessGroups)
         {
-            RunOnGroup(processGroup);
+            VisitGroup(processGroup);
         }
 
-        return;
-
-        void RunOnGroup(ProcessGroupViewModel pg)
+        void VisitGroup(CommandGroupViewModel pg)
         {
-            foreach (var childGroup in pg.Children.OfType<ProcessGroupViewModel>())
+            if (clear) pg.LastExecutedTracker.ClearLastExecuted();
+            else if (expire && expirationInterval.HasValue) pg.LastExecutedTracker.ExpireLastExecuted(expirationInterval.Value);
+
+            foreach (var childGroup in pg.Children)
             {
-                executeOnGroup(childGroup);
-                RunOnGroup(childGroup);
+                VisitGroup(childGroup);
             }
 
-            foreach (var childProcess in pg.Children.OfType<ProcessViewModel>())
+            foreach (var process in pg.Processes)
             {
-                executeOnChild(childProcess);
+                if (clear) process.LastExecutedTracker.ClearLastExecuted();
+                else if (expire && expirationInterval.HasValue) process.LastExecutedTracker.ExpireLastExecuted(expirationInterval.Value);
             }
         }
     }
 
+    [RelayCommand]
     private static void Exit()
     {
         Application.Current?.MainWindow?.Close();
     }
 
+    [RelayCommand]
     private async Task EditJsonDefinitionAsync(CancellationToken cancellationToken)
     {
         var editCommand = new ProcessLaunchInformation(
