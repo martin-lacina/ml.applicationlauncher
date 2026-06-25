@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ML.ApplicationLauncher.Core;
 using ML.ApplicationLauncher.Core.Validation;
 using ML.ApplicationLauncher.Shared.Services;
 using ML.ApplicationLauncher.Source.Extensions;
@@ -100,7 +101,7 @@ public partial class MainWindowViewModel : ObservableObject
         {
             Name = process.DisplayName,
             Path = process.Executable,
-            Arguments = string.Join(" ", process.Arguments),
+            Arguments = ArgumentExtensions.FormatArguments(process.Arguments),
             Comment = process.Comment,
             ExecutionMode = process.ExecutionMode,
             Disabled = process.Disabled,

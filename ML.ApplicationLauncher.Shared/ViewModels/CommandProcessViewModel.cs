@@ -3,8 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ML.ApplicationLauncher.Core;
 using ML.ApplicationLauncher.Shared.Services;
-using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
 
@@ -82,7 +82,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                 Name,
                 Comment,
                 Path,
-                Arguments.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries),
+                ArgumentExtensions.ParseArguments(Arguments),
                 ExecutionMode,
                 Disabled,
                 Hidden,

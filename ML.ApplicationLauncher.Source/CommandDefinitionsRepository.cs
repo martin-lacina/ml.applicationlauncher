@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
+using ML.ApplicationLauncher.Core;
 
 namespace ML.ApplicationLauncher.Source
 {
@@ -174,7 +175,7 @@ namespace ML.ApplicationLauncher.Source
                         Id = Guid.NewGuid(),
                         Name = p.DisplayName ?? string.Empty,
                         Path = p.Executable ?? string.Empty,
-                        Arguments = (p.Arguments != null) ? string.Join("\n", p.Arguments) : string.Empty,
+                        Arguments = ArgumentExtensions.FormatArguments(p.Arguments),
                         Comment = p.Comment ?? string.Empty,
                         ExecutionMode = p.ExecutionMode,
                         Disabled = p.Disabled,
@@ -203,7 +204,7 @@ namespace ML.ApplicationLauncher.Source
                     p.Name ?? string.Empty,
                     p.Comment ?? string.Empty,
                     p.Path ?? string.Empty,
-                    ParseArguments(p.Arguments),
+                    ArgumentExtensions.ParseArguments(p.Arguments),
                     p.ExecutionMode,
                     p.Disabled,
                     p.Hidden,
@@ -211,15 +212,6 @@ namespace ML.ApplicationLauncher.Source
                 )).ToArray();
 
             return new ProcessGroup(g.Name ?? string.Empty, string.Empty, true, childGroups, processes, false, false);
-        }
-
-        private static string[] ParseArguments(string args)
-        {
-            if (string.IsNullOrWhiteSpace(args))
-                return Array.Empty<string>();
-
-            // Each line represents one argument to preserve spaces within each argument.
-            return args.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         }
     }
 }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ML.ApplicationLauncher.Core;
+using ML.ApplicationLauncher.Core;
 using ML.ApplicationLauncher.Shared.Services;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
@@ -72,7 +74,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                     process.Name,
                     process.Comment,
                     process.Path,
-                    process.Arguments.Split((char[])null!, StringSplitOptions.RemoveEmptyEntries),
+                    ArgumentExtensions.ParseArguments(process.Arguments),
                     process.ExecutionMode,
                     process.Disabled,
                     process.Hidden,
