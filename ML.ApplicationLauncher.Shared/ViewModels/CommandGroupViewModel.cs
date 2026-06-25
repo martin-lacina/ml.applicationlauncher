@@ -26,6 +26,18 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         [ObservableProperty]
         string _name = string.Empty;
 
+        [ObservableProperty]
+        string _comment = string.Empty;
+
+        [ObservableProperty]
+        bool _canLaunch = false;
+
+        [ObservableProperty]
+        bool _disabled = false;
+
+        [ObservableProperty]
+        bool _hidden = false;
+
         public ObservableCollection<CommandGroupViewModel> Children { get; } = new();
         public ObservableCollection<CommandProcessViewModel> Processes { get; } = new();
 

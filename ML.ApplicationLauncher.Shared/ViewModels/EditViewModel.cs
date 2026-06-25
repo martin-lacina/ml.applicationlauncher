@@ -80,6 +80,17 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         [RelayCommand]
+        private void AddSubGroup()
+        {
+            if (SelectedGroup == null) return;
+            PushUndo();
+            var newGroup = CreateGroupViewModel();
+            newGroup.Name = "New Subgroup";
+            SelectedGroup.Children.Add(newGroup);
+            SelectedGroup = newGroup;
+        }
+
+        [RelayCommand]
         private void RemoveSelected()
         {
             if (SelectedProcess != null && SelectedGroup != null)
@@ -107,6 +118,16 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         [RelayCommand]
         private void MoveDown() => MoveSelectedInternal(up: false);
+
+        [RelayCommand]
+        private void RemoveProcess(CommandProcessViewModel process)
+        {
+            if (process == null || SelectedGroup == null) return;
+            PushUndo();
+            SelectedGroup.Processes.Remove(process);
+            if (SelectedProcess == process)
+                SelectedProcess = null;
+        }
 
         private void MoveSelectedInternal(bool up)
         {
@@ -168,7 +189,15 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             Groups.Clear();
             foreach (var g in groups)
                 Groups.Add(ToViewModel(g));
-            // UI state is intentionally not persisted to disk for edit mode.
+
+            // If no groups exist, create a default group and select it
+            if (Groups.Count == 0)
+            {
+                Groups.Add(CreateGroupViewModel());
+            }
+
+            // Select the first group
+            SelectedGroup = Groups.First();
         }
 
         private CommandGroupViewModel ToViewModel(CommandGroup group)
@@ -197,13 +226,13 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         private CommandGroupViewModel CreateGroupViewModel()
             => _processLauncher is not null && _commandFactory is not null
-                ? new CommandGroupViewModel(_processLauncher, _commandFactory)
-                : new CommandGroupViewModel();
+                ? new CommandGroupViewModel(_processLauncher, _commandFactory) { Name = "New Group" }
+                : new CommandGroupViewModel() { Name = "New Group" };
 
         private CommandProcessViewModel CreateProcessViewModel()
             => _processLauncher is not null && _commandFactory is not null
-                ? new CommandProcessViewModel(_processLauncher, _commandFactory)
-                : new CommandProcessViewModel();
+                ? new CommandProcessViewModel(_processLauncher, _commandFactory) { Name = "New Process" }
+                : new CommandProcessViewModel() { Name = "New Process" };
 
         public void MoveProcess(Guid processId, int newIndex)
         {

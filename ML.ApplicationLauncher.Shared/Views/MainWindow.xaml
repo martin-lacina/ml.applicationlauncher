@@ -8,7 +8,7 @@
               xmlns:sharedVM="clr-namespace:ML.ApplicationLauncher.Shared.ViewModels"
               xmlns:sharedViews="clr-namespace:ML.ApplicationLauncher.Shared.Views"
               mc:Ignorable="d"
-              Title="Universal Application Launcher" Height="700" Width="900"
+              Title="Universal Application Launcher" Height="700" Width="1300"
 
               d:DataContext="{d:DesignInstance Type=viewModels:MainWindowViewModel, IsDesignTimeCreatable=False}"
 ><!--

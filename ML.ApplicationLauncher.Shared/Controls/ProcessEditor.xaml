@@ -1,0 +1,87 @@
+<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:ML.ApplicationLauncher.Shared.ViewModels"
+             x:Class="ML.ApplicationLauncher.Shared.Controls.ProcessEditor">
+    <StackPanel Margin="10">
+        <!-- Editor Header -->
+        <Grid>
+            <TextBlock Text="Edit Process" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
+            <Button Content="▶ Start" HorizontalAlignment="Right" Command="{Binding StartCommand}" 
+                    IsEnabled="{Binding CanBeStarted}" Margin="0,0,10,0" Padding="8,2" />
+        </Grid>
+
+        <!-- Basic Properties and Configuration Side by Side -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="250" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Basic Properties Section (Left) -->
+            <GroupBox Header="Basic Properties" Grid.Column="0" Margin="0,5,5,0">
+                <StackPanel Margin="10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Name:" VerticalAlignment="Center" Margin="0,5" />
+                        <TextBox Grid.Column="1" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Margin="2" />
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Path:" VerticalAlignment="Center" Margin="0,5" />
+                        <TextBox Grid.Column="1" Text="{Binding Path, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Margin="2" />
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Working dir:" VerticalAlignment="Center" Margin="0,5" />
+                        <TextBox Grid.Column="1" Text="{Binding WorkingDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="2" />
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Configuration Options Section (Right) -->
+            <GroupBox Header="Configuration" Grid.Column="1" Margin="5,5,0,0">
+                <StackPanel Margin="10">
+                    <CheckBox Content="Disabled" IsChecked="{Binding Disabled, Mode=TwoWay}" Margin="0,5,0,0" />
+                    <CheckBox Content="Hidden" IsChecked="{Binding Hidden, Mode=TwoWay}" Margin="0,5,0,0" />
+                    <TextBlock Text="Execution Mode:" Margin="0,10,0,2" />
+                    <ComboBox x:Name="ExecutionModeCombo" SelectedItem="{Binding ExecutionMode, Mode=TwoWay}"
+                              MinWidth="150" HorizontalAlignment="Left" />
+                </StackPanel>
+            </GroupBox>
+        </Grid>
+
+        <!-- Arguments and Comment Section (Full Width Below) -->
+        <GroupBox Header="Arguments &amp; Comment" Margin="0,5,0,0">
+            <StackPanel Margin="10">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Args:" VerticalAlignment="Top" Margin="0,5" />
+                    <TextBox Grid.Column="1" Text="{Binding Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="2" AcceptsReturn="True" MinHeight="60" MaxHeight="100"
+                             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+                </Grid>
+                <Grid Margin="0,5,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="Comment:" VerticalAlignment="Top" Margin="0,5" />
+                    <TextBox Grid.Column="1" Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                             Margin="2" AcceptsReturn="True" MinHeight="40" MaxHeight="80" />
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+</UserControl>

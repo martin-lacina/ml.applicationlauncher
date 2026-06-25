@@ -1,12 +1,17 @@
+// Copyright © Martin Lacina
+
 using System;
 using System.Windows.Controls;
 using ML.ApplicationLauncher.Source.Model;
 
-namespace ML.ApplicationLauncher.Shared.Views
+namespace ML.ApplicationLauncher.Shared.Controls
 {
-    public partial class ProcessDetailsControl : UserControl
+    /// <summary>
+    /// Interaction logic for ProcessEditor.xaml
+    /// </summary>
+    public partial class ProcessEditor : UserControl
     {
-        public ProcessDetailsControl()
+        public ProcessEditor()
         {
             InitializeComponent();
 

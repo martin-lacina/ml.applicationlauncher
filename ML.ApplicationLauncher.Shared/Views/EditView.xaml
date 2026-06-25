@@ -14,15 +14,17 @@
 
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
-            <Button Content="Add Group" Command="{Binding AddGroupCommand}" />
-            <Button Content="Add Process" Command="{Binding AddProcessCommand}" />
-            <Button Content="Remove" Command="{Binding RemoveCommand}" />
-            <Button Content="Move Up" Command="{Binding MoveUpCommand}" />
-            <Button Content="Move Down" Command="{Binding MoveDownCommand}" />
+            <Button Content="➕" ToolTip="Add Group" Command="{Binding AddGroupCommand}" />
+            <Button Content="📁" ToolTip="Add Subgroup" Command="{Binding AddSubGroupCommand}" />
+            <Button Content="📄" ToolTip="Add Process" Command="{Binding AddProcessCommand}" />
+            <Button Content="🗑️" ToolTip="Remove Selected" Command="{Binding RemoveCommand}" />
             <Separator />
-            <Button Content="Save" Command="{Binding SaveCommand}" />
-            <Button Content="Undo" Command="{Binding UndoCommand}" />
-            <Button Content="Redo" Command="{Binding RedoCommand}" />
+            <Button Content="⬆️" ToolTip="Move Up" Command="{Binding MoveUpCommand}" />
+            <Button Content="⬇️" ToolTip="Move Down" Command="{Binding MoveDownCommand}" />
+            <Separator />
+            <Button Content="💾" ToolTip="Save Configuration" Command="{Binding SaveCommand}" />
+            <Button Content="↩️" ToolTip="Undo Last Change" Command="{Binding UndoCommand}" />
+            <Button Content="↪️" ToolTip="Redo Last Change" Command="{Binding RedoCommand}" />
         </ToolBar>
 
         <Grid>
@@ -31,8 +33,8 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="2*" MaxWidth="250" />
+                <ColumnDefinition Width="5*" />
                 <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
 
@@ -54,8 +56,8 @@
 
             <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="3*" />
-                    <RowDefinition Height="2*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" MinHeight="300" />
                 </Grid.RowDefinitions>
 
                 <ListView x:Name="ProcessesListView" Grid.Row="0" ItemsSource="{Binding SelectedGroup.Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
@@ -68,27 +70,41 @@
                             <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}" />
                             <GridViewColumn Header="Path" DisplayMemberBinding="{Binding Path}" />
                             <GridViewColumn Header="Args" DisplayMemberBinding="{Binding Arguments}" />
+                            <GridViewColumn>
+                                <GridViewColumn.Header>
+                                    <TextBlock Text="Actions" FontWeight="Bold" />
+                                </GridViewColumn.Header>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="▶" Width="30" Height="22" Margin="0,0,4,0"
+                                                    Command="{Binding StartCommand}" IsEnabled="{Binding CanBeStarted}"
+                                                    ToolTip="Start Process" />
+                                            <Button Content="🗑" Width="30" Height="22"
+                                                    Command="{Binding DataContext.RemoveProcessCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Delete Process" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                         </GridView>
                     </ListView.View>
                 </ListView>
 
-                <ContentControl Grid.Row="1" Content="{Binding SelectedDetail}">
-                    <ContentControl.Resources>
-                        <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
-                            <views:ProcessDetailsControl />
-                        </DataTemplate>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <ContentControl Content="{Binding SelectedDetail}">
+                        <ContentControl.Resources>
+                            <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
+                                <controls:ProcessEditor />
+                            </DataTemplate>
 
-                        <DataTemplate DataType="{x:Type vm:CommandGroupViewModel}">
-                            <StackPanel Margin="8">
-                                <TextBlock Text="Group Details" FontWeight="Bold" />
-                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                                    <TextBlock Text="Name:" Width="60" />
-                                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=True}" Width="300" />
-                                </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ContentControl.Resources>
-                </ContentControl>
+                            <DataTemplate DataType="{x:Type vm:CommandGroupViewModel}">
+                                <controls:ProcessGroupEditor />
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                    </ContentControl>
+                </ScrollViewer>
             </Grid>
 
             <TextBlock Grid.Column="2" Grid.Row="0" Margin="5,8,5,5" FontWeight="Bold" Text="Process preview" />
