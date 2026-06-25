@@ -35,7 +35,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" MaxWidth="250" />
                 <ColumnDefinition Width="5*" />
-                <ColumnDefinition Width="300" />
+                <ColumnDefinition Width="Auto" MaxWidth="300" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,8,5,5" FontWeight="Bold" Text="Groups" />
@@ -57,7 +57,7 @@
             <Grid Grid.Column="1" Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" MinHeight="300" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <ListView x:Name="ProcessesListView" Grid.Row="0" ItemsSource="{Binding SelectedGroup.Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
@@ -107,10 +107,16 @@
                 </ScrollViewer>
             </Grid>
 
-            <TextBlock Grid.Column="2" Grid.Row="0" Margin="5,8,5,5" FontWeight="Bold" Text="Process preview" />
-
-            <Grid Grid.Column="2" Grid.Row="1">
-
+            <Expander Grid.Column="2" Grid.Row="1" Header="Process preview" IsExpanded="False" ExpandDirection="Left" Margin="5,8,5,5">
+                <Expander.HeaderTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontWeight="Bold">
+                            <TextBlock.LayoutTransform>
+                                <RotateTransform Angle="90" />
+                            </TextBlock.LayoutTransform>
+                        </TextBlock>
+                    </DataTemplate>
+                </Expander.HeaderTemplate>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel>
                         <!-- Process list -->
@@ -146,7 +152,7 @@
                         </TextBlock>
                     </StackPanel>
                 </ScrollViewer>
-            </Grid>
+            </Expander>
         </Grid>
     </DockPanel>
 </UserControl>
