@@ -11,7 +11,7 @@ namespace ML.ApplicationLauncher.Source;
 /// </summary>
 public record CommandGroup
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.CreateVersion7();
     public string Name { get; set; } = string.Empty;
     public string Comment { get; set; } = string.Empty;
     public bool CanLaunch { get; set; }

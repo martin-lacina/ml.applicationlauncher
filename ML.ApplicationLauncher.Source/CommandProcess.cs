@@ -10,7 +10,7 @@ namespace ML.ApplicationLauncher.Source;
 /// </summary>
 public record CommandProcess
 {
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.CreateVersion7();
     public string Name { get; set; } = string.Empty;
     public string Path { get; set; } = string.Empty;
     // Free-form arguments string for editor compatibility. Persisted configuration uses ProcessLaunchInformation.Arguments (string[]).
