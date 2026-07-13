@@ -1,23 +1,22 @@
+// Copyright © Martin Lacina
+
 using System;
 using System.Collections.Generic;
-using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ML.ApplicationLauncher.Source
+namespace ML.ApplicationLauncher.Source;
+
+/// <summary>
+/// Represents a group of commands. Groups can contain nested groups and processes.
+/// This is a persistence DTO — never data-bound to UI.
+/// </summary>
+public record CommandGroup
 {
-    /// <summary>
-    /// Represents a group of commands. Groups can contain nested groups and processes.
-    /// </summary>
-    public partial class CommandGroup : ObservableObject
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-
-        [ObservableProperty]
-        string _name = string.Empty;
-
-        [ObservableProperty]
-        List<CommandGroup> _children = new();
-
-        [ObservableProperty]
-        List<CommandProcess> _processes = new();
-    }
+    public Guid Id { get; init; } = Guid.NewGuid();
+    public string Name { get; set; } = string.Empty;
+    public string Comment { get; set; } = string.Empty;
+    public bool CanLaunch { get; set; }
+    public bool Disabled { get; set; }
+    public bool Hidden { get; set; }
+    public List<CommandGroup> Children { get; init; } = new();
+    public List<CommandProcess> Processes { get; init; } = new();
 }

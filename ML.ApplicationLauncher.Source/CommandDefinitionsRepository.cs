@@ -157,7 +157,11 @@ namespace ML.ApplicationLauncher.Source
             var cg = new CommandGroup
             {
                 Id = Guid.NewGuid(),
-                Name = pg.DisplayName ?? string.Empty
+                Name = pg.DisplayName ?? string.Empty,
+                Comment = pg.Comment ?? string.Empty,
+                CanLaunch = pg.CanLaunch,
+                Disabled = pg.Disabled,
+                Hidden = pg.Hidden,
             };
 
             if (pg.Groups != null)
@@ -211,7 +215,7 @@ namespace ML.ApplicationLauncher.Source
                     string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory
                 )).ToArray();
 
-            return new ProcessGroup(g.Name ?? string.Empty, string.Empty, true, childGroups, processes, false, false);
+            return new ProcessGroup(g.Name ?? string.Empty, g.Comment ?? string.Empty, g.CanLaunch, childGroups, processes, g.Disabled, g.Hidden);
         }
     }
 }

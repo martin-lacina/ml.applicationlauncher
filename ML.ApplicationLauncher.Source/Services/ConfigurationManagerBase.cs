@@ -69,6 +69,7 @@ internal abstract class ConfigurationManagerBase<TConfiguration> : IConfiguratio
             };
 
             await JsonSerializer.SerializeAsync<TConfiguration>(fileStream, configuration, options, cancellationToken);
+            fileStream.SetLength(fileStream.Position);
         }
         catch (Exception ex)
         {

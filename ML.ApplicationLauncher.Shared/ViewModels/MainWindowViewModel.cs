@@ -80,6 +80,10 @@ public partial class MainWindowViewModel : ObservableObject
         var vm = new CommandGroupViewModel(_processLauncher, _commandFactory)
         {
             Name = group.DisplayName,
+            Comment = group.Comment,
+            CanLaunch = group.CanLaunch,
+            Disabled = group.Disabled,
+            Hidden = group.Hidden,
         };
 
         foreach (var childGroup in group.Groups.Where(g => g.IsVisible()))

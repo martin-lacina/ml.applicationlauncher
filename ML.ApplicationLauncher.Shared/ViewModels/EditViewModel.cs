@@ -205,6 +205,10 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             var vm = CreateGroupViewModel();
             vm.Id = group.Id;
             vm.Name = group.Name;
+            vm.Comment = group.Comment;
+            vm.CanLaunch = group.CanLaunch;
+            vm.Disabled = group.Disabled;
+            vm.Hidden = group.Hidden;
             foreach (var child in group.Children)
                 vm.Children.Add(ToViewModel(child));
             foreach (var proc in group.Processes)
@@ -334,7 +338,11 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             var group = new CommandGroup
             {
                 Id = vm.Id,
-                Name = vm.Name
+                Name = vm.Name,
+                Comment = vm.Comment,
+                CanLaunch = vm.CanLaunch,
+                Disabled = vm.Disabled,
+                Hidden = vm.Hidden,
             };
             foreach (var child in vm.Children)
                 group.Children.Add(ToModel(child));
