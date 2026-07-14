@@ -13,18 +13,34 @@
     </UserControl.Resources>
 
     <DockPanel>
-        <ToolBar DockPanel.Dock="Top">
-            <Button Content="➕" ToolTip="Add Group" Command="{Binding AddGroupCommand}" />
-            <Button Content="📁" ToolTip="Add Subgroup" Command="{Binding AddSubGroupCommand}" />
-            <Button Content="📄" ToolTip="Add Process" Command="{Binding AddProcessCommand}" />
-            <Button Content="🗑️" ToolTip="Remove Selected" Command="{Binding RemoveCommand}" />
-            <Separator />
-            <Button Content="⬆️" ToolTip="Move Up" Command="{Binding MoveUpCommand}" />
-            <Button Content="⬇️" ToolTip="Move Down" Command="{Binding MoveDownCommand}" />
-            <Separator />
+        <ToolBar DockPanel.Dock="Top" OverridesDefaultStyle="True">
+            <ToolBar.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="MinWidth" Value="24" />
+                    <Setter Property="Margin" Value="2,0" />
+                </Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="11" />
+                    <Setter Property="Margin" Value="5,0,2,0" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </ToolBar.Resources>
             <Button Content="💾" ToolTip="Save Configuration" Command="{Binding SaveCommand}" />
             <Button Content="↩️" ToolTip="Undo Last Change" Command="{Binding UndoCommand}" />
             <Button Content="↪️" ToolTip="Redo Last Change" Command="{Binding RedoCommand}" />
+            <Separator />
+            <TextBlock Text="Groups:" />
+            <Button Content="➕" ToolTip="Add Group" Command="{Binding AddGroupCommand}" />
+            <Button Content="📁" ToolTip="Add Subgroup" Command="{Binding AddSubGroupCommand}" />
+            <Button Content="🗑️" ToolTip="Remove Selected Group" Command="{Binding RemoveGroupCommand}" />
+            <Button Content="⬆️" ToolTip="Move Group Up" Command="{Binding MoveUpGroupCommand}" />
+            <Button Content="⬇️" ToolTip="Move Group Down" Command="{Binding MoveDownGroupCommand}" />
+            <Separator />
+            <TextBlock Text="Processes:" />
+            <Button Content="➕" ToolTip="Add Process" Command="{Binding AddProcessCommand}" />
+            <Button Content="🗑" ToolTip="Remove Selected Process" Command="{Binding RemoveSelectedProcessCommand}" />
+            <Button Content="⬆️" ToolTip="Move Process Up" Command="{Binding MoveUpProcessCommand}" />
+            <Button Content="⬇️" ToolTip="Move Process Down" Command="{Binding MoveDownProcessCommand}" />
         </ToolBar>
 
         <Grid>

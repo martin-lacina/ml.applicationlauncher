@@ -91,33 +91,28 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         [RelayCommand]
-        private void RemoveSelected()
+        private void RemoveGroup()
         {
-            if (SelectedProcess != null && SelectedGroup != null)
+            if (SelectedGroup == null) return;
+            PushUndo();
+            if (!RemoveGroupById(SelectedGroup.Id, Groups))
             {
-                PushUndo();
-                SelectedGroup.Processes.Remove(SelectedProcess);
-                SelectedProcess = null;
-                return;
+                // not found in root - try to remove from parent
+                var parent = FindParentCollection(SelectedGroup.Id, Groups);
+                if (parent != null)
+                    parent.Remove(SelectedGroup);
             }
-
-            if (SelectedGroup != null)
-            {
-                PushUndo();
-                // try to remove from root
-                if (!RemoveGroupById(SelectedGroup.Id, Groups))
-                {
-                    // not found in root - nothing
-                }
-                SelectedGroup = null;
-            }
+            SelectedGroup = null;
         }
 
         [RelayCommand]
-        private void MoveUp() => MoveSelectedInternal(up: true);
-
-        [RelayCommand]
-        private void MoveDown() => MoveSelectedInternal(up: false);
+        private void RemoveSelectedProcess()
+        {
+            if (SelectedProcess == null || SelectedGroup == null) return;
+            PushUndo();
+            SelectedGroup.Processes.Remove(SelectedProcess);
+            SelectedProcess = null;
+        }
 
         [RelayCommand]
         private void RemoveProcess(CommandProcessViewModel process)
@@ -129,31 +124,56 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                 SelectedProcess = null;
         }
 
-        private void MoveSelectedInternal(bool up)
+        [RelayCommand]
+        private void MoveUpProcess()
         {
-            if (SelectedProcess != null && SelectedGroup != null)
-            {
-                var list = SelectedGroup.Processes;
-                var idx = list.IndexOf(SelectedProcess);
-                if (idx < 0) return;
-                var newIdx = up ? idx - 1 : idx + 1;
-                if (newIdx < 0 || newIdx >= list.Count) return;
-                PushUndo();
-                list.Move(idx, newIdx);
-                return;
-            }
+            if (SelectedProcess == null || SelectedGroup == null) return;
+            var list = SelectedGroup.Processes;
+            var idx = list.IndexOf(SelectedProcess);
+            if (idx < 0) return;
+            var newIdx = idx - 1;
+            if (newIdx < 0 || newIdx >= list.Count) return;
+            PushUndo();
+            list.Move(idx, newIdx);
+        }
 
-            if (SelectedGroup != null)
-            {
-                // find parent collection
-                var parent = FindParentCollection(SelectedGroup.Id, Groups) ?? Groups;
-                var idx = parent.IndexOf(SelectedGroup);
-                if (idx < 0) return;
-                var newIdx = up ? idx - 1 : idx + 1;
-                if (newIdx < 0 || newIdx >= parent.Count) return;
-                PushUndo();
-                parent.Move(idx, newIdx);
-            }
+        [RelayCommand]
+        private void MoveDownProcess()
+        {
+            if (SelectedProcess == null || SelectedGroup == null) return;
+            var list = SelectedGroup.Processes;
+            var idx = list.IndexOf(SelectedProcess);
+            if (idx < 0) return;
+            var newIdx = idx + 1;
+            if (newIdx < 0 || newIdx >= list.Count) return;
+            PushUndo();
+            list.Move(idx, newIdx);
+        }
+
+        [RelayCommand]
+        private void MoveUpGroup()
+        {
+            if (SelectedGroup == null) return;
+            var parent = FindParentCollection(SelectedGroup.Id, Groups) ?? Groups;
+            var idx = parent.IndexOf(SelectedGroup);
+            if (idx < 0) return;
+            var newIdx = idx - 1;
+            if (newIdx < 0 || newIdx >= parent.Count) return;
+            PushUndo();
+            parent.Move(idx, newIdx);
+        }
+
+        [RelayCommand]
+        private void MoveDownGroup()
+        {
+            if (SelectedGroup == null) return;
+            var parent = FindParentCollection(SelectedGroup.Id, Groups) ?? Groups;
+            var idx = parent.IndexOf(SelectedGroup);
+            if (idx < 0) return;
+            var newIdx = idx + 1;
+            if (newIdx < 0 || newIdx >= parent.Count) return;
+            PushUndo();
+            parent.Move(idx, newIdx);
         }
 
         [RelayCommand]
