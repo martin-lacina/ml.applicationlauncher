@@ -1,4 +1,4 @@
-// Copyright © Martin Lacina
+// Copyright ï¿½ Martin Lacina
 
 using System.Windows;
 

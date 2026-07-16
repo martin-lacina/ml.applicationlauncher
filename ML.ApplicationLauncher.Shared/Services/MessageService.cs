@@ -19,8 +19,11 @@ internal class MessageService : IMessageService
         ShowError(formattedMessage);
     }
 
-    private static string? TrimMessageLength(string? message)
+    internal static string? TrimMessageLength(string? message)
     {
-        return message?.Substring(0, Math.Min(1000, message.Length));
+        if (message == null || message.Length <= 1000)
+            return message;
+
+        return message[..1000];
     }
 }
