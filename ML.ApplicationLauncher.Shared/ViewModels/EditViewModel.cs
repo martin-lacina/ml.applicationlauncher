@@ -39,8 +39,19 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         public object? SelectedDetail => (object?)SelectedProcess ?? SelectedGroup;
 
-        private readonly Stack<string> _undoStack = new();
+        private readonly List<string> _undoHistory = new();
+        
+        // Max undo history size — hidden from users, overridable via code if needed
+        private const int MaxUndoRedoStackSize = 100;
+        private int _undoIndex; // Index into _undoHistory pointing to current state
         private readonly Stack<string> _redoStack = new();
+
+        /// <summary>
+        /// Snapshot of the edit session: serialized groups plus the IDs of the selected group/process.
+        /// Exactly one selection ID is non-default at any given time.
+        /// </summary>
+        private record UndoState(string GroupsJson, Guid SelectedGroupId, Guid SelectedProcessId);
+
         private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
@@ -185,22 +196,95 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             await _repository.SaveAsync(groups);
         }
 
+        private void PushUndo()
+        {
+            try
+            {
+                var snapshot = new UndoState(
+                    GroupsJson: SerializeGroups(),
+                    SelectedGroupId: SelectedGroup?.Id ?? Guid.Empty,
+                    SelectedProcessId: SelectedProcess?.Id ?? Guid.Empty
+                );
+                
+                _undoHistory.Add(JsonSerializer.Serialize(snapshot, _jsonOptions));
+                
+                // Trim old entries (from the bottom/oldest) if history exceeds maximum size
+                while (_undoHistory.Count > MaxUndoRedoStackSize)
+                    _undoHistory.RemoveAt(0);
+                
+                _redoStack.Clear();
+            }
+            catch { }
+        }
+
+        private string SerializeGroups()
+        {
+            var models = Groups.Select(g => ToModel(g)).ToList();
+            return JsonSerializer.Serialize(models, _jsonOptions);
+        }
+
+        private void LoadFromJson(string json)
+        {
+            var snapshot = JsonSerializer.Deserialize<UndoState>(json, _jsonOptions);
+            if (snapshot == null) return;
+
+            RestoreGroupsFromJson(snapshot.GroupsJson);
+
+            // Restore selection state — exactly one of the IDs is non-default at any time.
+            if (snapshot.SelectedGroupId != Guid.Empty)
+                SelectedGroup = Groups.FirstOrDefault(g => g.Id == snapshot.SelectedGroupId);
+
+            if (snapshot.SelectedProcessId != Guid.Empty && SelectedGroup != null)
+            {
+                var proc = SelectedGroup.Processes.FirstOrDefault(p => p.Id == snapshot.SelectedProcessId);
+                if (proc != null)
+                    SelectedProcess = proc;
+            }
+        }
+
+        private void RestoreGroupsFromJson(string json)
+        {
+            var groups = JsonSerializer.Deserialize<List<CommandGroup>>(json, _jsonOptions) ?? new List<CommandGroup>();
+            Groups.Clear();
+            foreach (var g in groups) Groups.Add(ToViewModel(g));
+            SelectedGroup = null;
+            SelectedProcess = null;
+        }
+
         [RelayCommand]
         private void Undo()
         {
-            if (_undoStack.Count == 0) return;
-            var snap = _undoStack.Pop();
-            _redoStack.Push(SerializeGroups());
-            LoadFromJson(snap);
+            if (_undoIndex <= 0) return;
+            
+            // Save current state to redo stack before moving back
+            var currentState = new UndoState(
+                GroupsJson: SerializeGroups(),
+                SelectedGroupId: SelectedGroup?.Id ?? Guid.Empty,
+                SelectedProcessId: SelectedProcess?.Id ?? Guid.Empty
+            );
+            _redoStack.Push(JsonSerializer.Serialize(currentState, _jsonOptions));
+            
+            // Move back one step in history (current is at end, so undo moves to Count-2)
+            _undoIndex--;
+            LoadFromJson(_undoHistory[_undoIndex]);
         }
 
         [RelayCommand]
         private void Redo()
         {
             if (_redoStack.Count == 0) return;
-            var snap = _redoStack.Pop();
-            _undoStack.Push(SerializeGroups());
-            LoadFromJson(snap);
+            
+            // Save current state back to undo history before moving forward
+            var currentState = new UndoState(
+                GroupsJson: SerializeGroups(),
+                SelectedGroupId: SelectedGroup?.Id ?? Guid.Empty,
+                SelectedProcessId: SelectedProcess?.Id ?? Guid.Empty
+            );
+            _undoHistory.Insert(_undoIndex + 1, JsonSerializer.Serialize(currentState, _jsonOptions));
+            _undoIndex++;
+            
+            // Pop from redo stack and restore that state
+            LoadFromJson(_redoStack.Pop());
         }
 
         private async Task Load()
@@ -326,31 +410,6 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                 if (found != null) return found;
             }
             return null;
-        }
-
-        private void PushUndo()
-        {
-            try
-            {
-                _undoStack.Push(SerializeGroups());
-                _redoStack.Clear();
-            }
-            catch { }
-        }
-
-        private string SerializeGroups()
-        {
-            var models = Groups.Select(g => ToModel(g)).ToList();
-            return JsonSerializer.Serialize(models, _jsonOptions);
-        }
-
-        private void LoadFromJson(string json)
-        {
-            var groups = JsonSerializer.Deserialize<List<CommandGroup>>(json, _jsonOptions) ?? new List<CommandGroup>();
-            Groups.Clear();
-            foreach (var g in groups) Groups.Add(ToViewModel(g));
-            SelectedGroup = null;
-            SelectedProcess = null;
         }
 
         private CommandGroup ToModel(CommandGroupViewModel vm)
