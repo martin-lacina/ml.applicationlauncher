@@ -1,8 +1,6 @@
 // Copyright © Martin Lacina
 
 using System;
-using NUnit.Framework;
-using ML.ApplicationLauncher.Shared.Services;
 using System.IO;
 
 namespace ML.ApplicationLauncher.Tests;
@@ -38,7 +36,7 @@ public class ConfigurationFileProviderBaseTests
 
         // Act — simulate what ConfigurationFileProviderBase does internally
         var backupPath = filePath + ".bak";
-        
+
         // This is the backup logic from BuildConfigurationFilePath
         if (File.Exists(backupPath))
             File.Delete(backupPath);
@@ -84,7 +82,7 @@ public class ConfigurationFileProviderBaseTests
     {
         // Arrange & Act — test the logic for object types (non-array)
         var configurationType = typeof(TestConfigObject);
-        
+
         // Simulate GetDefaultConfigurationJson logic
         string result;
         if (configurationType.IsArray)
@@ -101,7 +99,7 @@ public class ConfigurationFileProviderBaseTests
     {
         // Arrange & Act — test the logic for array types
         var configurationType = typeof(TestConfigObject[]);
-        
+
         string result;
         if (configurationType.IsArray)
             result = "[]";
