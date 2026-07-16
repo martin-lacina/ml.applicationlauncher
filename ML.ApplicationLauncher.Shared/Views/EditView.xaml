@@ -4,16 +4,8 @@
              xmlns:views="clr-namespace:ML.ApplicationLauncher.Shared.Views"
              xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shared.Controls"
              x:Class="ML.ApplicationLauncher.Shared.Views.EditView">
-    <UserControl.Resources>
-
-
-        <!--<DataTemplate DataType="{x:Type vm:ProcessGroupViewModel}">
-            <controls:ProcessGroupView />
-        </DataTemplate>-->
-    </UserControl.Resources>
-
     <DockPanel>
-        <ToolBar DockPanel.Dock="Top" OverridesDefaultStyle="True">
+        <ToolBar DockPanel.Dock="Top">
             <ToolBar.Resources>
                 <Style TargetType="Button">
                     <Setter Property="MinWidth" Value="24" />
