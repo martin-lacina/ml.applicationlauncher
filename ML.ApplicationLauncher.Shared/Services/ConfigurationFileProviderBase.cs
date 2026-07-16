@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using ML.ApplicationLauncher.Core.Validation;
 using ML.ApplicationLauncher.Source.Services;
 
@@ -38,12 +39,42 @@ internal abstract class ConfigurationFileProviderBase<T> : IConfigurationLocatio
         if (firstExisting is null)
         {
             var toCreate = options.First();
+            var defaultContent = GetDefaultConfigurationJson(typeof(T));
+
             messageService.ShowError($"No config file present in application directory ({string.Join(", ", options.Select(f => f.FileName))}), creating default {toCreate.FileName}.");
-            File.WriteAllText(toCreate.Path, "[]");
+            
+            // Backup any existing file before overwriting (safety net for partially corrupted files)
+            var backupPath = toCreate.Path + ".bak";
+            if (File.Exists(backupPath))
+                File.Delete(backupPath);
+            if (File.Exists(toCreate.Path))
+                File.Move(toCreate.Path, backupPath);
+
+            // Validate the default content is valid JSON before writing it
+            try
+            {
+                JsonDocument.Parse(defaultContent);
+            }
+            catch (JsonException ex)
+            {
+                messageService.ShowError($"Invalid default configuration template for type {typeof(T).Name}: {ex.Message}");
+            }
+
+            File.WriteAllText(toCreate.Path, defaultContent);
             firstExisting = toCreate;
         }
 
         return firstExisting;
+    }
+
+    private static string GetDefaultConfigurationJson(Type configurationType)
+    {
+        // Check if TConfiguration is an array type (e.g., ProcessGroup[])
+        if (configurationType.IsArray)
+            return "[]";
+
+        // For object types, use empty JSON object which deserializes to default values
+        return "{}";
     }
 
     private record ConfigurationFile(string FileName, string Path);

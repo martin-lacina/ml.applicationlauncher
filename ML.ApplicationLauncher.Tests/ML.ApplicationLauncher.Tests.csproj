@@ -13,4 +13,7 @@
     <ProjectReference Include="..\ML.ApplicationLauncher.Source\ML.ApplicationLauncher.Source.csproj" />
     <ProjectReference Include="..\ML.ApplicationLauncher.Shared\ML.ApplicationLauncher.Shared.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Using Include="NUnit.Framework" />
+  </ItemGroup>
 </Project>
