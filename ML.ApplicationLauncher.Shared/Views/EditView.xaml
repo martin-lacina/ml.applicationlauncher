@@ -4,35 +4,39 @@
              xmlns:views="clr-namespace:ML.ApplicationLauncher.Shared.Views"
              xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shared.Controls"
              x:Class="ML.ApplicationLauncher.Shared.Views.EditView">
+    <UserControl.Resources>
+
+
+        <!--<DataTemplate DataType="{x:Type vm:ProcessGroupViewModel}">
+            <controls:ProcessGroupView />
+        </DataTemplate>-->
+    </UserControl.Resources>
+
     <DockPanel>
         <ToolBar DockPanel.Dock="Top">
             <ToolBar.Resources>
-                <Style TargetType="Button">
-                    <Setter Property="MinWidth" Value="24" />
-                    <Setter Property="Margin" Value="2,0" />
-                </Style>
                 <Style TargetType="TextBlock">
                     <Setter Property="FontSize" Value="11" />
                     <Setter Property="Margin" Value="5,0,2,0" />
                     <Setter Property="VerticalAlignment" Value="Center" />
                 </Style>
             </ToolBar.Resources>
-            <Button Content="💾" ToolTip="Save Configuration" Command="{Binding SaveCommand}" />
-            <Button Content="↩️" ToolTip="Undo Last Change" Command="{Binding UndoCommand}" />
-            <Button Content="↪️" ToolTip="Redo Last Change" Command="{Binding RedoCommand}" />
+            <Button Content="💾" ToolTip="Save Configuration" Command="{Binding SaveCommand}" MinWidth="24" />
+            <Button Content="↩️" ToolTip="Undo Last Change" Command="{Binding UndoCommand}" MinWidth="24" />
+            <Button Content="↪️" ToolTip="Redo Last Change" Command="{Binding RedoCommand}" MinWidth="24" />
             <Separator />
             <TextBlock Text="Groups:" />
-            <Button Content="➕" ToolTip="Add Group" Command="{Binding AddGroupCommand}" />
-            <Button Content="📁" ToolTip="Add Subgroup" Command="{Binding AddSubGroupCommand}" />
-            <Button Content="🗑️" ToolTip="Remove Selected Group" Command="{Binding RemoveGroupCommand}" />
-            <Button Content="⬆️" ToolTip="Move Group Up" Command="{Binding MoveUpGroupCommand}" />
-            <Button Content="⬇️" ToolTip="Move Group Down" Command="{Binding MoveDownGroupCommand}" />
+            <Button Content="➕" ToolTip="Add Group" Command="{Binding AddGroupCommand}" MinWidth="24" />
+            <Button Content="📁" ToolTip="Add Subgroup" Command="{Binding AddSubGroupCommand}" MinWidth="24" />
+            <Button Content="🗑️" ToolTip="Remove Selected Group" Command="{Binding RemoveGroupCommand}" MinWidth="24" />
+            <Button Content="⬆️" ToolTip="Move Group Up" Command="{Binding MoveUpGroupCommand}" MinWidth="24" />
+            <Button Content="⬇️" ToolTip="Move Group Down" Command="{Binding MoveDownGroupCommand}" MinWidth="24" />
             <Separator />
             <TextBlock Text="Processes:" />
-            <Button Content="➕" ToolTip="Add Process" Command="{Binding AddProcessCommand}" />
-            <Button Content="🗑" ToolTip="Remove Selected Process" Command="{Binding RemoveSelectedProcessCommand}" />
-            <Button Content="⬆️" ToolTip="Move Process Up" Command="{Binding MoveUpProcessCommand}" />
-            <Button Content="⬇️" ToolTip="Move Process Down" Command="{Binding MoveDownProcessCommand}" />
+            <Button Content="➕" ToolTip="Add Process" Command="{Binding AddProcessCommand}" MinWidth="24" />
+            <Button Content="🗑" ToolTip="Remove Selected Process" Command="{Binding RemoveSelectedProcessCommand}" MinWidth="24" />
+            <Button Content="⬆️" ToolTip="Move Process Up" Command="{Binding MoveUpProcessCommand}" MinWidth="24" />
+            <Button Content="⬇️" ToolTip="Move Process Down" Command="{Binding MoveDownProcessCommand}" MinWidth="24" />
         </ToolBar>
 
         <Grid>
@@ -88,6 +92,10 @@
                                             <Button Content="▶" Width="30" Height="22" Margin="0,0,4,0"
                                                     Command="{Binding StartCommand}" IsEnabled="{Binding CanBeStarted}"
                                                     ToolTip="Start Process" />
+                                            <Button Content="⧉" Width="30" Height="22" Margin="0,0,4,0"
+                                                    Command="{Binding DataContext.DuplicateProcessCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="Duplicate Process" />
                                             <Button Content="🗑" Width="30" Height="22"
                                                     Command="{Binding DataContext.RemoveProcessCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                                     CommandParameter="{Binding}"
