@@ -71,7 +71,13 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         {
             var processInfo = BuildProcessLaunchInformation();
             await _processLauncher!.StartAsync(processInfo);
+            SetLastExecuted();
+        }
+
+        public void SetLastExecuted()
+        {
             LastExecutedTracker.SetLastExecuted();
+            OnPropertyChanged(nameof(LastExecuted));
         }
 
         private bool CanStart() => !Disabled && File.Exists(Path);

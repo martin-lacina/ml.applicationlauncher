@@ -64,13 +64,13 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         private async Task StartAsync()
         {
             await LaunchAllProcessesAsync();
+            SetLastExecuted();
+        }
+
+        private void SetLastExecuted()
+        {
             LastExecutedTracker.SetLastExecuted();
-
-            foreach (var child in Children)
-                child.LastExecutedTracker.SetLastExecuted();
-
-            foreach (var process in Processes)
-                process.LastExecutedTracker.SetLastExecuted();
+            OnPropertyChanged(nameof(LastExecuted));
         }
 
         private bool CanStart() => GetLaunchableProcesses().Any();
@@ -92,6 +92,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                     string.IsNullOrEmpty(process.WorkingDirectory) ? null : process.WorkingDirectory);
 
                 tasks.Add(_processLauncher!.StartAsync(info));
+                process.SetLastExecuted();
             }
 
             foreach (var child in Children)

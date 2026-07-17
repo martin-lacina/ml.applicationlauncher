@@ -1,12 +1,15 @@
 <ContentControl x:Class="ML.ApplicationLauncher.Shared.Controls.StartButtonControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ML.ApplicationLauncher.Shared.Controls"
              xmlns:viewModels="clr-namespace:ML.ApplicationLauncher.Shared.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:CommandProcessViewModel, IsDesignTimeCreatable=False}"
+             MinHeight="36"
+             Margin="0,2,0,0"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <ContentControl Name="ContentContainer">
@@ -18,8 +21,34 @@
                             <Button
                                 HorizontalContentAlignment="Stretch"
                                 Command="{Binding Path=StartCommand, Mode=OneWay}"
-                                ToolTip="{Binding Path=Comment, Mode=OneWay}"
                                 DataContext="{Binding Path=DataContext, ElementName=ContentContainer}">
+                                <Button.ToolTip>
+                                    <StackPanel MaxWidth="400">
+                                        <TextBlock Text="{Binding Comment}" FontWeight="SemiBold" Margin="0,0,0,6">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Comment}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Comment}" Value="{x:Static sys:String.Empty}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <StackPanel>
+                                            <TextBlock FontWeight="SemiBold" Foreground="Gray">Execution Mode</TextBlock>
+                                            <TextBlock Text="{Binding ExecutionMode}" Margin="4,0,0,0" />
+                                            <TextBlock FontWeight="SemiBold" Foreground="Gray">Path</TextBlock>
+                                            <TextBlock Text="{Binding Path}" TextWrapping="Wrap" Margin="4,0,0,4" />
+                                            <TextBlock FontWeight="SemiBold" Foreground="Gray">Arguments</TextBlock>
+                                            <TextBlock Text="{Binding Arguments}" TextWrapping="Wrap" Margin="4,0,0,4" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Button.ToolTip>
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="8" />
@@ -28,10 +57,11 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="8" />
                                     </Grid.ColumnDefinitions>
-
-                                    <Image Grid.Column="1" Source="pack://application:,,,/Resources/Start.ico"/>
-                                    <TextBlock Grid.Column="3" Text="{Binding Path=DisplayName, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" />
-                                    <TextBlock Grid.Column="3" Text="{Binding Path=LastExecuted, Mode=OneWay}" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="8" />
+                                    <Image Grid.Column="1" Source="pack://application:,,,/Resources/Start.ico" VerticalAlignment="Center" MaxHeight="24" />
+                                    <Grid Grid.Column="3" VerticalAlignment="Stretch">
+                                        <TextBlock Text="{Binding Path=DisplayName, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" />
+                                        <TextBlock Text="{Binding Path=LastExecuted, Mode=OneWay, StringFormat={}{0:HH\\:mm}}" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="9" Foreground="Gray" />
+                                    </Grid>
                                 </Grid>
                             </Button>
                         </DataTemplate>
@@ -43,7 +73,7 @@
                             <Setter.Value>
                                 <DataTemplate>
                                     <Border HorizontalAlignment="Stretch" DataContext="{Binding Path=DataContext, ElementName=ContentContainer}">
-                                        <TextBlock FontSize="16" Text="{Binding Path=DisplayName, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" />
+                                        <TextBlock Text="{Binding Path=DisplayName, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" />
                                     </Border>
                                 </DataTemplate>
                             </Setter.Value>

@@ -5,11 +5,6 @@
              xmlns:controls="clr-namespace:ML.ApplicationLauncher.Shared.Controls"
              x:Class="ML.ApplicationLauncher.Shared.Views.EditView">
     <UserControl.Resources>
-
-
-        <!--<DataTemplate DataType="{x:Type vm:ProcessGroupViewModel}">
-            <controls:ProcessGroupView />
-        </DataTemplate>-->
     </UserControl.Resources>
 
     <DockPanel>
@@ -21,22 +16,49 @@
                     <Setter Property="VerticalAlignment" Value="Center" />
                 </Style>
             </ToolBar.Resources>
-            <Button Content="💾" ToolTip="Save Configuration" Command="{Binding SaveCommand}" MinWidth="24" />
-            <Button Content="↩️" ToolTip="Undo Last Change" Command="{Binding UndoCommand}" MinWidth="24" />
-            <Button Content="↪️" ToolTip="Redo Last Change" Command="{Binding RedoCommand}" MinWidth="24" />
+            <Button ToolTip="Save Configuration" Command="{Binding SaveCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/content-save-outline-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Undo Last Change" Command="{Binding UndoCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/undo-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Redo Last Change" Command="{Binding RedoCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/redo-custom.png" MaxHeight="24" />
+            </Button>
             <Separator />
-            <TextBlock Text="Groups:" />
-            <Button Content="➕" ToolTip="Add Group" Command="{Binding AddGroupCommand}" MinWidth="24" />
-            <Button Content="📁" ToolTip="Add Subgroup" Command="{Binding AddSubGroupCommand}" MinWidth="24" />
-            <Button Content="🗑️" ToolTip="Remove Selected Group" Command="{Binding RemoveGroupCommand}" MinWidth="24" />
-            <Button Content="⬆️" ToolTip="Move Group Up" Command="{Binding MoveUpGroupCommand}" MinWidth="24" />
-            <Button Content="⬇️" ToolTip="Move Group Down" Command="{Binding MoveDownGroupCommand}" MinWidth="24" />
+            <TextBlock Text="Groups" FontSize="14" />
+            <Button ToolTip="Add Group" Command="{Binding AddGroupCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/plus-thick-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Add Subgroup" Command="{Binding AddSubGroupCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/folder-plus-outline-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Remove Selected Group" Command="{Binding RemoveGroupCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/delete-empty-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Move Group Up" Command="{Binding MoveUpGroupCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/arrow-up-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Move Group Down" Command="{Binding MoveDownGroupCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/arrow-down-custom.png" MaxHeight="24" />
+            </Button>
             <Separator />
-            <TextBlock Text="Processes:" />
-            <Button Content="➕" ToolTip="Add Process" Command="{Binding AddProcessCommand}" MinWidth="24" />
-            <Button Content="🗑" ToolTip="Remove Selected Process" Command="{Binding RemoveSelectedProcessCommand}" MinWidth="24" />
-            <Button Content="⬆️" ToolTip="Move Process Up" Command="{Binding MoveUpProcessCommand}" MinWidth="24" />
-            <Button Content="⬇️" ToolTip="Move Process Down" Command="{Binding MoveDownProcessCommand}" MinWidth="24" />
+            <TextBlock Text="Processes" FontSize="14" />
+            <Button ToolTip="Add Process" Command="{Binding AddProcessCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/shape-circle-plus-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Duplicate Selected Process" Command="{Binding DuplicateSelectedProcessCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/content-duplicate-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Remove Selected Process" Command="{Binding RemoveSelectedProcessCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/delete-empty-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Move Process Up" Command="{Binding MoveUpProcessCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/arrow-up-custom.png" MaxHeight="24" />
+            </Button>
+            <Button ToolTip="Move Process Down" Command="{Binding MoveDownProcessCommand}" MinWidth="24">
+                <Image Source="pack://application:,,,/Resources/arrow-down-custom.png" MaxHeight="24" />
+            </Button>
         </ToolBar>
 
         <Grid>
@@ -89,17 +111,23 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
                                         <StackPanel Orientation="Horizontal">
-                                            <Button Content="▶" Width="30" Height="22" Margin="0,0,4,0"
+                                            <Button Width="30" Height="24" Margin="0,0,4,0"
                                                     Command="{Binding StartCommand}" IsEnabled="{Binding CanBeStarted}"
-                                                    ToolTip="Start Process" />
-                                            <Button Content="⧉" Width="30" Height="22" Margin="0,0,4,0"
+                                                    ToolTip="Start Process">
+                                                <Image Source="pack://application:,,,/Resources/play-custom.png" MaxHeight="24" />
+                                            </Button>
+                                            <Button Width="30" Height="24" Margin="0,0,4,0"
                                                     Command="{Binding DataContext.DuplicateProcessCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                                     CommandParameter="{Binding}"
-                                                    ToolTip="Duplicate Process" />
-                                            <Button Content="🗑" Width="30" Height="22"
+                                                    ToolTip="Duplicate Process">
+                                                <Image Source="pack://application:,,,/Resources/content-duplicate-custom.png" MaxHeight="24" />
+                                            </Button>
+                                            <Button Width="30" Height="24"
                                                     Command="{Binding DataContext.RemoveProcessCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                                     CommandParameter="{Binding}"
-                                                    ToolTip="Delete Process" />
+                                                    ToolTip="Delete Process">
+                                                <Image Source="pack://application:,,,/Resources/delete-empty-custom.png" MaxHeight="24" />
+                                            </Button>
                                         </StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>

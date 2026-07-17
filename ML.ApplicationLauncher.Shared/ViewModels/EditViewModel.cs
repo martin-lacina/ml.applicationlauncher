@@ -155,6 +155,24 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         [RelayCommand]
+        private void DuplicateSelectedProcess()
+        {
+            if (SelectedProcess == null || SelectedGroup == null) return;
+            PushUndo();
+            var newProc = CreateProcessViewModel();
+            newProc.Name = $"{SelectedProcess.Name} (Copy)";
+            newProc.Path = SelectedProcess.Path;
+            newProc.Arguments = SelectedProcess.Arguments;
+            newProc.Comment = SelectedProcess.Comment;
+            newProc.ExecutionMode = SelectedProcess.ExecutionMode;
+            newProc.Disabled = SelectedProcess.Disabled;
+            newProc.Hidden = SelectedProcess.Hidden;
+            newProc.WorkingDirectory = SelectedProcess.WorkingDirectory;
+            SelectedGroup.Processes.Add(newProc);
+            SelectedProcess = newProc;
+        }
+
+        [RelayCommand]
         private void MoveUpProcess()
         {
             if (SelectedProcess == null || SelectedGroup == null) return;
