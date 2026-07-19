@@ -105,8 +105,13 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         partial void OnPathChanged(string value)
         {
             SetValidation(nameof(Path), string.IsNullOrWhiteSpace(value) ? "Path cannot be empty." : null);
+            OnPropertyChanged(nameof(CanBeStarted));
         }
 
-        partial void OnDisabledChanged(bool value) => StartCommand.NotifyCanExecuteChanged();
+        partial void OnDisabledChanged(bool value)
+        {
+            StartCommand.NotifyCanExecuteChanged();
+            OnPropertyChanged(nameof(CanBeStarted));
+        }
     }
 }

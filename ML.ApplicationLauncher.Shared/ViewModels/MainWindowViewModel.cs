@@ -76,6 +76,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         var processGroups = await _processListProvider
             .LoadProcessGroupsAsync(cancellationToken)
+            .Where(pg => pg.IsVisible())
             .Select(pg => MapGroup(pg))
             .ToListAsync(cancellationToken);
 

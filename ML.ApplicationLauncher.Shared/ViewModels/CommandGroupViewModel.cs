@@ -73,7 +73,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             OnPropertyChanged(nameof(LastExecuted));
         }
 
-        private bool CanStart() => GetLaunchableProcesses().Any();
+        private bool CanStart() => CanLaunch && !Disabled && GetLaunchableProcesses().Any();
 
         private async Task LaunchAllProcessesAsync()
         {
@@ -121,12 +121,16 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             return result;
         }
 
-        public bool CanBeStarted => GetLaunchableProcesses().Any();
+        public bool CanBeStarted => CanLaunch && !Disabled && GetLaunchableProcesses().Any();
 
         partial void OnNameChanged(string value)
         {
             SetValidation(nameof(Name), string.IsNullOrWhiteSpace(value) ? "Name cannot be empty." : null);
         }
+
+        partial void OnCanLaunchChanged(bool value) => OnPropertyChanged(nameof(CanBeStarted));
+
+        partial void OnDisabledChanged(bool value) => OnPropertyChanged(nameof(CanBeStarted));
     }
 }
 
