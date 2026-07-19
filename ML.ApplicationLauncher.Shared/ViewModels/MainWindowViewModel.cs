@@ -25,6 +25,7 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly IProcessListProvider _processListProvider;
     private readonly ICommandFactory _commandFactory;
     private readonly IMyDialogService _dialogService;
+    private readonly IMessageService _messageService;
     private bool _isEditMode;
 
     public MainWindowViewModel(
@@ -33,7 +34,8 @@ public partial class MainWindowViewModel : ObservableObject
         IProcessListProvider processListProvider,
         IProcessLauncher processLauncher,
         ICommandFactory commandFactory,
-        IMyDialogService dialogService)
+        IMyDialogService dialogService,
+        IMessageService messageService)
     {
         _configurationProvider = configurationProvider.ShouldNotBeNull();
         _configurationManager = configurationManager.ShouldNotBeNull();
@@ -41,6 +43,7 @@ public partial class MainWindowViewModel : ObservableObject
         _processListProvider = processListProvider.ShouldNotBeNull();
         _commandFactory = commandFactory.ShouldNotBeNull();
         _dialogService = dialogService.ShouldNotBeNull();
+        _messageService = messageService.ShouldNotBeNull();
 
         Task.Run(async () => await LoadListAsync(CancellationToken.None));
 
@@ -60,6 +63,11 @@ public partial class MainWindowViewModel : ObservableObject
         get => _editViewContent;
         private set => SetProperty(ref _editViewContent, value);
     }
+
+    /// <summary>
+    /// Reference to the current edit session ViewModel for checking unsaved changes.
+    /// </summary>
+    private EditViewModel? _editViewModel;
 
     public ObservableCollection<CommandGroupViewModel> ProcessGroups { get; } = new();
 
@@ -119,8 +127,8 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (IsEditMode)
         {
-            var vm = new EditViewModel(_configurationManager, _processLauncher, _commandFactory);
-            EditViewContent = vm;
+            _editViewModel = new EditViewModel(_configurationManager, _processLauncher, _commandFactory);
+            EditViewContent = _editViewModel;
             Console.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
             try
             {
@@ -134,6 +142,24 @@ public partial class MainWindowViewModel : ObservableObject
         }
         else
         {
+            // Check for unsaved changes before exiting edit mode
+            if (_editViewModel?.HasUnsavedChanges == true)
+            {
+                var result = _messageService.ShowQuestion(
+                    "You have unsaved changes. Do you want to exit without saving?",
+                    "Unsaved Changes",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                {
+                    // User chose not to exit — re-enable edit mode
+                    IsEditMode = true;
+                    return;
+                }
+            }
+
+            _editViewModel = null;
             EditViewContent = null;
             Console.WriteLine("EditListAsync: Edit mode disabled; EditViewContent cleared.");
             await LoadListAsync(cancellationToken);

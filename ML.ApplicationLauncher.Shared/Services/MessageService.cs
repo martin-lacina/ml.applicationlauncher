@@ -19,6 +19,11 @@ internal class MessageService : IMessageService
         ShowError(formattedMessage);
     }
 
+    public MessageBoxResult ShowQuestion(string message, string title, MessageBoxButton button = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.Question)
+    {
+        return MessageBox.Show(TrimMessageLength(message), title, button, image);
+    }
+
     internal static string? TrimMessageLength(string? message)
     {
         if (message == null || message.Length <= 1000)

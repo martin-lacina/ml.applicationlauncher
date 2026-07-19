@@ -25,6 +25,13 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         [ObservableProperty]
         bool _isEditMode;
 
+        /// <summary>
+        /// Serialized snapshot of the groups at the last save/load. Used to detect unsaved changes.
+        /// </summary>
+        private string _lastSavedJson = string.Empty;
+
+        public bool HasUnsavedChanges => SerializeGroups() != _lastSavedJson;
+
         public ObservableCollection<CommandGroupViewModel> Groups { get; } = new();
 
         [ObservableProperty]
@@ -231,6 +238,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             foreach (var vm in Groups)
                 groups.Add(ToModel(vm));
             await _repository.SaveAsync(groups);
+            _lastSavedJson = SerializeGroups();
         }
 
         private void PushUndo()
@@ -343,6 +351,9 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
             // Select the first group
             SelectedGroup = Groups.First();
+
+            // Capture baseline snapshot so HasUnsavedChanges starts as false
+            _lastSavedJson = SerializeGroups();
         }
 
         private CommandGroupViewModel ToViewModel(CommandGroup group)
