@@ -6,7 +6,7 @@
         <!-- Editor Header -->
         <Grid>
             <TextBlock Text="Edit Process" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" />
-            <Button Content="▶ Start" HorizontalAlignment="Right" Command="{Binding StartCommand}" 
+            <Button Content="▶ Start" HorizontalAlignment="Right" Command="{Binding StartCommand}"
                     IsEnabled="{Binding CanBeStarted}" Margin="0,0,10,0" Padding="8,2" />
         </Grid>
 
@@ -70,7 +70,8 @@
                     <TextBlock Grid.Column="0" Text="Args:" VerticalAlignment="Top" Margin="0,5" />
                     <TextBox Grid.Column="1" Text="{Binding Arguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                              Margin="2" AcceptsReturn="True" MinHeight="60" MaxHeight="100"
-                             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+                             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                             TextWrapping="NoWrap" />
                 </Grid>
                 <Grid Margin="0,5,0,0">
                     <Grid.ColumnDefinitions>
@@ -79,7 +80,9 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" Text="Comment:" VerticalAlignment="Top" Margin="0,5" />
                     <TextBox Grid.Column="1" Text="{Binding Comment, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="2" AcceptsReturn="True" MinHeight="40" MaxHeight="80" />
+                             Margin="2" AcceptsReturn="True" MinHeight="40" MaxHeight="80"
+                             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                             TextWrapping="NoWrap" />
                 </Grid>
             </StackPanel>
         </GroupBox>
