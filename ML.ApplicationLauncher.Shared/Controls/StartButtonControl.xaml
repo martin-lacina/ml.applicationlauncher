@@ -79,6 +79,29 @@
                             </Setter.Value>
                         </Setter>
                     </DataTrigger>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Path=CanBeStarted}" Value="False" />
+                            <Condition Binding="{Binding Path=CanLaunch}" Value="False" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="ContentTemplate">
+                            <Setter.Value>
+                                <DataTemplate>
+                                    <Border HorizontalAlignment="Stretch" DataContext="{Binding Path=DataContext, ElementName=ContentContainer}">
+                                        <TextBlock FontSize="14" Text="{Binding Path=DisplayName, Mode=OneWay}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" />
+                                    </Border>
+                                </DataTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </MultiDataTrigger>
+
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding Path=CanBeStarted}" Value="False" />
+                            <Condition Binding="{Binding Path=CanLaunch}" Value="True" />
+                        </MultiDataTrigger.Conditions>
+                        <Setter Property="IsEnabled" Value="False" />
+                    </MultiDataTrigger>
                 </Style.Triggers>
             </Style>
         </ContentControl.Style>
