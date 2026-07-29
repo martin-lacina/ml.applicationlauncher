@@ -11,6 +11,7 @@ using CommunityToolkit.Mvvm.Input;
 using ML.ApplicationLauncher.Core;
 using ML.ApplicationLauncher.Core.Validation;
 using ML.ApplicationLauncher.Shared.Services;
+using ML.ApplicationLauncher.Source;
 using ML.ApplicationLauncher.Source.Extensions;
 using ML.ApplicationLauncher.Source.Model;
 using ML.ApplicationLauncher.Source.Services;
@@ -21,9 +22,9 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private readonly IConfigurationLocationProvider<ProcessGroup[]> _configurationProvider;
     private readonly IConfigurationManager<ProcessGroup[]> _configurationManager;
+    private readonly CommandDefinitionsRepository _repository;
     private readonly IProcessModelMapper _mapper;
     private readonly IProcessLauncher _processLauncher;
-    private readonly IProcessListProvider _processListProvider;
     private readonly ICommandFactory _commandFactory;
     private readonly IMyDialogService _dialogService;
     private readonly IMessageService _messageService;
@@ -32,8 +33,8 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         IConfigurationLocationProvider<ProcessGroup[]> configurationProvider,
         IConfigurationManager<ProcessGroup[]> configurationManager,
+        CommandDefinitionsRepository repository,
         IProcessModelMapper mapper,
-        IProcessListProvider processListProvider,
         IProcessLauncher processLauncher,
         ICommandFactory commandFactory,
         IMyDialogService dialogService,
@@ -41,9 +42,9 @@ public partial class MainWindowViewModel : ObservableObject
     {
         _configurationProvider = configurationProvider.ShouldNotBeNull();
         _configurationManager = configurationManager.ShouldNotBeNull();
+        _repository = repository.ShouldNotBeNull();
         _mapper = mapper.ShouldNotBeNull();
         _processLauncher = processLauncher.ShouldNotBeNull();
-        _processListProvider = processListProvider.ShouldNotBeNull();
         _commandFactory = commandFactory.ShouldNotBeNull();
         _dialogService = dialogService.ShouldNotBeNull();
         _messageService = messageService.ShouldNotBeNull();
@@ -77,53 +78,47 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadListAsync(CancellationToken cancellationToken)
     {
-        var processGroups = await _processListProvider
-            .LoadProcessGroupsAsync(cancellationToken)
-            .Where(pg => pg.IsVisible())
-            .Select(pg => MapGroup(pg))
-            .ToListAsync(cancellationToken);
+        var allGroups = await _repository.LoadAsync().ConfigureAwait(false);
 
+        // Filter by IsVisible (preserves disabled/hidden items from main view only)
         ProcessGroups.Clear();
-        ProcessGroups.AddRange(processGroups);
+        foreach (var g in allGroups.Where(g => !g.Hidden && HasVisibleDescendant(g)))
+            ProcessGroups.Add(ToViewModel(g));
     }
 
-    private CommandGroupViewModel MapGroup(ProcessGroup group)
+    private static bool HasVisibleDescendant(CommandGroup group)
+    {
+        if (group.Processes.Any(p => !p.Hidden)) return true;
+        return group.Children.Any(c => HasVisibleDescendant(c));
+    }
+
+    private CommandGroupViewModel ToViewModel(CommandGroup group)
     {
         var vm = new CommandGroupViewModel(_processLauncher, _commandFactory)
         {
-            Name = group.DisplayName,
+            Id = group.Id,
+            Name = group.Name,
             Comment = group.Comment,
             CanLaunch = group.CanLaunch,
             Disabled = group.Disabled,
             Hidden = group.Hidden,
         };
-
-        foreach (var childGroup in group.Groups.Where(g => g.IsVisible()))
-        {
-            vm.Children.Add(MapGroup(childGroup));
-        }
-
-        foreach (var process in group.Processes.Where(p => p.IsVisible()))
-        {
-            vm.Processes.Add(MapProcess(process));
-        }
-
+        foreach (var child in group.Children)
+            vm.Children.Add(ToViewModel(child));
+        foreach (var proc in group.Processes)
+            vm.Processes.Add(new CommandProcessViewModel(_processLauncher, _commandFactory)
+            {
+                Id = proc.Id,
+                Name = proc.Name,
+                Path = proc.Path,
+                Arguments = proc.Arguments,
+                Comment = proc.Comment,
+                ExecutionMode = proc.ExecutionMode,
+                Disabled = proc.Disabled,
+                Hidden = proc.Hidden,
+                WorkingDirectory = proc.WorkingDirectory
+            });
         return vm;
-    }
-
-    private CommandProcessViewModel MapProcess(ProcessLaunchInformation process)
-    {
-        return new CommandProcessViewModel(_processLauncher, _commandFactory)
-        {
-            Name = process.DisplayName,
-            Path = process.Executable,
-            Arguments = ArgumentExtensions.FormatArguments(process.Arguments),
-            Comment = process.Comment,
-            ExecutionMode = process.ExecutionMode,
-            Disabled = process.Disabled,
-            Hidden = process.Hidden,
-            WorkingDirectory = process.WorkingDirectory ?? string.Empty,
-        };
     }
 
     [RelayCommand]
