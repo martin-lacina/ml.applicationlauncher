@@ -69,7 +69,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" MaxWidth="250" />
                 <ColumnDefinition Width="5*" />
-                <ColumnDefinition Width="Auto" MaxWidth="300" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0" Grid.Row="0" Margin="5,8,5,5" FontWeight="Bold" Text="Groups" />
@@ -93,8 +92,12 @@
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                <ListView x:Name="ProcessesListView" Grid.Row="0" ItemsSource="{Binding SelectedGroup.Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
+                <ListView x:Name="ProcessesListView" Grid.Row="0" Grid.Column="0" ItemsSource="{Binding SelectedGroup.Processes}" SelectedItem="{Binding SelectedProcess, Mode=TwoWay}"
                           AllowDrop="True"
                           PreviewMouseLeftButtonDown="ProcessesListView_PreviewMouseLeftButtonDown"
                           MouseMove="ProcessesListView_MouseMove"
@@ -136,7 +139,7 @@
                     </ListView.View>
                 </ListView>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="1" Grid.Column="0" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="2">
                     <ContentControl Content="{Binding SelectedDetail}">
                         <ContentControl.Resources>
                             <DataTemplate DataType="{x:Type vm:CommandProcessViewModel}">
@@ -149,54 +152,54 @@
                         </ContentControl.Resources>
                     </ContentControl>
                 </ScrollViewer>
+
+                <Expander Grid.Column="1" Grid.Row="0" Header="Process preview" IsExpanded="False" ExpandDirection="Left" Margin="5,8,5,5">
+                    <Expander.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" FontWeight="Bold">
+                                <TextBlock.LayoutTransform>
+                                    <RotateTransform Angle="90" />
+                                </TextBlock.LayoutTransform>
+                            </TextBlock>
+                        </DataTemplate>
+                    </Expander.HeaderTemplate>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <!-- Process list -->
+                            <controls:CommandGroupProcessList DataContext="{Binding SelectedGroup}">
+                                <controls:CommandGroupProcessList.Style>
+                                    <Style TargetType="controls:CommandGroupProcessList">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedGroup.Processes.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </controls:CommandGroupProcessList.Style>
+                            </controls:CommandGroupProcessList>
+
+                            <!-- Empty state message -->
+                            <TextBlock Text="No process definitions created"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="Gray"
+                                FontSize="14">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SelectedGroup.Processes.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Expander>
             </Grid>
-
-            <Expander Grid.Column="2" Grid.Row="1" Header="Process preview" IsExpanded="False" ExpandDirection="Left" Margin="5,8,5,5">
-                <Expander.HeaderTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" FontWeight="Bold">
-                            <TextBlock.LayoutTransform>
-                                <RotateTransform Angle="90" />
-                            </TextBlock.LayoutTransform>
-                        </TextBlock>
-                    </DataTemplate>
-                </Expander.HeaderTemplate>
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <!-- Process list -->
-                        <controls:CommandGroupProcessList DataContext="{Binding SelectedGroup}">
-                            <controls:CommandGroupProcessList.Style>
-                                <Style TargetType="controls:CommandGroupProcessList">
-                                    <Setter Property="Visibility" Value="Visible" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedGroup.Processes.Count}" Value="0">
-                                            <Setter Property="Visibility" Value="Collapsed" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </controls:CommandGroupProcessList.Style>
-                        </controls:CommandGroupProcessList>
-
-                        <!-- Empty state message -->
-                        <TextBlock Text="No process definitions created"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Foreground="Gray"
-                                   FontSize="14">
-                            <TextBlock.Style>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="Visibility" Value="Collapsed" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SelectedGroup.Processes.Count}" Value="0">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBlock.Style>
-                        </TextBlock>
-                    </StackPanel>
-                </ScrollViewer>
-            </Expander>
         </Grid>
     </DockPanel>
 </UserControl>

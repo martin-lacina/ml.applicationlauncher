@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ML.ApplicationLauncher.Core;
@@ -52,6 +54,9 @@ public partial class MainWindowViewModel : ObservableObject
         Task.Run(async () => await LoadListAsync(CancellationToken.None));
 
         Task.Run(async () => await ExpireLastExecutionTimeLoopAsync(CancellationToken.None));
+
+        // Allow cross-thread collection changes (used by LoadListAsync running on background threads)
+        BindingOperations.EnableCollectionSynchronization(ProcessGroups, new object());
     }
 
 
@@ -78,6 +83,8 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadListAsync(CancellationToken cancellationToken)
     {
+        await Task.Yield();
+
         var allGroups = await _repository.LoadAsync().ConfigureAwait(false);
 
         // Filter by IsVisible (preserves disabled/hidden items from main view only)
@@ -92,7 +99,7 @@ public partial class MainWindowViewModel : ObservableObject
         return group.Children.Any(c => HasVisibleDescendant(c));
     }
 
-    private CommandGroupViewModel ToViewModel(CommandGroup group)
+    private CommandGroupViewModel ToViewModel(CommandGroup group, bool includeHidden = false)
     {
         var vm = new CommandGroupViewModel(_processLauncher, _commandFactory)
         {
@@ -103,9 +110,9 @@ public partial class MainWindowViewModel : ObservableObject
             Disabled = group.Disabled,
             Hidden = group.Hidden,
         };
-        foreach (var child in group.Children)
-            vm.Children.Add(ToViewModel(child));
-        foreach (var proc in group.Processes)
+        foreach (var child in group.Children.Where(c => includeHidden || !c.Hidden))
+            vm.Children.Add(ToViewModel(child, includeHidden));
+        foreach (var proc in group.Processes.Where(p => includeHidden || !p.Hidden))
             vm.Processes.Add(new CommandProcessViewModel(_processLauncher, _commandFactory)
             {
                 Id = proc.Id,
@@ -128,15 +135,15 @@ public partial class MainWindowViewModel : ObservableObject
         {
             _editViewModel = new EditViewModel(_configurationManager, _mapper, _processLauncher, _commandFactory);
             EditViewContent = _editViewModel;
-            Console.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
+            Debug.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
             try
             {
                 var dt = Application.Current?.TryFindResource(typeof(EditViewModel));
-                Console.WriteLine(dt == null ? "EditListAsync: No DataTemplate found for EditViewModel" : $"EditListAsync: DataTemplate found for EditViewModel: {dt.GetType().FullName}");
+                Debug.WriteLine(dt == null ? "EditListAsync: No DataTemplate found for EditViewModel" : $"EditListAsync: DataTemplate found for EditViewModel: {dt.GetType().FullName}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"EditListAsync: Exception checking resources: {ex}");
+                Debug.WriteLine($"EditListAsync: Exception checking resources: {ex}");
             }
         }
         else
@@ -145,22 +152,38 @@ public partial class MainWindowViewModel : ObservableObject
             if (_editViewModel?.HasUnsavedChanges == true)
             {
                 var result = _messageService.ShowQuestion(
-                    "You have unsaved changes. Do you want to exit without saving?",
+                    "There are unsaved changes. Do you want to save them before closing edit mode?",
                     "Unsaved Changes",
-                    MessageBoxButton.YesNo,
+                    MessageBoxButton.YesNoCancel,
                     MessageBoxImage.Warning);
 
-                if (result != MessageBoxResult.Yes)
+                switch (result)
                 {
-                    // User chose not to exit — re-enable edit mode
-                    IsEditMode = true;
-                    return;
+                    case MessageBoxResult.Yes:
+                        // Save and close — re-enter edit mode temporarily so the command can execute
+                        IsEditMode = true;
+                        await _editViewModel.SaveCommand.ExecuteAsync(null);
+                        IsEditMode = false;
+                        _editViewModel = null;
+                        EditViewContent = null;
+                        Debug.WriteLine("EditListAsync: Changes saved; edit mode disabled.");
+                        await LoadListAsync(cancellationToken);
+                        return;
+
+                    case MessageBoxResult.No:
+                        // Discard and close
+                        break;
+
+                    case MessageBoxResult.Cancel:
+                        // User cancelled — stay in edit mode
+                        IsEditMode = true;
+                        return;
                 }
             }
 
             _editViewModel = null;
             EditViewContent = null;
-            Console.WriteLine("EditListAsync: Edit mode disabled; EditViewContent cleared.");
+            Debug.WriteLine("EditListAsync: Edit mode disabled; EditViewContent cleared.");
             await LoadListAsync(cancellationToken);
         }
     }
