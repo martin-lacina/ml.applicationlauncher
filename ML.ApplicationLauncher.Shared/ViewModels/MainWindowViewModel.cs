@@ -21,6 +21,7 @@ public partial class MainWindowViewModel : ObservableObject
 {
     private readonly IConfigurationLocationProvider<ProcessGroup[]> _configurationProvider;
     private readonly IConfigurationManager<ProcessGroup[]> _configurationManager;
+    private readonly IProcessModelMapper _mapper;
     private readonly IProcessLauncher _processLauncher;
     private readonly IProcessListProvider _processListProvider;
     private readonly ICommandFactory _commandFactory;
@@ -31,6 +32,7 @@ public partial class MainWindowViewModel : ObservableObject
     public MainWindowViewModel(
         IConfigurationLocationProvider<ProcessGroup[]> configurationProvider,
         IConfigurationManager<ProcessGroup[]> configurationManager,
+        IProcessModelMapper mapper,
         IProcessListProvider processListProvider,
         IProcessLauncher processLauncher,
         ICommandFactory commandFactory,
@@ -39,6 +41,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         _configurationProvider = configurationProvider.ShouldNotBeNull();
         _configurationManager = configurationManager.ShouldNotBeNull();
+        _mapper = mapper.ShouldNotBeNull();
         _processLauncher = processLauncher.ShouldNotBeNull();
         _processListProvider = processListProvider.ShouldNotBeNull();
         _commandFactory = commandFactory.ShouldNotBeNull();
@@ -128,7 +131,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (IsEditMode)
         {
-            _editViewModel = new EditViewModel(_configurationManager, _processLauncher, _commandFactory);
+            _editViewModel = new EditViewModel(_configurationManager, _mapper, _processLauncher, _commandFactory);
             EditViewContent = _editViewModel;
             Console.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
             try

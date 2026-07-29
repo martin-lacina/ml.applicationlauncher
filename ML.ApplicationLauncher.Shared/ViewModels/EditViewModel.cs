@@ -21,6 +21,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         private readonly CommandDefinitionsRepository _repository;
         private readonly IProcessLauncher? _processLauncher;
         private readonly ICommandFactory? _commandFactory;
+        private readonly IProcessModelMapper _mapper;
 
         [ObservableProperty]
         bool _isEditMode;
@@ -60,9 +61,10 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             PropertyNameCaseInsensitive = true
         };
 
-        public EditViewModel(IConfigurationManager<ProcessGroup[]> configurationManager, IProcessLauncher? processLauncher = null, ICommandFactory? commandFactory = null)
+        public EditViewModel(IConfigurationManager<ProcessGroup[]> configurationManager, IProcessModelMapper mapper, IProcessLauncher? processLauncher = null, ICommandFactory? commandFactory = null)
         {
-            _repository = new CommandDefinitionsRepository(configurationManager);
+            _repository = new CommandDefinitionsRepository(configurationManager, mapper);
+            _mapper = mapper;
             _processLauncher = processLauncher;
             _commandFactory = commandFactory;
             _undoManager = new UndoRedoManager<UndoState>(100); // Hidden config option: 100 undo steps

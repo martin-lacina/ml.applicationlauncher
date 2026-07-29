@@ -15,16 +15,18 @@ namespace ML.ApplicationLauncher.Source
     public class CommandDefinitionsRepository
     {
         private readonly IConfigurationManager<ProcessGroup[]> _configurationManager;
+        private readonly IProcessModelMapper _mapper;
 
-        public CommandDefinitionsRepository(IConfigurationManager<ProcessGroup[]> configurationManager)
+        public CommandDefinitionsRepository(IConfigurationManager<ProcessGroup[]> configurationManager, IProcessModelMapper mapper)
         {
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<List<CommandGroup>> LoadAsync()
         {
             var config = await _configurationManager.LoadConfigurationAsync(CancellationToken.None).ConfigureAwait(false);
-            return MapProcessGroupsToCommandGroups(config ?? Array.Empty<ProcessGroup>());
+            return _mapper.MapToCommandGroups(config ?? Array.Empty<ProcessGroup>()).ToList();
         }
 
         public async Task SaveAsync(List<CommandGroup> groups)
@@ -32,8 +34,8 @@ namespace ML.ApplicationLauncher.Source
             // Validate entire tree for duplicates and circular refs before persisting
             ValidateAll(groups);
 
-            // Convert to new ProcessGroup[] model for persistence
-            var processGroups = MapCommandGroupsToProcessGroups(groups);
+            // Convert to ProcessGroup[] model for persistence via mapper
+            var processGroups = _mapper.MapToProcessGroups(groups).ToArray();
 
             await _configurationManager.SaveConfigurationAsync(processGroups, CancellationToken.None).ConfigureAwait(false);
         }
@@ -141,81 +143,5 @@ namespace ML.ApplicationLauncher.Source
             }
         }
 
-        // ---------------------------------------------------------------------
-        // Mapping helpers between ProcessGroup (configuration model) and CommandGroup (editor model)
-        // ---------------------------------------------------------------------
-        private static List<CommandGroup> MapProcessGroupsToCommandGroups(IEnumerable<ProcessGroup> processGroups)
-        {
-            var result = new List<CommandGroup>();
-            foreach (var pg in processGroups ?? Array.Empty<ProcessGroup>())
-                result.Add(MapProcessGroupToCommandGroup(pg));
-            return result;
-        }
-
-        private static CommandGroup MapProcessGroupToCommandGroup(ProcessGroup pg)
-        {
-            var cg = new CommandGroup
-            {
-                Id = Guid.NewGuid(),
-                Name = pg.DisplayName ?? string.Empty,
-                Comment = pg.Comment ?? string.Empty,
-                CanLaunch = pg.CanLaunch,
-                Disabled = pg.Disabled,
-                Hidden = pg.Hidden,
-            };
-
-            if (pg.Groups != null)
-            {
-                foreach (var child in pg.Groups)
-                    cg.Children.Add(MapProcessGroupToCommandGroup(child));
-            }
-
-            if (pg.Processes != null)
-            {
-                foreach (var p in pg.Processes)
-                {
-                    cg.Processes.Add(new CommandProcess
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = p.DisplayName ?? string.Empty,
-                        Path = p.Executable ?? string.Empty,
-                        Arguments = ArgumentExtensions.FormatArguments(p.Arguments),
-                        Comment = p.Comment ?? string.Empty,
-                        ExecutionMode = p.ExecutionMode,
-                        Disabled = p.Disabled,
-                        Hidden = p.Hidden,
-                        WorkingDirectory = p.WorkingDirectory ?? string.Empty
-                    });
-                }
-            }
-
-            return cg;
-        }
-
-        private static ProcessGroup[] MapCommandGroupsToProcessGroups(IEnumerable<CommandGroup> groups)
-        {
-            var list = new List<ProcessGroup>();
-            foreach (var g in groups ?? new List<CommandGroup>())
-                list.Add(MapCommandGroupToProcessGroup(g));
-            return list.ToArray();
-        }
-
-        private static ProcessGroup MapCommandGroupToProcessGroup(CommandGroup g)
-        {
-            var childGroups = (g.Children ?? new List<CommandGroup>()).Select(MapCommandGroupToProcessGroup).ToArray();
-            var processes = (g.Processes ?? new List<CommandProcess>()).Select(p =>
-                new ProcessLaunchInformation(
-                    p.Name ?? string.Empty,
-                    p.Comment ?? string.Empty,
-                    p.Path ?? string.Empty,
-                    ArgumentExtensions.ParseArguments(p.Arguments),
-                    p.ExecutionMode,
-                    p.Disabled,
-                    p.Hidden,
-                    string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory
-                )).ToArray();
-
-            return new ProcessGroup(g.Name ?? string.Empty, g.Comment ?? string.Empty, g.CanLaunch, childGroups, processes, g.Disabled, g.Hidden);
-        }
     }
 }
