@@ -14,13 +14,15 @@ namespace ML.ApplicationLauncher.Tests
     public class CommandDefinitionsRepositoryTests
     {
         private Mock<IConfigurationManager<ProcessGroup[]>> _mockConfigManager;
+        private Mock<IProcessModelMapper> _mockMapper;
         private CommandDefinitionsRepository _repo;
 
         [SetUp]
         public void Setup()
         {
             _mockConfigManager = new Mock<IConfigurationManager<ProcessGroup[]>>();
-            _repo = new CommandDefinitionsRepository(_mockConfigManager.Object);
+            _mockMapper = new Mock<IProcessModelMapper>();
+            _repo = new CommandDefinitionsRepository(_mockConfigManager.Object, _mockMapper.Object);
         }
 
         #region LoadAsync Tests

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using ML.ApplicationLauncher.Shared.Services;
+using ML.ApplicationLauncher.Shared.ViewModels;
 using NUnit.Framework;
 
 namespace ML.ApplicationLauncher.Tests;
