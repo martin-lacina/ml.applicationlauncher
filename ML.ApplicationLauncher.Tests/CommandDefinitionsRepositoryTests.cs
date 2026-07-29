@@ -22,7 +22,72 @@ namespace ML.ApplicationLauncher.Tests
         {
             _mockConfigManager = new Mock<IConfigurationManager<ProcessGroup[]>>();
             _mockMapper = new Mock<IProcessModelMapper>();
+
+            // Configure mapper to return real data for mapping tests
+            _mockMapper.Setup(m => m.MapToCommandGroups(It.IsAny<IEnumerable<ProcessGroup>>()))
+                .Returns((IEnumerable<ProcessGroup> sources) =>
+                {
+                    var result = new List<CommandGroup>();
+                    foreach (var pg in sources ?? Array.Empty<ProcessGroup>())
+                        result.Add(MapRealToCommandGroup(pg));
+                    return result;
+                });
+            _mockMapper.Setup(m => m.MapToProcessGroups(It.IsAny<IEnumerable<CommandGroup>>()))
+                .Returns((IEnumerable<CommandGroup> sources) =>
+                {
+                    var list = new List<ProcessGroup>();
+                    foreach (var g in sources ?? Array.Empty<CommandGroup>())
+                        list.Add(MapRealToProcessGroup(g));
+                    return list.ToArray();
+                });
+
             _repo = new CommandDefinitionsRepository(_mockConfigManager.Object, _mockMapper.Object);
+        }
+
+        // Real mapping helpers for test assertions
+        private static CommandGroup MapRealToCommandGroup(ProcessGroup pg)
+        {
+            var cg = new CommandGroup
+            {
+                Id = Guid.CreateVersion7(),
+                Name = pg.DisplayName ?? string.Empty,
+                Comment = pg.Comment ?? string.Empty,
+                CanLaunch = pg.CanLaunch,
+                Disabled = pg.Disabled,
+                Hidden = pg.Hidden,
+            };
+            if (pg.Groups != null)
+                foreach (var child in pg.Groups) cg.Children.Add(MapRealToCommandGroup(child));
+            if (pg.Processes != null)
+                foreach (var p in pg.Processes)
+                    cg.Processes.Add(new CommandProcess
+                    {
+                        Id = Guid.CreateVersion7(),
+                        Name = p.DisplayName ?? string.Empty,
+                        Path = p.Executable ?? string.Empty,
+                        Arguments = ML.ApplicationLauncher.Core.ArgumentExtensions.FormatArguments(p.Arguments),
+                        Comment = p.Comment ?? string.Empty,
+                        ExecutionMode = p.ExecutionMode,
+                        Disabled = p.Disabled,
+                        Hidden = p.Hidden,
+                        WorkingDirectory = p.WorkingDirectory ?? string.Empty
+                    });
+            return cg;
+        }
+
+        private static ProcessGroup MapRealToProcessGroup(CommandGroup g)
+        {
+            var childGroups = g.Children.Select(MapRealToProcessGroup).ToArray();
+            var processes = g.Processes.Select(p => new ProcessLaunchInformation(
+                p.Name ?? string.Empty,
+                p.Comment ?? string.Empty,
+                p.Path ?? string.Empty,
+                ML.ApplicationLauncher.Core.ArgumentExtensions.ParseArguments(p.Arguments),
+                p.ExecutionMode,
+                p.Disabled,
+                p.Hidden,
+                string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory)).ToArray();
+            return new ProcessGroup(g.Name ?? string.Empty, g.Comment ?? string.Empty, g.CanLaunch, childGroups, processes, g.Disabled, g.Hidden);
         }
 
         #region LoadAsync Tests

@@ -17,7 +17,6 @@ public class SourceServiceInstaller : IDependencyInstaller
     {
         registry
             .RegisterSingleton<IProcessModelMapper, ProcessGroupMapper>()
-            .Register<IProcessListProvider, ProcessListProvider>()
             .Register<IProcessLauncher, ProcessLauncher>()
             .Register<IProcessStartInfoResolverSelector, ProcessStartInfoResolverSelector>()
             .RegisterSingleton<ProcessToLaunchConfigurationManager>()
