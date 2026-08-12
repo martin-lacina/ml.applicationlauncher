@@ -23,13 +23,13 @@ namespace ML.ApplicationLauncher.Source
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<List<CommandGroup>> LoadAsync()
+        public async Task<List<CommandGroup>> LoadAsync(CancellationToken cancellationToken = default)
         {
-            var config = await _configurationManager.LoadConfigurationAsync(CancellationToken.None).ConfigureAwait(false);
+            var config = await _configurationManager.LoadConfigurationAsync(cancellationToken).ConfigureAwait(false);
             return _mapper.MapToCommandGroups(config ?? Array.Empty<ProcessGroup>()).ToList();
         }
 
-        public async Task SaveAsync(List<CommandGroup> groups)
+        public async Task SaveAsync(List<CommandGroup> groups, CancellationToken cancellationToken = default)
         {
             // Validate entire tree for duplicates and circular refs before persisting
             ValidateAll(groups);
@@ -37,7 +37,7 @@ namespace ML.ApplicationLauncher.Source
             // Convert to ProcessGroup[] model for persistence via mapper
             var processGroups = _mapper.MapToProcessGroups(groups).ToArray();
 
-            await _configurationManager.SaveConfigurationAsync(processGroups, CancellationToken.None).ConfigureAwait(false);
+            await _configurationManager.SaveConfigurationAsync(processGroups, cancellationToken).ConfigureAwait(false);
         }
 
         // ---------------------------------------------------------------------
