@@ -15,6 +15,7 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
 {
     private DateTime _lastStartup = DateTime.MinValue;
     private readonly TimeSpan _delay = TimeSpan.FromSeconds(3);
+    private readonly Lock _delayLock = new();
 
     private readonly IMessageService _messageService;
     private readonly IProcessStartInfoResolverSelector _processStartInfoResolverSelector;
@@ -82,16 +83,19 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
 
     private TimeSpan ComputeDelay()
     {
-        var now = DateTime.UtcNow;
+        lock (_delayLock)
+        {
+            var now = DateTime.UtcNow;
 
-        var nextRun = _lastStartup.Add(_delay);
+            var nextRun = _lastStartup.Add(_delay);
 
-        _lastStartup = DateTime.UtcNow;
+            _lastStartup = DateTime.UtcNow;
 
-        if (nextRun < now)
-            return TimeSpan.Zero;
+            if (nextRun < now)
+                return TimeSpan.Zero;
 
-        return nextRun - now;
+            return nextRun - now;
+        }
     }
 
     public void Dispose() => _cancellationTokenSource.Dispose();

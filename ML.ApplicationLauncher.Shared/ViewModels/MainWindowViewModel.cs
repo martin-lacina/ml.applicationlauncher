@@ -51,12 +51,27 @@ public partial class MainWindowViewModel : ObservableObject
         _dialogService = dialogService.ShouldNotBeNull();
         _messageService = messageService.ShouldNotBeNull();
 
-        Task.Run(async () => await LoadListAsync(CancellationToken.None));
+        _ = RunSafe(LoadListAsync(CancellationToken.None), _messageService);
 
-        Task.Run(async () => await ExpireLastExecutionTimeLoopAsync(CancellationToken.None));
+        _ = RunSafe(ExpireLastExecutionTimeLoopAsync(CancellationToken.None), _messageService);
 
         // Allow cross-thread collection changes (used by LoadListAsync running on background threads)
         BindingOperations.EnableCollectionSynchronization(ProcessGroups, new object());
+    }
+
+    /// <summary>
+    /// Wraps a fire-and-forget task and surfaces any unhandled exceptions via the message service.
+    /// </summary>
+    private static async Task RunSafe(Task task, IMessageService messageService)
+    {
+        try
+        {
+            await task;
+        }
+        catch (Exception ex)
+        {
+            messageService.ShowError("An unexpected error occurred in a background task", ex);
+        }
     }
 
 
