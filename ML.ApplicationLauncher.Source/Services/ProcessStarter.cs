@@ -14,7 +14,8 @@ namespace ML.ApplicationLauncher.Source.Services;
 internal class ProcessLauncher : IProcessLauncher, IDisposable
 {
     private DateTime _lastStartup = DateTime.MinValue;
-    private readonly TimeSpan _delay = TimeSpan.FromSeconds(3);
+    private const int LaunchDelaySeconds = 3;
+    private readonly TimeSpan _delay = TimeSpan.FromSeconds(LaunchDelaySeconds);
     private readonly Lock _delayLock = new();
 
     private readonly IMessageService _messageService;

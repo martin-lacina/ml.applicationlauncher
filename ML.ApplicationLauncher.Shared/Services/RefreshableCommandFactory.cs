@@ -11,12 +11,14 @@ namespace ML.ApplicationLauncher.Shared.Services;
 
 public class RefreshableCommandFactory : ICommandFactory, IDisposable
 {
+    private const int CanExecuteRefreshIntervalMs = 250;
+
     private readonly Timer _timer;
     private List<WeakReference<RefreshedCommandWrapper>> _commands = new();
 
     public RefreshableCommandFactory()
     {
-        _timer = new Timer(250);
+        _timer = new Timer(CanExecuteRefreshIntervalMs);
         _timer.Elapsed += RefreshCanExecute;
     }
 

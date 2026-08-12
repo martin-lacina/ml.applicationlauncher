@@ -8,6 +8,8 @@ namespace ML.ApplicationLauncher.Shared.Services;
 
 internal class MessageService : IMessageService
 {
+    private const int MaxErrorMessageLength = 1000;
+
     public void ShowError(string message)
     {
         MessageBox.Show(TrimMessageLength(message), "Error occurred", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -26,9 +28,9 @@ internal class MessageService : IMessageService
 
     internal static string? TrimMessageLength(string? message)
     {
-        if (message == null || message.Length <= 1000)
+        if (message == null || message.Length <= MaxErrorMessageLength)
             return message;
 
-        return message[..1000];
+        return message[..MaxErrorMessageLength];
     }
 }
