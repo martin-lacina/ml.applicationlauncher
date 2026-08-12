@@ -367,7 +367,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             vm.CanLaunch = group.CanLaunch;
             vm.Disabled = group.Disabled;
             vm.Hidden = group.Hidden;
-            foreach (var child in group.Children)
+            foreach (var child in group.ChildGroups)
                 vm.Children.Add(ToViewModel(child));
             foreach (var proc in group.Processes)
             {
@@ -478,7 +478,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                 Hidden = vm.Hidden,
             };
             foreach (var child in vm.Children)
-                group.Children.Add(ToModel(child));
+                group.ChildGroups.Add(ToModel(child));
             foreach (var procVm in vm.Processes)
                 group.Processes.Add(new CommandProcess
                 {

@@ -34,7 +34,7 @@ public class ProcessGroupMapper : IProcessModelMapper
         if (source.Groups != null)
         {
             foreach (var child in source.Groups)
-                cg.Children.Add(MapToCommandGroup(child));
+                cg.ChildGroups.Add(MapToCommandGroup(child));
         }
 
         if (source.Processes != null)
@@ -65,29 +65,33 @@ public class ProcessGroupMapper : IProcessModelMapper
 
     public ProcessGroup MapToProcessGroup(CommandGroup source)
     {
-        var childGroups = source.Children.Select(MapToProcessGroup).ToArray();
+        var childGroups = source.ChildGroups.Select(MapToProcessGroup).ToArray();
         var processes = source.Processes.Select(MapToProcessLaunchInformation).ToArray();
 
-        return new ProcessGroup(
-            source.Name ?? string.Empty,
-            source.Comment ?? string.Empty,
-            source.CanLaunch,
-            childGroups,
-            processes,
-            source.Disabled,
-            source.Hidden);
+        return new ProcessGroup
+        {
+            DisplayName = source.Name ?? string.Empty,
+            Comment = source.Comment ?? string.Empty,
+            CanLaunch = source.CanLaunch,
+            Groups = childGroups,
+            Processes = processes,
+            Disabled = source.Disabled,
+            Hidden = source.Hidden
+        };
     }
 
     private static ProcessLaunchInformation MapToProcessLaunchInformation(CommandProcess p)
     {
-        return new ProcessLaunchInformation(
-            p.Name ?? string.Empty,
-            p.Comment ?? string.Empty,
-            p.Path ?? string.Empty,
-            ArgumentExtensions.ParseArguments(p.Arguments),
-            p.ExecutionMode,
-            p.Disabled,
-            p.Hidden,
-            string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory);
+        return new ProcessLaunchInformation
+        {
+            DisplayName = p.Name ?? string.Empty,
+            Comment = p.Comment ?? string.Empty,
+            Executable = p.Path ?? string.Empty,
+            Arguments = ArgumentExtensions.ParseArguments(p.Arguments),
+            ExecutionMode = p.ExecutionMode,
+            Disabled = p.Disabled,
+            Hidden = p.Hidden,
+            WorkingDirectory = string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory
+        };
     }
 }

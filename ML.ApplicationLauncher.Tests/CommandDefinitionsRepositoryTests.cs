@@ -57,7 +57,7 @@ namespace ML.ApplicationLauncher.Tests
                 Hidden = pg.Hidden,
             };
             if (pg.Groups != null)
-                foreach (var child in pg.Groups) cg.Children.Add(MapRealToCommandGroup(child));
+                foreach (var child in pg.Groups) cg.ChildGroups.Add(MapRealToCommandGroup(child));
             if (pg.Processes != null)
                 foreach (var p in pg.Processes)
                     cg.Processes.Add(new CommandProcess
@@ -77,17 +77,28 @@ namespace ML.ApplicationLauncher.Tests
 
         private static ProcessGroup MapRealToProcessGroup(CommandGroup g)
         {
-            var childGroups = g.Children.Select(MapRealToProcessGroup).ToArray();
-            var processes = g.Processes.Select(p => new ProcessLaunchInformation(
-                p.Name ?? string.Empty,
-                p.Comment ?? string.Empty,
-                p.Path ?? string.Empty,
-                ML.ApplicationLauncher.Core.ArgumentExtensions.ParseArguments(p.Arguments),
-                p.ExecutionMode,
-                p.Disabled,
-                p.Hidden,
-                string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory)).ToArray();
-            return new ProcessGroup(g.Name ?? string.Empty, g.Comment ?? string.Empty, g.CanLaunch, childGroups, processes, g.Disabled, g.Hidden);
+            var childGroups = g.ChildGroups.Select(MapRealToProcessGroup).ToArray();
+            var processes = g.Processes.Select(p => new ProcessLaunchInformation
+            {
+                DisplayName = p.Name ?? string.Empty,
+                Comment = p.Comment ?? string.Empty,
+                Executable = p.Path ?? string.Empty,
+                Arguments = ML.ApplicationLauncher.Core.ArgumentExtensions.ParseArguments(p.Arguments),
+                ExecutionMode = p.ExecutionMode,
+                Disabled = p.Disabled,
+                Hidden = p.Hidden,
+                WorkingDirectory = string.IsNullOrWhiteSpace(p.WorkingDirectory) ? null : p.WorkingDirectory
+            }).ToArray();
+            return new ProcessGroup
+            {
+                DisplayName = g.Name ?? string.Empty,
+                Comment = g.Comment ?? string.Empty,
+                CanLaunch = g.CanLaunch,
+                Groups = childGroups,
+                Processes = processes,
+                Disabled = g.Disabled,
+                Hidden = g.Hidden
+            };
         }
 
         #region LoadAsync Tests
@@ -115,25 +126,27 @@ namespace ML.ApplicationLauncher.Tests
             // Arrange
             var processGroups = new[]
             {
-                new ProcessGroup(
-                    DisplayName: "Group1",
-                    Comment: "Test",
-                    CanLaunch: true,
-                    Groups: Array.Empty<ProcessGroup>(),
-                    Processes: new[]
+                new ProcessGroup
+                {
+                    DisplayName = "Group1",
+                    Comment = "Test",
+                    CanLaunch = true,
+                    Groups = Array.Empty<ProcessGroup>(),
+                    Processes = new[]
                     {
-                        new ProcessLaunchInformation(
-                            DisplayName: "Process1",
-                            Comment: "",
-                            Executable: "C:\\notepad.exe",
-                            Arguments: Array.Empty<string>(),
-                            ExecutionMode: ExecutionMode.Default,
-                            Disabled: false,
-                            Hidden: false,
-                            WorkingDirectory: null
-                        )
+                        new ProcessLaunchInformation
+                        {
+                            DisplayName = "Process1",
+                            Comment = "",
+                            Executable = "C:\\notepad.exe",
+                            Arguments = Array.Empty<string>(),
+                            ExecutionMode = ExecutionMode.Default,
+                            Disabled = false,
+                            Hidden = false,
+                            WorkingDirectory = null
+                        }
                     }
-                )
+                }
             };
 
             _mockConfigManager
@@ -255,8 +268,14 @@ namespace ML.ApplicationLauncher.Tests
             _mockConfigManager
                 .Setup(m => m.LoadConfigurationAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new[] {
-                    new ProcessGroup(group.Name, "", true, Array.Empty<ProcessGroup>(),
-                        new ProcessLaunchInformation[0], false, false)
+                    new ProcessGroup
+                    {
+                        DisplayName = group.Name,
+                        Comment = "",
+                        CanLaunch = true,
+                        Groups = Array.Empty<ProcessGroup>(),
+                        Processes = new ProcessLaunchInformation[0]
+                    }
                 });
 
             _mockConfigManager
@@ -380,7 +399,7 @@ namespace ML.ApplicationLauncher.Tests
             // Arrange
             var g = new CommandGroup { Name = "Self" };
             // create a direct circular reference
-            g.Children.Add(g);
+            g.ChildGroups.Add(g);
             var list = new List<CommandGroup> { g };
 
             _mockConfigManager
@@ -416,13 +435,23 @@ namespace ML.ApplicationLauncher.Tests
         public async Task LoadAsync_NestedGroups_MapsCorrectly()
         {
             // Arrange
-            var childGroup = new ProcessGroup(
-                "ChildGroup", "", true, Array.Empty<ProcessGroup>(),
-                new ProcessLaunchInformation[0], false, false);
+            var childGroup = new ProcessGroup
+            {
+                DisplayName = "ChildGroup",
+                Comment = "",
+                CanLaunch = true,
+                Groups = Array.Empty<ProcessGroup>(),
+                Processes = new ProcessLaunchInformation[0]
+            };
 
-            var parentGroup = new ProcessGroup(
-                "ParentGroup", "", true, new[] { childGroup },
-                new ProcessLaunchInformation[0], false, false);
+            var parentGroup = new ProcessGroup
+            {
+                DisplayName = "ParentGroup",
+                Comment = "",
+                CanLaunch = true,
+                Groups = new[] { childGroup },
+                Processes = new ProcessLaunchInformation[0]
+            };
 
             _mockConfigManager
                 .Setup(m => m.LoadConfigurationAsync(It.IsAny<CancellationToken>()))
@@ -434,8 +463,8 @@ namespace ML.ApplicationLauncher.Tests
             // Assert
             Assert.AreEqual(1, groups.Count);
             Assert.AreEqual("ParentGroup", groups[0].Name);
-            Assert.AreEqual(1, groups[0].Children.Count);
-            Assert.AreEqual("ChildGroup", groups[0].Children[0].Name);
+            Assert.AreEqual(1, groups[0].ChildGroups.Count);
+            Assert.AreEqual("ChildGroup", groups[0].ChildGroups[0].Name);
         }
 
         [Test]

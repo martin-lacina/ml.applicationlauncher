@@ -81,15 +81,17 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
             foreach (var process in Processes.Where(p => !p.Disabled && File.Exists(p.Path)))
             {
-                var info = new ProcessLaunchInformation(
-                    process.Name,
-                    process.Comment,
-                    process.Path,
-                    ArgumentExtensions.ParseArguments(process.Arguments),
-                    process.ExecutionMode,
-                    process.Disabled,
-                    process.Hidden,
-                    string.IsNullOrEmpty(process.WorkingDirectory) ? null : process.WorkingDirectory);
+                var info = new ProcessLaunchInformation
+                {
+                    DisplayName = process.Name,
+                    Comment = process.Comment,
+                    Executable = process.Path,
+                    Arguments = ArgumentExtensions.ParseArguments(process.Arguments),
+                    ExecutionMode = process.ExecutionMode,
+                    Disabled = process.Disabled,
+                    Hidden = process.Hidden,
+                    WorkingDirectory = string.IsNullOrEmpty(process.WorkingDirectory) ? null : process.WorkingDirectory
+                };
 
                 tasks.Add(_processLauncher!.StartAsync(info));
                 process.SetLastExecuted();

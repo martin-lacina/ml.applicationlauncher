@@ -6,7 +6,7 @@ namespace ML.ApplicationLauncher.Source;
 
 /// <summary>
 /// Represents a launchable process.
-/// This is a persistence DTO — never data-bound to UI.
+/// This is a runtime DTO — never data-bound to UI and never directly serialized.
 /// </summary>
 public record CommandProcess
 {

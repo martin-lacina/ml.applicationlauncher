@@ -111,7 +111,7 @@ public partial class MainWindowViewModel : ObservableObject
     private static bool HasVisibleDescendant(CommandGroup group)
     {
         if (group.Processes.Any(p => !p.Hidden)) return true;
-        return group.Children.Any(c => HasVisibleDescendant(c));
+        return group.ChildGroups.Any(c => HasVisibleDescendant(c));
     }
 
     private CommandGroupViewModel ToViewModel(CommandGroup group, bool includeHidden = false)
@@ -125,7 +125,7 @@ public partial class MainWindowViewModel : ObservableObject
             Disabled = group.Disabled,
             Hidden = group.Hidden,
         };
-        foreach (var child in group.Children.Where(c => includeHidden || !c.Hidden))
+        foreach (var child in group.ChildGroups.Where(c => includeHidden || !c.Hidden))
             vm.Children.Add(ToViewModel(child, includeHidden));
         foreach (var proc in group.Processes.Where(p => includeHidden || !p.Hidden))
             vm.Processes.Add(new CommandProcessViewModel(_processLauncher, _commandFactory)
@@ -267,12 +267,14 @@ public partial class MainWindowViewModel : ObservableObject
     [RelayCommand]
     private async Task EditJsonDefinitionAsync(CancellationToken cancellationToken)
     {
-        var editCommand = new ProcessLaunchInformation(
-            "Edit JSON defition in Notepad",
-            string.Empty,
-            "notepad.exe",
-            [_configurationProvider.ConfigurationFilePath],
-            ExecutionMode.Raw);
+        var editCommand = new ProcessLaunchInformation
+        {
+            DisplayName = "Edit JSON defition in Notepad",
+            Comment = string.Empty,
+            Executable = "notepad.exe",
+            Arguments = [_configurationProvider.ConfigurationFilePath],
+            ExecutionMode = ExecutionMode.Raw
+        };
 
         await _processLauncher.StartAsync(editCommand, cancellationToken);
     }

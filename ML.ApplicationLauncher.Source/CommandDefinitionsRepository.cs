@@ -48,7 +48,7 @@ namespace ML.ApplicationLauncher.Source
             seenIds ??= new HashSet<Guid>();
             if (!seenIds.Add(group.Id))
                 throw new InvalidOperationException($"Duplicate group Id detected: {group.Id}");
-            foreach (var child in group.Children)
+            foreach (var child in group.ChildGroups)
                 ValidateGroup(child, seenIds);
             foreach (var proc in group.Processes)
             {
@@ -63,7 +63,7 @@ namespace ML.ApplicationLauncher.Source
         {
             if (parentId.HasValue && group.Id == parentId.Value)
                 throw new InvalidOperationException("Circular reference detected in group hierarchy.");
-            foreach (var child in group.Children)
+            foreach (var child in group.ChildGroups)
                 ValidateCircularReference(child, group.Id);
         }
 
@@ -111,7 +111,7 @@ namespace ML.ApplicationLauncher.Source
             foreach (var g in groups)
             {
                 if (g.Id == id) return g;
-                var child = FindGroup(g.Children, id);
+                var child = FindGroup(g.ChildGroups, id);
                 if (child != null) return child;
             }
             return null;

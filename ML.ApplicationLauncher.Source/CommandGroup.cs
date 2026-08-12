@@ -7,7 +7,7 @@ namespace ML.ApplicationLauncher.Source;
 
 /// <summary>
 /// Represents a group of commands. Groups can contain nested groups and processes.
-/// This is a persistence DTO — never data-bound to UI.
+/// This is a runtime DTO — never data-bound to UI and never directly serialized.
 /// </summary>
 public record CommandGroup
 {
@@ -17,6 +17,6 @@ public record CommandGroup
     public bool CanLaunch { get; set; }
     public bool Disabled { get; set; }
     public bool Hidden { get; set; }
-    public List<CommandGroup> Children { get; init; } = new();
+    public List<CommandGroup> ChildGroups { get; init; } = new();
     public List<CommandProcess> Processes { get; init; } = new();
 }

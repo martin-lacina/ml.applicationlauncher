@@ -84,15 +84,17 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         private ProcessLaunchInformation BuildProcessLaunchInformation()
         {
-            return new ProcessLaunchInformation(
-                Name,
-                Comment,
-                Path,
-                ArgumentExtensions.ParseArguments(Arguments),
-                ExecutionMode,
-                Disabled,
-                Hidden,
-                string.IsNullOrEmpty(WorkingDirectory) ? null : WorkingDirectory);
+            return new ProcessLaunchInformation
+            {
+                DisplayName = Name,
+                Comment = Comment,
+                Executable = Path,
+                Arguments = ArgumentExtensions.ParseArguments(Arguments),
+                ExecutionMode = ExecutionMode,
+                Disabled = Disabled,
+                Hidden = Hidden,
+                WorkingDirectory = string.IsNullOrEmpty(WorkingDirectory) ? null : WorkingDirectory
+            };
         }
 
 
