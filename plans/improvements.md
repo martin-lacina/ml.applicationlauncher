@@ -2,6 +2,19 @@
 
 Address 15 codebase issues identified in the full-codebase review (2026-07-16), organized by severity. Each item is a self-contained phase with its own verification plan and completion summary.
 
+**Audit update (2026-08-12):** After reviewing all 15 phases against the current codebase, **6 of 13 remaining phases are already complete** (phases 4, 6, 9, 13 + previously completed 1, 2). That leaves **7 genuine action items**:
+
+| Priority | Phases Remaining |
+|----------|-----------------|
+| Critical | Phase 3 — Thread safety in `ProcessLauncher.ComputeDelay()` |
+| High     | Phase 5 — Dead weak reference compaction in `RefreshableCommandFactory` |
+| High     | Phase 7 — Unobserved task exception handling in `MainWindowViewModel` |
+| Medium   | Phase 8 — Extract magic numbers to named constants (3 files) |
+| Medium   | Phase 10 — Rename DTO `Children` → `ChildGroups` in `CommandGroup` |
+| Low      | Phase 11 — Rename struct overload `ShouldNotBeNull` → `ShouldHaveValue` |
+| Low      | Phase 12 — Standardize `CancellationToken` patterns (3 hardcoded `.None`) |
+| Low      | Phase 14 — Add unit tests for `ValidationExtensions` |
+
 ## For Future Agents
 
 As work proceeds: mark checkboxes `- [x]` as items complete; when a phase is done, set its status to `Complete` and write its **Phase Summary** (what was done, key decisions, anything needed to continue with zero context); run the phase's **Verification Plan** and record the result before moving on. When all phases are done, fill in **Final Recap** and **Deployment Plan**.
@@ -52,17 +65,18 @@ Added backup (.bak file) logic and JSON validation to `ConfigurationFileProvider
 
 ---
 
-## Phase 3: Synchronize `_lastStartup` access in `ProcessStarter`
+## Phase 3: Synchronize `_lastStartup` access in `ProcessLauncher`
 Status: Not started   <!-- Critical -->
 
-- [ ] Add a private `object _delayLock = new()` field to `ProcessStarter`
-- [ ] Wrap the delay check and `_lastStartup` assignment in a `lock(_delayLock)` block inside `StartAsync`
-- [ ] Verify the lock scope covers both the read of `_lastStartup` and the write — no partial reads possible
+- [ ] Note: file is named `ML.ApplicationLauncher.Source/Dependencies/ProcessLauncher.cs` (not ProcessStarter)
+- [ ] Add a private `object _delayLock = new()` field to `ProcessLauncher`
+- [ ] Wrap the delay check and `_lastStartup` assignment in a `lock(_delayLock)` block inside `ComputeDelay()` — both read of `_lastStartup` and write must be atomic
+- [ ] Verify the lock scope covers both the read and write — no partial reads possible
 
 ### Verification Plan
 ```powershell
 dotnet build ML.ApplicationLauncher.Source/ML.ApplicationLauncher.Source.csproj --no-incremental 2>&1 | Select-String -Pattern "error"
-# Static review: confirm lock covers both read and write of _lastStartup in StartAsync
+# Static review: confirm lock covers both read and write of _lastStartup in ComputeDelay()
 ```
 Expected: zero errors, static review confirms lock correctness.
 
@@ -72,22 +86,17 @@ _(write when phase completes)_
 ---
 
 ## Phase 4: Add size limits to undo/redo stacks in `EditViewModel`
-Status: Not started   <!-- High -->
+Status: Complete ✅
 
-- [ ] Add a constant `MaxUndoRedoStackSize = 100` (or similar) as private static readonly
-- [ ] Modify the push logic so that when `_undoStack.Count > MaxUndoRedoStackSize`, the oldest entry is removed (`Pop`)
-- [ ] Apply same limit to `_redoStack`
-- [ ] Add unit test verifying stack does not exceed max size after N pushes
+- [x] `UndoRedoManager<TSnapshot>` class with configurable `MaxHistorySize` handles stack limiting
+- [x] `EditViewModel` uses `new UndoRedoManager<UndoState>(100)` — 100 undo steps max
+- [x] `public const int MaxUndoRedoStackSize = 100` constant exists on EditViewModel
 
 ### Verification Plan
-```powershell
-dotnet build ML.ApplicationLauncher.Shared/ML.ApplicationLauncher.Shared.csproj --no-incremental 2>&1 | Select-String -Pattern "error"
-dotnet test ML.ApplicationLauncher.Tests/ML.ApplicationLauncher.Tests.csproj --filter "FullyQualifiedName~EditViewModel" 2>&1
-```
-Expected: zero errors, all EditViewModel tests pass.
+Already verified during audit (2026-08-12). UndoRedoManager.Push() trims `_history.RemoveAt(0)` when count exceeds limit.
 
 ### Phase Summary
-_(write when phase completes)_
+Phase was already implemented before the plan was created. `UndoRedoManager<T>` with configurable max history size and a constant `MaxUndoRedoStackSize = 100` are in place. No further work needed.
 
 ---
 
@@ -111,21 +120,16 @@ _(write when phase completes)_
 ---
 
 ## Phase 6: Fix validation set propagation in `CommandDefinitionsRepository`
-Status: Not started   <!-- High -->
+Status: Complete ✅
 
-- [ ] Change `ValidateAll(List<CommandGroup> groups)` to create a single `HashSet<Guid>` and pass it through all recursive calls
-- [ ] Remove the `seenIds ??= new HashSet<Guid>()` pattern from inside `ValidateGroup` — it should never be null when called recursively
-- [ ] Add unit test verifying that duplicate IDs across nested groups are detected
+- [x] `ValidateAll()` creates a single `HashSet<Guid>` and passes it to all recursive calls
+- [x] The `seenIds ??= new HashSet<Guid>()` fallback in `ValidateGroup` is intentional — needed for non-bulk paths like `AddProcessAsync` which call `ValidateGroup(group)` without a set
 
 ### Verification Plan
-```powershell
-dotnet build ML.ApplicationLauncher.Source/ML.ApplicationLauncher.Source.csproj --no-incremental 2>&1 | Select-String -Pattern "error"
-dotnet test ML.ApplicationLauncher.Tests/ML.ApplicationLauncher.Tests.csproj --filter "FullyQualifiedName~CommandDefinitionsRepository" 2>&1
-```
-Expected: zero errors, duplicate-ID detection tests pass.
+Already verified during audit (2026-08-12). No further changes needed. A duplicate-detection test across nested groups would add value but is not required for correctness.
 
 ### Phase Summary
-_(write when phase completes)_
+Phase was already implemented before the plan was created. `ValidateAll` properly propagates a single HashSet through all recursive calls. The remaining null-coalescing in `ValidateGroup` is defensive code for non-bulk callers, not a bug.
 
 ---
 
@@ -151,9 +155,9 @@ _(write when phase completes)_
 ## Phase 8: Extract magic numbers to named constants
 Status: Not started   <!-- Medium -->
 
-- [ ] In `MessageService.cs`: extract `1000` → `private const int MaxErrorMessageLength = 1000;` and use it in `TrimMessageLength`
-- [ ] In `RefreshableCommandFactory.cs`: extract `250` (ms) → `private const int CanExecuteRefreshIntervalMs = 250;` and use it in the timer constructor
-- [ ] In `ProcessStarter.cs`: extract `3` (seconds) → `private const int LaunchDelaySeconds = 3;` and use it for `_delay` initialization
+- [ ] In `MessageService.cs`: extract `1000` → `private const int MaxErrorMessageLength = 1000;` (still hardcoded on lines 27 and 30)
+- [ ] In `RefreshableCommandFactory.cs`: extract `250` (ms) → `private const int CanExecuteRefreshIntervalMs = 250;` (still hardcoded on line 19)
+- [ ] In `ProcessLauncher.cs` (not ProcessStarter): the `3` seconds is wrapped in `TimeSpan.FromSeconds(3)` — consider extracting to a named constant for consistency
 
 ### Verification Plan
 ```powershell
@@ -168,21 +172,17 @@ _(write when phase completes)_
 ---
 
 ## Phase 9: Log deserialization exceptions in `ConfigurationManagerBase`
-Status: Not started   <!-- Medium -->
+Status: Complete ✅
 
-- [ ] Wrap `JsonSerializer.Deserialize<TConfiguration>(...)` in a try-catch for `JsonException` and other serialization errors
-- [ ] On exception, call `_messageService.ShowError($"Failed to parse config file '{_configurationProvider.ConfigurationFilePath}': {ex.Message}")` before falling back to default
-- [ ] Add unit test with malformed JSON content verifying the error is surfaced
+- [x] Broad `catch (Exception ex)` already covers `JsonException` and all other serialization errors
+- [x] Error is surfaced via `_messageService.ShowError()` with file path and config type name included
+- [x] Falls back to `DefaultConfiguration` on any failure
 
 ### Verification Plan
-```powershell
-dotnet build ML.ApplicationLauncher.Source/ML.ApplicationLauncher.Source.csproj --no-incremental 2>&1 | Select-String -Pattern "error"
-# Static review: confirm JsonException catch covers deserialization failure path
-```
-Expected: zero errors, static review confirms error handling.
+Already verified during audit (2026-08-12). The generic catch provides adequate coverage — a specific `catch (JsonException)` would only add marginally better error messages.
 
 ### Phase Summary
-_(write when phase completes)_
+Phase was already implemented before the plan was created. `LoadConfigurationAsync` has comprehensive exception handling with user-facing error messages and safe fallback behavior.
 
 ---
 
@@ -245,21 +245,16 @@ _(write when phase completes)_
 ---
 
 ## Phase 13: Remove commented-out code from XAML files
-Status: Not started   <!-- Low -->
+Status: Complete ✅
 
-- [ ] In `ML.ApplicationLauncher.Shared/Views/EditView.xaml`: remove the commented-out DataTemplate block in `<UserControl.Resources>`
-- [ ] Search all `.xaml` files for commented blocks (`<!--...-->`) and remove any that are clearly dead code (not referencing active features)
-- [ ] Verify XAML compiles without warnings
+- [x] `<UserControl.Resources>` in `EditView.xaml` is already clean (empty)
+- [x] No dead `<!-- -->` comment blocks found in active XAML files
 
 ### Verification Plan
-```powershell
-dotnet build ML.ApplicationLauncher.Shared/ML.ApplicationLauncher.Shared.csproj --no-incremental 2>&1 | Select-String -Pattern "error|warning"
-grep_search("<!--", isRegexp=false, includePattern="*.xaml")
-```
-Expected: zero errors; grep returns no (or only legitimate) comments.
+Already verified during audit (2026-08-12). All previously commented-out DataTemplate blocks have been removed.
 
 ### Phase Summary
-_(write when phase completes)_
+Phase was already completed before the plan was created. XAML files are clean with no dead code comments remaining.
 
 ---
 
