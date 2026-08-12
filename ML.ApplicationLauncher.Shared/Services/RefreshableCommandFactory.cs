@@ -37,18 +37,14 @@ public class RefreshableCommandFactory : ICommandFactory, IDisposable
     {
         lock (_commands)
         {
-            var aliveCommands = new List<WeakReference<RefreshedCommandWrapper>>();
             foreach (var command in _commands)
             {
-                if (!command.TryGetTarget(out var aliveCommand))
-                {
-                    continue;
-                }
-
-                aliveCommands.Add(command);
-                aliveCommand.CheckCanExecuteChanged();
+                if (command.TryGetTarget(out var aliveCommand))
+                    aliveCommand.CheckCanExecuteChanged();
             }
-            _commands = aliveCommands;
+
+            // Compact dead references in-place — avoids allocating a new list each tick
+            _commands.RemoveAll(wr => !wr.TryGetTarget(out _));
             UpdateTimer();
         }
     }
