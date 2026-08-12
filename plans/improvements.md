@@ -231,6 +231,26 @@ Phase was already completed before the plan was created. XAML files are clean wi
 
 ---
 
+## Phase 16: Propagate CancellationToken through full call chains (mandatory parameters)
+Status: Not started   <!-- Medium -->
+
+- [ ] Audit all async methods that currently accept `CancellationToken cancellationToken = default` — change to mandatory parameter (remove `= default`)
+- [ ] Propagate the token up from each caller until reaching a synchronous context (constructor, UI event handler, or DI registration) where `CancellationToken.None` or `default` is the correct entry point
+- [ ] Key files: `CommandDefinitionsRepository.cs` (`LoadAsync`, `SaveAsync`, all CRUD methods), any service in `ML.ApplicationLauncher.Source/Services/` that accepts tokens
+- [ ] Verify callers in Shared layer (view models, etc.) pass explicit tokens or use `default` / `CancellationToken.None` only at true entry points
+
+### Verification Plan
+```powershell
+dotnet build --no-incremental 2>&1 | Select-String -Pattern "error"
+grep_search("CancellationToken.*= default", isRegexp=true, includePattern="*.cs")
+```
+Expected: zero errors; grep returns no optional `= default` CancellationToken parameters in async methods.
+
+### Phase Summary
+_(write when phase completes)_
+
+---
+
 ## Phase 14: Add unit tests for validation helpers in `ValidationExtensions`
 Status: Not started   <!-- Low -->
 
