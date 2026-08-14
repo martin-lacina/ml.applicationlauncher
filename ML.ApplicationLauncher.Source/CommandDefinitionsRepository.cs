@@ -23,13 +23,13 @@ namespace ML.ApplicationLauncher.Source
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<List<CommandGroup>> LoadAsync(CancellationToken cancellationToken = default)
+        public async Task<List<CommandGroup>> LoadAsync(CancellationToken cancellationToken)
         {
             var config = await _configurationManager.LoadConfigurationAsync(cancellationToken).ConfigureAwait(false);
             return _mapper.MapToCommandGroups(config ?? Array.Empty<ProcessGroup>()).ToList();
         }
 
-        public async Task SaveAsync(List<CommandGroup> groups, CancellationToken cancellationToken = default)
+        public async Task SaveAsync(List<CommandGroup> groups, CancellationToken cancellationToken)
         {
             // Validate entire tree for duplicates and circular refs before persisting
             ValidateAll(groups);
@@ -70,40 +70,40 @@ namespace ML.ApplicationLauncher.Source
         // ---------------------------------------------------------------------
         // CRUD operations
         // ---------------------------------------------------------------------
-        public async Task AddProcessAsync(Guid groupId, CommandProcess process)
+        public async Task AddProcessAsync(Guid groupId, CommandProcess process, CancellationToken cancellationToken = default)
         {
-            var groups = await LoadAsync().ConfigureAwait(false);
+            var groups = await LoadAsync(cancellationToken).ConfigureAwait(false);
             var group = FindGroup(groups, groupId) ?? throw new KeyNotFoundException("Group not found");
             group.Processes.Add(process);
             ValidateGroup(group);
-            await SaveAsync(groups).ConfigureAwait(false);
+            await SaveAsync(groups, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task RemoveProcessAsync(Guid groupId, Guid processId)
+        public async Task RemoveProcessAsync(Guid groupId, Guid processId, CancellationToken cancellationToken = default)
         {
-            var groups = await LoadAsync().ConfigureAwait(false);
+            var groups = await LoadAsync(cancellationToken).ConfigureAwait(false);
             var group = FindGroup(groups, groupId) ?? throw new KeyNotFoundException("Group not found");
             group.Processes.RemoveAll(p => p.Id == processId);
-            await SaveAsync(groups).ConfigureAwait(false);
+            await SaveAsync(groups, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task MoveGroupAsync(Guid groupId, int newIndex)
+        public async Task MoveGroupAsync(Guid groupId, int newIndex, CancellationToken cancellationToken = default)
         {
-            var groups = await LoadAsync().ConfigureAwait(false);
+            var groups = await LoadAsync(cancellationToken).ConfigureAwait(false);
             var group = groups.Find(g => g.Id == groupId) ?? throw new KeyNotFoundException("Group not found");
             groups.Remove(group);
             groups.Insert(newIndex, group);
-            await SaveAsync(groups).ConfigureAwait(false);
+            await SaveAsync(groups, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task MoveProcessAsync(Guid groupId, Guid processId, int newIndex)
+        public async Task MoveProcessAsync(Guid groupId, Guid processId, int newIndex, CancellationToken cancellationToken = default)
         {
-            var groups = await LoadAsync().ConfigureAwait(false);
+            var groups = await LoadAsync(cancellationToken).ConfigureAwait(false);
             var group = FindGroup(groups, groupId) ?? throw new KeyNotFoundException("Group not found");
             var proc = group.Processes.Find(p => p.Id == processId) ?? throw new KeyNotFoundException("Process not found");
             group.Processes.Remove(proc);
             group.Processes.Insert(newIndex, proc);
-            await SaveAsync(groups).ConfigureAwait(false);
+            await SaveAsync(groups, cancellationToken).ConfigureAwait(false);
         }
 
         private CommandGroup? FindGroup(List<CommandGroup> groups, Guid id)
@@ -118,19 +118,19 @@ namespace ML.ApplicationLauncher.Source
         }
 
         // Simple add/remove helpers – real implementation would handle IDs and ordering
-        public async Task AddGroupAsync(CommandGroup group)
+        public async Task AddGroupAsync(CommandGroup group, CancellationToken cancellationToken = default)
         {
-            var groups = await LoadAsync().ConfigureAwait(false);
+            var groups = await LoadAsync(cancellationToken).ConfigureAwait(false);
             groups.Add(group);
             ValidateAll(groups);
-            await SaveAsync(groups).ConfigureAwait(false);
+            await SaveAsync(groups, cancellationToken).ConfigureAwait(false);
         }
 
-        public async Task RemoveGroupAsync(Guid id)
+        public async Task RemoveGroupAsync(Guid id, CancellationToken cancellationToken)
         {
-            var groups = await LoadAsync().ConfigureAwait(false);
+            var groups = await LoadAsync(cancellationToken).ConfigureAwait(false);
             groups.RemoveAll(g => g.Id == id);
-            await SaveAsync(groups).ConfigureAwait(false);
+            await SaveAsync(groups, cancellationToken).ConfigureAwait(false);
         }
 
         private void ValidateAll(List<CommandGroup> groups)

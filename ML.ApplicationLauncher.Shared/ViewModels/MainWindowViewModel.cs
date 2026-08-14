@@ -65,7 +65,7 @@ public partial class MainWindowViewModel : ObservableObject
     private static async Task RunSafe(Task task, IMessageService messageService)
     {
         await Task.Yield();
-        
+
         try
         {
             await task;
@@ -102,7 +102,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         await Task.Yield();
 
-        var allGroups = await _repository.LoadAsync().ConfigureAwait(false);
+        var allGroups = await _repository.LoadAsync(cancellationToken).ConfigureAwait(false);
 
         // Filter by IsVisible (preserves disabled/hidden items from main view only)
         ProcessGroups.Clear();

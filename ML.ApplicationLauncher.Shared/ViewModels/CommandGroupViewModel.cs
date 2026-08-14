@@ -61,9 +61,9 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanStart))]
-        private async Task StartAsync()
+        private async Task StartAsync(CancellationToken cancellationToken)
         {
-            await LaunchAllProcessesAsync();
+            await LaunchAllProcessesAsync(cancellationToken);
             SetLastExecuted();
         }
 
@@ -75,7 +75,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         private bool CanStart() => CanLaunch && !Disabled && GetLaunchableProcesses().Any();
 
-        private async Task LaunchAllProcessesAsync()
+        private async Task LaunchAllProcessesAsync(CancellationToken cancellationToken)
         {
             var tasks = new System.Collections.Generic.List<Task>();
 
@@ -93,7 +93,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                     WorkingDirectory = string.IsNullOrEmpty(process.WorkingDirectory) ? null : process.WorkingDirectory
                 };
 
-                tasks.Add(_processLauncher!.StartAsync(info));
+                tasks.Add(_processLauncher!.StartAsync(info, cancellationToken));
                 process.SetLastExecuted();
             }
 
@@ -101,7 +101,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             {
                 if (child.GetLaunchableProcesses().Any())
                 {
-                    tasks.Add(child.StartAsync());
+                    tasks.Add(child.StartAsync(cancellationToken));
                 }
             }
 

@@ -70,10 +70,6 @@ public class UndoRedoManager<TSnapshot>
 
         // Move index to the newly added entry
         _index = _history.Count - 1;
-
-        // After trimming, ensure index is valid within the trimmed history
-        if (_index >= MaxHistorySize)
-            _index = MaxHistorySize - 1;
     }
 
     /// <summary>

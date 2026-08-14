@@ -234,12 +234,12 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         [RelayCommand]
-        private async Task SaveAsync()
+        private async Task SaveAsync(CancellationToken cancellationToken)
         {
             var groups = new List<CommandGroup>();
             foreach (var vm in Groups)
                 groups.Add(ToModel(vm));
-            await _repository.SaveAsync(groups);
+            await _repository.SaveAsync(groups, cancellationToken);
             _lastSavedJson = SerializeGroups();
         }
 
@@ -340,7 +340,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         private async Task Load()
         {
-            var groups = await _repository.LoadAsync();
+            var groups = await _repository.LoadAsync(CancellationToken.None);
             Groups.Clear();
             foreach (var g in groups)
                 Groups.Add(ToViewModel(g));

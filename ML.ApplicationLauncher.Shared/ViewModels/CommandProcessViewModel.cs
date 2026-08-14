@@ -67,10 +67,10 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         [RelayCommand(CanExecute = nameof(CanStart))]
-        private async Task StartAsync()
+        private async Task StartAsync(CancellationToken cancellationToken)
         {
             var processInfo = BuildProcessLaunchInformation();
-            await _processLauncher!.StartAsync(processInfo);
+            await _processLauncher!.StartAsync(processInfo, cancellationToken);
             SetLastExecuted();
         }
 

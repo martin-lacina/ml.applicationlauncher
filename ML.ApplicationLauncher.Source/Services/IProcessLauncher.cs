@@ -8,5 +8,5 @@ namespace ML.ApplicationLauncher.Source.Services;
 
 public interface IProcessLauncher
 {
-    Task StartAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken = default);
+    Task StartAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken);
 }

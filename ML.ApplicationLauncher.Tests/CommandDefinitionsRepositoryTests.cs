@@ -112,7 +112,7 @@ namespace ML.ApplicationLauncher.Tests
                 .ReturnsAsync(Array.Empty<ProcessGroup>());
 
             // Act
-            var groups = await _repo.LoadAsync();
+            var groups = await _repo.LoadAsync(CancellationToken.None);
 
             // Assert
             Assert.IsNotNull(groups);
@@ -154,7 +154,7 @@ namespace ML.ApplicationLauncher.Tests
                 .ReturnsAsync(processGroups);
 
             // Act
-            var groups = await _repo.LoadAsync();
+            var groups = await _repo.LoadAsync(CancellationToken.None);
 
             // Assert
             Assert.AreEqual(1, groups.Count);
@@ -180,7 +180,7 @@ namespace ML.ApplicationLauncher.Tests
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _repo.SaveAsync(new List<CommandGroup> { group });
+            await _repo.SaveAsync(new List<CommandGroup> { group }, CancellationToken.None);
 
             // Assert
             _mockConfigManager.Verify(
@@ -201,7 +201,7 @@ namespace ML.ApplicationLauncher.Tests
                 .Returns(Task.CompletedTask);
 
             // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list, CancellationToken.None));
             _mockConfigManager.Verify(
                 m => m.SaveConfigurationAsync(It.IsAny<ProcessGroup[]>(), It.IsAny<CancellationToken>()),
                 Times.Never);
@@ -220,7 +220,7 @@ namespace ML.ApplicationLauncher.Tests
                 .Returns(Task.CompletedTask);
 
             // Act & Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => await _repo.SaveAsync(new List<CommandGroup> { group }));
+            Assert.ThrowsAsync<ArgumentException>(async () => await _repo.SaveAsync(new List<CommandGroup> { group }, CancellationToken.None));
         }
 
         #endregion
@@ -283,7 +283,7 @@ namespace ML.ApplicationLauncher.Tests
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _repo.RemoveGroupAsync(groupId);
+            await _repo.RemoveGroupAsync(groupId, CancellationToken.None);
 
             // Assert
             _mockConfigManager.Verify(
@@ -390,7 +390,7 @@ namespace ML.ApplicationLauncher.Tests
 
             // Act & Assert
             Assert.ThrowsAsync<InvalidOperationException>(
-                async () => await _repo.SaveAsync(new List<CommandGroup> { g1 }));
+                async () => await _repo.SaveAsync(new List<CommandGroup> { g1 }, CancellationToken.None));
         }
 
         [Test]
@@ -407,7 +407,7 @@ namespace ML.ApplicationLauncher.Tests
                 .Returns(Task.CompletedTask);
 
             // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list, CancellationToken.None));
         }
 
         [Test]
@@ -424,7 +424,7 @@ namespace ML.ApplicationLauncher.Tests
                 .Returns(Task.CompletedTask);
 
             // Act & Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _repo.SaveAsync(list, CancellationToken.None));
         }
 
         #endregion
@@ -458,7 +458,7 @@ namespace ML.ApplicationLauncher.Tests
                 .ReturnsAsync(new[] { parentGroup });
 
             // Act
-            var groups = await _repo.LoadAsync();
+            var groups = await _repo.LoadAsync(CancellationToken.None);
 
             // Assert
             Assert.AreEqual(1, groups.Count);
@@ -492,7 +492,7 @@ namespace ML.ApplicationLauncher.Tests
                 .Returns(Task.CompletedTask);
 
             // Act
-            await _repo.SaveAsync(new List<CommandGroup> { group });
+            await _repo.SaveAsync(new List<CommandGroup> { group }, CancellationToken.None);
 
             // Assert
             Assert.IsNotNull(savedProcessGroups);
