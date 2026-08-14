@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Timers;
 using System.Windows.Input;
-using Prism.Commands;
+using CommunityToolkit.Mvvm.Input;
 using Timer = System.Timers.Timer;
 
 namespace ML.ApplicationLauncher.Shared.Services;
@@ -72,13 +72,13 @@ public class RefreshableCommandFactory : ICommandFactory, IDisposable
     private class RefreshedCommandWrapper
     {
         private readonly Func<bool> _canExecuteMethod;
-        private readonly DelegateCommand _command;
+        private readonly RelayCommand _command;
         private bool _lastCanExecute;
 
         public RefreshedCommandWrapper(Action executeMethod, Func<bool> canExecuteMethod)
         {
             _canExecuteMethod = canExecuteMethod;
-            _command = new DelegateCommand(executeMethod, GetLastCanExecute);
+            _command = new RelayCommand(executeMethod, GetLastCanExecute);
             CheckCanExecuteChanged();
         }
 
@@ -98,7 +98,7 @@ public class RefreshableCommandFactory : ICommandFactory, IDisposable
             }
 
             _lastCanExecute = canExecute;
-            _command.RaiseCanExecuteChanged();
+            _command.NotifyCanExecuteChanged();
         }
     }
 }

@@ -26,21 +26,23 @@ Status: Complete
 Removed ICommandFactory from all ViewModels and DI registration. CommandGroupViewModel and CommandProcessViewModel constructors now accept only IProcessLauncher. EditViewModel and MainWindowViewModel no longer depend on ICommandFactory. ShellServiceInstaller registration removed. All ViewModels now use [RelayCommand] attributes exclusively. No breaking changes to public APIs.
 
 ## Phase 2: Replace RefreshableCommandFactory Prism DelegateCommand with CT.Mvvm
-Status: Not started
+Status: Complete
 
-- [ ] Replace `Prism.Commands.DelegateCommand` with `CommunityToolkit.Mvvm.Input.RelayCommand` in `RefreshableCommandFactory`
-- [ ] Update `RefreshedCommandWrapper` to use `RelayCommand` instead of `DelegateCommand`
-- [ ] Remove `using Prism.Commands` from `RefreshableCommandFactory.cs`
-- [ ] Verify `ICommandFactory` interface still works with CT.Mvvm commands
-- [ ] Build and test command refresh mechanism still functions
+- [x] Replace `Prism.Commands.DelegateCommand` with `CommunityToolkit.Mvvm.Input.RelayCommand` in `RefreshableCommandFactory`
+- [x] Update `RefreshedCommandWrapper` to use `RelayCommand` instead of `DelegateCommand`
+- [x] Remove `using Prism.Commands` from `RefreshableCommandFactory.cs`
+- [x] Verify `ICommandFactory` interface still works with CT.Mvvm commands
+- [x] Build and test command refresh mechanism still functions
 
 ### Verification Plan
 - `dotnet build ML.ApplicationLauncher.Shared/ML.ApplicationLauncher.Shared.csproj --no-incremental` → 0 errors
 - `grep_search "DelegateCommand" includePattern="**/Services/*.cs"` → 0 matches
 - `grep_search "Prism.Commands" includePattern="**/*.cs"` → 0 matches in Shared project
 
+**Result:** ✅ Build succeeded (0 errors). Zero DelegateCommand or Prism.Commands references remain.
+
 ### Phase Summary
-_(write when phase completes)_
+Replaced Prism.Commands.DelegateCommand with CommunityToolkit.Mvvm.Input.RelayCommand in RefreshableCommandFactory. Updated RefreshedCommandWrapper to use RelayCommand constructor and NotifyCanExecuteChanged() instead of RaiseCanExecuteChanged(). Removed Prism.Commands using directive. ICommandFactory interface remains compatible. Command refresh mechanism preserved with CT.Mvvm implementation.
 
 ## Phase 3: Fix CS8603 warnings in EditView.xaml.cs
 Status: Not started
