@@ -2,11 +2,12 @@
 
 Address 15 codebase issues identified in the full-codebase review (2026-07-16), organized by severity. Each item is a self-contained phase with its own verification plan and completion summary.
 
-**Audit update (2026-08-12):** After reviewing all 15 phases against the current codebase, **all 7 remaining action items are now complete**. Phases 4, 6, 9, 13 were already done before planning. Phases 3, 5, 7, 8, 10, 11 were confirmed as already implemented during this session. Phase 12 was implemented and committed (`40edace`). Only **Phase 14** (ValidationExtensionsTests) remains.
+**Audit update (2026-08-14):** After reviewing all 15 phases against the current codebase, **all 8 remaining action items are now complete**. Phases 4, 6, 9, 13 were already done before planning. Phases 3, 5, 7, 8, 10, 11 were confirmed as already implemented during this session. Phase 12 was implemented and committed (`40edace`). Phase 14 was implemented and committed today. Only **Phase 15** (MSBuild props audit) and **Phase 16** (mandatory CT propagation) remain.
 
 | Priority | Phases Remaining |
 |----------|-----------------|
-| Low      | Phase 14 — Add unit tests for `ValidationExtensions` |
+| Medium   | Phase 16 — Propagate CancellationToken as mandatory parameters |
+| Low      | Phase 15 — Audit shared MSBuild props for consistency |
 
 ## For Future Agents
 
@@ -252,21 +253,24 @@ _(write when phase completes)_
 ---
 
 ## Phase 14: Add unit tests for validation helpers in `ValidationExtensions`
-Status: Not started   <!-- Low -->
+Status: Complete ✅
 
-- [ ] Create new test file `ML.ApplicationLauncher.Tests/ValidationExtensionsTests.cs`
-- [ ] Add tests covering: null input to `ShouldNotBeNull`, empty array to `ShouldNotBeNullOrEmpty`, nullable struct with and without value, parameter name propagation via `[CallerArgumentExpression]`
-- [ ] Verify all tests pass
+- [x] Created `ML.ApplicationLauncher.Tests/ValidationExtensionsTests.cs` with 15 tests
+- [x] Tests cover `ShouldNotBeNull` (reference type): valid string, null throws, parameter name, empty string
+- [x] Tests cover `ShouldHaveValue` (nullable struct): valid int, null int, parameter name, valid Guid, null Guid
+- [x] Tests cover `ShouldNotBeNullOrEmpty` (array): valid array, null throws, parameter name, empty throws, single element
 
 ### Verification Plan
 ```powershell
 dotnet build ML.ApplicationLauncher.Tests/ML.ApplicationLauncher.Tests.csproj --no-incremental 2>&1 | Select-String -Pattern "error"
 dotnet test ML.ApplicationLauncher.Tests/ML.ApplicationLauncher.Tests.csproj --filter "FullyQualifiedName~ValidationExtensionsTests" 2>&1
 ```
-Expected: zero errors, all 6+ validation tests pass.
+Expected: zero errors, all 15 validation tests pass.
+
+**Result:** ✅ Build succeeded (0 errors), 15/15 ValidationExtensionsTests passed in 14s.
 
 ### Phase Summary
-_(write when phase completes)_
+Created `ValidationExtensionsTests.cs` with 15 NUnit tests covering all three validation extension methods. `ShouldNotBeNull` tested with valid strings, null (throws ArgumentNullException with correct parameter name), and empty strings. `ShouldHaveValue` tested with valid `int?` and `Guid?`, null values (throws with correct parameter name). `ShouldNotBeNullOrEmpty` tested with valid arrays, null (throws ArgumentNullException), empty arrays (throws ArgumentException with correct parameter name), and single-element arrays. All tests verify both the thrown exception type and the parameter name propagation via `[CallerArgumentExpression]`.
 
 ---
 

@@ -64,6 +64,8 @@ public partial class MainWindowViewModel : ObservableObject
     /// </summary>
     private static async Task RunSafe(Task task, IMessageService messageService)
     {
+        await Task.Yield();
+        
         try
         {
             await task;
