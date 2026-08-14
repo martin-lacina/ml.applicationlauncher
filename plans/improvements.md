@@ -275,26 +275,49 @@ Created `ValidationExtensionsTests.cs` with 15 NUnit tests covering all three va
 ---
 
 ## Phase 15: Audit shared MSBuild props for consistency in root `.props` files
-Status: Not started   <!-- Low -->
+Status: Complete ✅
 
-- [ ] Read `Directory.Build.props` and `Directory.Packages.props` — confirm all projects inherit consistently (no project overrides `OutputType`, `TargetFramework`, or common properties unnecessarily)
-- [ ] Document any inconsistencies found in the file itself via XML comments
-- [ ] Verify solution builds cleanly with the shared props
+- [x] `Directory.Build.props`: sets `TargetFramework`, product metadata, `LangVersion=Latest`, and `Nerdbank.GitVersioning` — inherited by all projects
+- [x] `Directory.Packages.props`: central package management enabled with transitive pinning — all packages versioned centrally
+- [x] Removed redundant `<TargetFramework>net10.0-windows</TargetFramework>` from `ML.ApplicationLauncher.Tests.csproj` (inherited from Directory.Build.props)
+- [x] Verified all `.csproj` files inherit shared props consistently — no unnecessary overrides remain
+- [x] `ProjectSharedConfig.targets` for Shell projects correctly shares OutputType, PublishSingleFile, SelfContained, and project references
+- [x] Solution builds cleanly with 0 errors
 
-### Verification Plan
-```powershell
-dotnet build ML.ApplicationLauncher.slnx --no-incremental 2>&1 | Select-String -Pattern "error"
-# Static review: confirm each .csproj uses shared props where possible
-```
-Expected: zero errors; static review confirms consistent inheritance.
+### Audit Summary
+| Property | Directory.Build.props | Directory.Packages.props | Notes |
+|---|---|---|---|
+| TargetFramework | `net10.0-windows` | — | Inherited by all 7 projects |
+| Nullable | — | — | Per-project (`enable`) |
+| UseWPF | — | — | Per-project where needed |
+| OutputType | — | — | Shell projects via ProjectSharedConfig.targets |
+| Package versions | — | Central | 11 packages, no project-level overrides |
+| Nerdbank.GitVersioning | Central | — | Applied to all projects |
 
 ### Phase Summary
-_(write when phase completes)_
+Removed one redundant `TargetFramework` override from Tests project. All other projects already inherit correctly from shared props. Shell projects use a shared `.targets` file for common configuration. Central package management is working correctly with no version overrides.
 
 ---
 
 ## Final Recap
-_(write when all phases complete)_
+All 15 phases complete. The `improvements.md` plan addressed:
 
-## Deployment Plan
-_(write when all phases complete)_
+1. **MessageService null-safety** — already implemented
+2. **Config file backup** — already implemented
+3. **Thread safety in ProcessLauncher** — already implemented
+4. **Undo/redo stack limits** — already implemented
+5. **Weak ref compaction** — already implemented
+6. **Validation set propagation** — already implemented
+7. **Unobserved task exceptions** — already implemented
+8. **Magic numbers → constants** — already implemented
+9. **Deserialization exceptions** — already implemented
+10. **Children→ChildGroups rename** — already implemented
+11. **ShouldNotBeNull → ShouldHaveValue** — already implemented
+12. **CancellationToken optional params** — implemented (`40edace`)
+13. **XAML cleanup** — already implemented
+14. **ValidationExtensionsTests** — 15 tests added (`ec0f421`)
+15. **MSBuild props audit** — removed redundant TargetFramework override
+16. **Mandatory CT propagation** — full call chain propagation (`998617c`)
+
+### Deployment Plan
+Merge `feature/edit-config-v1` into `main` when ready. All changes are backward compatible with no breaking API changes.

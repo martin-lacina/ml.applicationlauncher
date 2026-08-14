@@ -8,7 +8,7 @@ namespace ML.ApplicationLauncher.Source.Services;
 
 public static class ProcessStarterExtension
 {
-    public static async Task StartAsync(this IProcessLauncher processLauncher, ProcessGroup processGroup, CancellationToken cancellationToken = default)
+    public static async Task StartAsync(this IProcessLauncher processLauncher, ProcessGroup processGroup, CancellationToken cancellationToken)
     {
         await Task.Yield();
 
