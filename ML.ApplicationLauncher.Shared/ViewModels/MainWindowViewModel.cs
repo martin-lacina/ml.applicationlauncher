@@ -27,7 +27,6 @@ public partial class MainWindowViewModel : ObservableObject
     private readonly CommandDefinitionsRepository _repository;
     private readonly IProcessModelMapper _mapper;
     private readonly IProcessLauncher _processLauncher;
-    private readonly ICommandFactory _commandFactory;
     private readonly IMyDialogService _dialogService;
     private readonly IMessageService _messageService;
     private bool _isEditMode;
@@ -38,7 +37,6 @@ public partial class MainWindowViewModel : ObservableObject
         CommandDefinitionsRepository repository,
         IProcessModelMapper mapper,
         IProcessLauncher processLauncher,
-        ICommandFactory commandFactory,
         IMyDialogService dialogService,
         IMessageService messageService)
     {
@@ -47,7 +45,6 @@ public partial class MainWindowViewModel : ObservableObject
         _repository = repository.ShouldNotBeNull();
         _mapper = mapper.ShouldNotBeNull();
         _processLauncher = processLauncher.ShouldNotBeNull();
-        _commandFactory = commandFactory.ShouldNotBeNull();
         _dialogService = dialogService.ShouldNotBeNull();
         _messageService = messageService.ShouldNotBeNull();
 
@@ -118,7 +115,7 @@ public partial class MainWindowViewModel : ObservableObject
 
     private CommandGroupViewModel ToViewModel(CommandGroup group, bool includeHidden = false)
     {
-        var vm = new CommandGroupViewModel(_processLauncher, _commandFactory)
+        var vm = new CommandGroupViewModel(_processLauncher)
         {
             Id = group.Id,
             Name = group.Name,
@@ -130,7 +127,7 @@ public partial class MainWindowViewModel : ObservableObject
         foreach (var child in group.ChildGroups.Where(c => includeHidden || !c.Hidden))
             vm.Children.Add(ToViewModel(child, includeHidden));
         foreach (var proc in group.Processes.Where(p => includeHidden || !p.Hidden))
-            vm.Processes.Add(new CommandProcessViewModel(_processLauncher, _commandFactory)
+            vm.Processes.Add(new CommandProcessViewModel(_processLauncher)
             {
                 Id = proc.Id,
                 Name = proc.Name,
@@ -150,7 +147,7 @@ public partial class MainWindowViewModel : ObservableObject
     {
         if (IsEditMode)
         {
-            _editViewModel = new EditViewModel(_configurationManager, _mapper, _processLauncher, _commandFactory);
+            _editViewModel = new EditViewModel(_configurationManager, _mapper, _processLauncher);
             EditViewContent = _editViewModel;
             Debug.WriteLine($"EditListAsync: EditViewContent set to: {EditViewContent?.GetType().FullName}");
             try

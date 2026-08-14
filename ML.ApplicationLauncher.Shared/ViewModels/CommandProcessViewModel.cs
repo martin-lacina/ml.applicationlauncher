@@ -53,7 +53,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         /// <summary>
         /// Creates a new process view model with launch capability.
         /// </summary>
-        public CommandProcessViewModel(IProcessLauncher processLauncher, ICommandFactory commandFactory)
+        public CommandProcessViewModel(IProcessLauncher processLauncher)
         {
             _processLauncher = processLauncher;
         }

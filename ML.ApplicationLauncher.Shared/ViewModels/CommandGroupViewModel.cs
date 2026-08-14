@@ -47,7 +47,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         /// <summary>
         /// Creates a new group view model with launch capability.
         /// </summary>
-        public CommandGroupViewModel(IProcessLauncher processLauncher, ICommandFactory commandFactory)
+        public CommandGroupViewModel(IProcessLauncher processLauncher)
         {
             _processLauncher = processLauncher;
         }

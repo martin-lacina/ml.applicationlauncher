@@ -20,7 +20,6 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
     {
         private readonly CommandDefinitionsRepository _repository;
         private readonly IProcessLauncher? _processLauncher;
-        private readonly ICommandFactory? _commandFactory;
         private readonly IProcessModelMapper _mapper;
 
         [ObservableProperty]
@@ -61,12 +60,11 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
             PropertyNameCaseInsensitive = true
         };
 
-        public EditViewModel(IConfigurationManager<ProcessGroup[]> configurationManager, IProcessModelMapper mapper, IProcessLauncher? processLauncher = null, ICommandFactory? commandFactory = null)
+        public EditViewModel(IConfigurationManager<ProcessGroup[]> configurationManager, IProcessModelMapper mapper, IProcessLauncher? processLauncher = null)
         {
             _repository = new CommandDefinitionsRepository(configurationManager, mapper);
             _mapper = mapper;
             _processLauncher = processLauncher;
-            _commandFactory = commandFactory;
             _undoManager = new UndoRedoManager<UndoState>(100); // Hidden config option: 100 undo steps
             var _ = Task.Run(async () => await Load()).ConfigureAwait(false);
         }
@@ -387,13 +385,13 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         }
 
         private CommandGroupViewModel CreateGroupViewModel()
-            => _processLauncher is not null && _commandFactory is not null
-                ? new CommandGroupViewModel(_processLauncher, _commandFactory) { Name = "New Group" }
+            => _processLauncher is not null
+                ? new CommandGroupViewModel(_processLauncher) { Name = "New Group" }
                 : new CommandGroupViewModel() { Name = "New Group" };
 
         private CommandProcessViewModel CreateProcessViewModel()
-            => _processLauncher is not null && _commandFactory is not null
-                ? new CommandProcessViewModel(_processLauncher, _commandFactory) { Name = "New Process" }
+            => _processLauncher is not null
+                ? new CommandProcessViewModel(_processLauncher) { Name = "New Process" }
                 : new CommandProcessViewModel() { Name = "New Process" };
 
         public void MoveProcess(Guid processId, int newIndex)

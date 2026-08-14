@@ -15,7 +15,6 @@ public class ShellServiceInstaller : IDependencyInstaller
     {
         registry
             .RegisterSingleton<IMessageService, MessageService>()
-            .RegisterSingleton<ICommandFactory, RefreshableCommandFactory>()
             .RegisterSingleton<IMyDialogService, MyDialogService>()
             .Register<IConfigurationLocationProvider<ProcessGroup[]>, ProcessToLaunchConfigurationProvider>()
             .Register<IConfigurationLocationProvider<ApplicationConfiguration>, ApplicationConfigurationProvider>()
