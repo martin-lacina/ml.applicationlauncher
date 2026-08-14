@@ -83,7 +83,7 @@ namespace ML.ApplicationLauncher.Shared.Views
             vm.MoveProcess(dragged.Id, newIndex);
         }
 
-        private static DependencyObject VisualUpwardSearch(DependencyObject source)
+        private static DependencyObject? VisualUpwardSearch(DependencyObject source)
         {
             while (source != null && !(source is ListViewItem))
             {
@@ -92,7 +92,7 @@ namespace ML.ApplicationLauncher.Shared.Views
             return source;
         }
 
-        private static DependencyObject VisualUpwardSearchTreeItem(DependencyObject source)
+        private static DependencyObject? VisualUpwardSearchTreeItem(DependencyObject source)
         {
             while (source != null && !(source is TreeViewItem))
             {
