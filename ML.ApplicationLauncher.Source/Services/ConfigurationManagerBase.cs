@@ -12,6 +12,18 @@ namespace ML.ApplicationLauncher.Source.Services;
 
 internal abstract class ConfigurationManagerBase<TConfiguration> : IConfigurationProvider<TConfiguration>, IConfigurationManager<TConfiguration>
 {
+    private static readonly JsonSerializerOptions LoadOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+    };
+
+    private static readonly JsonSerializerOptions SaveOptions = new()
+    {
+        WriteIndented = true,
+        MaxDepth = 512,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+    };
+
     private readonly IConfigurationLocationProvider<TConfiguration> _configurationProvider;
     private readonly IMessageService _messageService;
 
@@ -38,13 +50,8 @@ internal abstract class ConfigurationManagerBase<TConfiguration> : IConfiguratio
 
             var fileContent = await File.ReadAllTextAsync(configurationFilePath, Encoding.UTF8, cancellationToken);
 
-            var options = new JsonSerializerOptions
-            {
-                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-            };
-
             TConfiguration configuration;
-            configuration = JsonSerializer.Deserialize<TConfiguration>(fileContent, options) ?? DefaultConfiguration;
+            configuration = JsonSerializer.Deserialize<TConfiguration>(fileContent, LoadOptions) ?? DefaultConfiguration;
 
             return configuration;
         }
@@ -61,14 +68,7 @@ internal abstract class ConfigurationManagerBase<TConfiguration> : IConfiguratio
         {
             using var fileStream = File.OpenWrite(_configurationProvider.ConfigurationFilePath);
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                MaxDepth = 512,
-                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-            };
-
-            await JsonSerializer.SerializeAsync<TConfiguration>(fileStream, configuration, options, cancellationToken);
+            await JsonSerializer.SerializeAsync<TConfiguration>(fileStream, configuration, SaveOptions, cancellationToken);
             fileStream.SetLength(fileStream.Position);
         }
         catch (Exception ex)

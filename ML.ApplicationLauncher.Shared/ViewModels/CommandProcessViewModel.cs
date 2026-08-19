@@ -63,14 +63,17 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         /// </summary>
         public CommandProcessViewModel()
         {
-            _processLauncher = null!;
+            _processLauncher = null;
         }
 
         [RelayCommand(CanExecute = nameof(CanStart))]
         private async Task StartAsync(CancellationToken cancellationToken)
         {
+            if (_processLauncher is null)
+                throw new InvalidOperationException("Process launcher is not available.");
+
             var processInfo = BuildProcessLaunchInformation();
-            await _processLauncher!.StartAsync(processInfo, cancellationToken);
+            await _processLauncher.StartAsync(processInfo, cancellationToken);
             SetLastExecuted();
         }
 

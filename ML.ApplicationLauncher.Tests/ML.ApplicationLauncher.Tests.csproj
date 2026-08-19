@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- TargetFramework inherited from Directory.Build.props -->
   <PropertyGroup>
     <IsPackable>false</IsPackable>
   </PropertyGroup>

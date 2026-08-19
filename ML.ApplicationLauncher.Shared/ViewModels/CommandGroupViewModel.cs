@@ -57,7 +57,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
         /// </summary>
         public CommandGroupViewModel()
         {
-            _processLauncher = null!;
+            _processLauncher = null;
         }
 
         [RelayCommand(CanExecute = nameof(CanStart))]
@@ -77,6 +77,9 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
 
         private async Task LaunchAllProcessesAsync(CancellationToken cancellationToken)
         {
+            if (_processLauncher is null)
+                throw new InvalidOperationException("Process launcher is not available.");
+
             var tasks = new System.Collections.Generic.List<Task>();
 
             foreach (var process in Processes.Where(p => !p.Disabled && File.Exists(p.Path)))
@@ -93,7 +96,7 @@ namespace ML.ApplicationLauncher.Shared.ViewModels
                     WorkingDirectory = string.IsNullOrEmpty(process.WorkingDirectory) ? null : process.WorkingDirectory
                 };
 
-                tasks.Add(_processLauncher!.StartAsync(info, cancellationToken));
+                tasks.Add(_processLauncher.StartAsync(info, cancellationToken));
                 process.SetLastExecuted();
             }
 

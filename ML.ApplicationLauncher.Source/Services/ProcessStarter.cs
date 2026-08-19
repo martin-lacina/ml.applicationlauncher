@@ -30,7 +30,7 @@ internal class ProcessLauncher : IProcessLauncher, IDisposable
         _processStartInfoResolverSelector = processStartInfoResolverSelector;
     }
 
-    public async Task StartAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken = default)
+    public async Task StartAsync(ProcessLaunchInformation processToLaunch, CancellationToken cancellationToken)
     {
         await Task.Yield();
 
