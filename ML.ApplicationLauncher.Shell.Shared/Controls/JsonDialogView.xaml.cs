@@ -5,7 +5,7 @@ using System.Windows.Controls;
 
 namespace ML.ApplicationLauncher.Shell.Controls;
 
-public partial class JsonDialogView : UserControl
+public partial class JsonDialogView : ContentControl
 {
     public JsonDialogView()
     {
