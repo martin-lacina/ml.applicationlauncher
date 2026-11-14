@@ -20,6 +20,10 @@
                 <controls:AboutApplicationView />
             </DataTemplate>
 
+            <DataTemplate DataType="{x:Type viewModels:JsonDialogViewModel}">
+                <controls:JsonDialogView />
+            </DataTemplate>
+
         </ContentControl.Resources>
 
     </ContentControl>

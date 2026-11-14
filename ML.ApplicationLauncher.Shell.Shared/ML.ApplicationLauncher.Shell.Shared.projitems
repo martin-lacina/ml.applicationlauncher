@@ -16,6 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\AboutApplicationView.xaml.cs">
       <DependentUpon>AboutApplicationView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\JsonDialogView.xaml.cs">
+      <DependentUpon>JsonDialogView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView.xaml.cs">
       <DependentUpon>ProcessGroupView.xaml</DependentUpon>
     </Compile>
@@ -37,6 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Services\RefreshableCommandFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\AboutViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\IDialogViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ViewModels\JsonDialogViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\MainWindowViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessGroupViewModel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewModels\ProcessViewModel.cs" />
@@ -50,6 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)Controls\AboutApplicationView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="$(MSBuildThisFileDirectory)Controls\JsonDialogView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Include="$(MSBuildThisFileDirectory)Controls\ProcessGroupView.xaml">

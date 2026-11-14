@@ -35,6 +35,9 @@ Icon="pack://application:,,,/Resources/Application.ico"
                     <Image Source="pack://application:,,,/Resources/clear-icon-9211-Windows.ico" MaxHeight="16" />
                 </Button>
                 <Separator />
+                <Button Command="{Binding Path=OpenJsonDialogCommand, Mode=OneWay}" ToolTip="Open JSON dialog">
+                    <Image Source="pack://application:,,,/Resources/Application.ico" MaxHeight="16" />
+                </Button>
                 <Button Command="{Binding Path=ShowAboutDialogCommand, Mode=OneWay}" ToolTip="About application">
                     <Image Source="pack://application:,,,/Resources/question-icon-my.ico" MaxHeight="16" />
                 </Button>

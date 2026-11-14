@@ -21,6 +21,7 @@ Toolbar buttons from left to right
 | Load commands | Reloads list of commands. Use after changes to the configuration JSON file. <br> Note: JSON parsing is not resilient and it will not load malformed JSON file (like missing commas `,`). You need to fix the issue manually and try again. |
 | Edit commands | Allows to open Notepad to edit the JSON file. <br> Note: It does not work well on Windows 11 (24H2) with new Notepad. |
 | Clear last executed time | Removes time when the command was last executed from all buttons. |
+| Open JSON dialog | Displays read-only dialog with the currently loaded command definitions (groups, processes, execution details). |
 | About application | Displays dialog with basic information about application, copyright and license. |
 
 ## Application configuration

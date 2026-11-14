@@ -41,6 +41,7 @@ public class MainWindowViewModel : BindableBase
         EditListCommand = new AsyncDelegateCommand(EditListAsync);
         ClearLastExecutedTimeCommand = new DelegateCommand(ClearLastExecutedTime);
         ShowAboutDialogCommand = new DelegateCommand(ShowAboutDialog);
+        OpenJsonDialogCommand = new DelegateCommand(OpenJsonDialog);
 
         LoadListCommand.Execute();
 
@@ -52,15 +53,21 @@ public class MainWindowViewModel : BindableBase
     public AsyncDelegateCommand EditListCommand { get; }
     public DelegateCommand ClearLastExecutedTimeCommand { get; }
     public DelegateCommand ShowAboutDialogCommand { get; }
+    public DelegateCommand OpenJsonDialogCommand { get; }
 
     public ObservableCollection<ProcessGroupViewModel> ProcessGroups { get; } = new();
 
+    private ProcessGroup[] _lastLoadedGroups = Array.Empty<ProcessGroup>();
+
     private async Task LoadListAsync(CancellationToken cancellationToken)
     {
-        var processGroups = await _processListProvider
+        _lastLoadedGroups = await _processListProvider
             .LoadProcessGroupsAsync(cancellationToken)
+            .ToArrayAsync(cancellationToken);
+
+        var processGroups = _lastLoadedGroups
             .Select(pg => new ProcessGroupViewModel(pg, _processLauncher, _commandFactory))
-            .ToListAsync(cancellationToken);
+            .ToList();
 
         ProcessGroups.Clear();
         ProcessGroups.AddRange(processGroups);
@@ -89,6 +96,11 @@ public class MainWindowViewModel : BindableBase
     private void ShowAboutDialog()
     {
         _dialogService.ShowAboutDialog();
+    }
+
+    private void OpenJsonDialog()
+    {
+        _dialogService.ShowJsonDialog(_lastLoadedGroups, _configurationProvider.ConfigurationFileName);
     }
 
     private async Task ExpireLastExecutionTimeLoopAsync(CancellationToken cancellationToken)
